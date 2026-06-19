@@ -51,6 +51,18 @@ This audit maps the screenshot requirements to concrete project evidence.
 | AI generation is fixed fake data with no extension path. | Avoided | `AgentOrchestrator` has replaceable task/log/artifact contract and documented provider upgrade path. |
 | Missing README/startup/reproducibility. | Avoided | README, `.env.example`, tests, ZIP package, local audit command. |
 
+## Engineering Design Reference
+
+| Screenshot design item | Status | Evidence |
+| --- | --- | --- |
+| Overall architecture: frontend, backend, async task, Agent Orchestrator, database, object storage, runtime isolation. | Pass | `docs/system-design.md`, `src/http.mjs`, `src/agent.mjs`, `src/storage.mjs`, `public/app.js`. |
+| Data model: users, games, versions, assets, generation tasks, Agent logs, publish state. | Pass | `docs/data-model.md`, `src/db.mjs`. |
+| Agent orchestration: harness choice and replacement path. | Pass | `docs/agent-workflow.md`, `AgentOrchestrator` in `src/agent.mjs`. |
+| Remote artifact protocol: manifest/bundle structure delivered to Play. | Pass | `docs/artifact-protocol.md`, `buildGameArtifact()` manifest generation, `/objects/` serving. |
+| Security isolation: uploaded material, prompt injection, generated code execution, secret protection, resource limits. | Pass | `docs/security.md`, `src/security.mjs`, upload allowlist, CSP, sandboxed iframe, `.env.example` without secrets. |
+| Failure recovery: model/build/upload/publish/load failures. | Pass | Task `failed` state and error logs, structured API errors, Play failed state, readiness endpoint, completion plan for production retries. |
+| Observability: generation process, Agent input/output, user actions, errors, and demo evidence. | Pass | `agent_logs`, `audit_events`, structured request logs, `X-Request-Id`, `docs/verification.md`, `delivery/media/`. |
+
 ## Final Verification
 
 - `npm.cmd run audit:local`: passed on 2026-06-20.
