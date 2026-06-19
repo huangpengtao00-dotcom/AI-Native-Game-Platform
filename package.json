@@ -1,0 +1,24 @@
+{
+  "name": "ai-native-game-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Native interactive game platform MVP with auth, generation tasks, object storage, and sandboxed play.",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "test": "node tests/run-tests.mjs",
+    "audit:local": "node tests/run-tests.mjs && node scripts/project-audit.mjs"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "keywords": [
+    "ai-agent",
+    "interactive-game",
+    "sqlite",
+    "object-storage",
+    "mvp"
+  ],
+  "license": "UNLICENSED"
+}
