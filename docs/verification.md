@@ -12,8 +12,13 @@ npm.cmd run audit:local
 The test starts the server on an ephemeral port and verifies:
 
 - Health endpoint works.
+- Readiness endpoint confirms database and object storage access.
+- Every API response includes `X-Request-Id`.
 - Seed creates at least three published games.
-- Registration creates a creator session.
+- Unauthenticated task access returns 401.
+- Registration creates a creator session and CSRF token.
+- Authenticated mutating requests without CSRF return 403.
+- Unsupported upload MIME types return 415.
 - Upload writes an asset with sha256.
 - Create task is accepted.
 - Agent task reaches `succeeded`.
@@ -54,3 +59,8 @@ Additional audit hardening added after review:
 - All source JavaScript files are checked with `node --check` inside `scripts/project-audit.mjs`.
 - Frontend icons were changed to ASCII to avoid Windows shell encoding corruption.
 - Home login button now binds auth handlers after rendering the auth view.
+- CSRF, request ID, rate limit, readiness, proxy-trust, and encoding markers are checked by `scripts/project-audit.mjs`.
+
+## Final Local Verification - 2026-06-20
+
+`npm.cmd run audit:local` passed after enterprise hardening. The run verified health, readiness, request IDs, 401 unauthenticated task access, 403 missing CSRF rejection, 415 invalid upload MIME rejection, upload sha256 persistence, Create task success, publish, manifest loading, object bundle fetch, and Home visibility for the newly published game.

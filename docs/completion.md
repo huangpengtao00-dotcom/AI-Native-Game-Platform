@@ -4,6 +4,8 @@
 
 - Email register/login/logout.
 - Demo Google/GitHub OAuth boundary and schema.
+- CSRF token flow for cookie-authenticated mutating requests.
+- Request IDs, structured logs, rate limits, and readiness checks.
 - Published Home list from backend/database.
 - At least three seeded playable games.
 - Create prompt and upload flow.
@@ -26,6 +28,6 @@
 1. Real OAuth callbacks with CSRF state.
 2. External model provider integration and tool sandbox.
 3. S3/OSS adapter with signed URLs.
-4. Rate limits, CSRF tokens, and request IDs.
+4. Origin/Referer validation and gateway-level rate limiting.
 5. Admin moderation for unsafe games.
 6. More game templates and version remixing.

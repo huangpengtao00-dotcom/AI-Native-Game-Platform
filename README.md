@@ -2,6 +2,13 @@
 
 AI Native interactive game platform MVP for the AI Agent full-stack system design test.
 
+Repository: https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform
+
+Demo address:
+
+- Local: http://127.0.0.1:4173
+- If deployed online, use the deployment URL plus the same seeded accounts below.
+
 The project implements a complete business loop:
 
 1. Player discovers published games on Home.
@@ -60,6 +67,10 @@ The target machine has Node 24 and Git, but no Docker. A zero-dependency Node im
 - `src/storage.mjs`: object storage adapter
 - `public/app.js`: frontend app workflow
 - `tests/run-tests.mjs`: end-to-end API test
+- `docs/delivery.md`: checklist mapped to required submission items
+- `docs/prd-alignment.md`: product roles and page acceptance mapped to implementation
+- `docs/verification.md`: automated and manual validation evidence
+- `docs/ai-collaboration.md`: AI assistance, review, test, and human-fix record
 - `docs/`: system design and delivery evidence
 
 ## Environment Variables

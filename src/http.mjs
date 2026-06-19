@@ -5,9 +5,11 @@ import { AgentOrchestrator } from './agent.mjs';
 import { clearSessionCookie, createSessionCookie, createSessionRecord, normalizeEmail, parseCookies, publicUser, validateEmail, validatePassword, verifyPassword } from './auth.mjs';
 import { DataStore } from './db.mjs';
 import { createConfig } from './env.mjs';
+import { createRequestId, logEvent, redactError } from './logger.mjs';
 import { seedDemoData } from './seed.mjs';
 import { LocalObjectStorage } from './storage.mjs';
 import { clampText, contentTypeFor, requireInside, sanitizeFilename, sha256 } from './util.mjs';
+import { appendSetCookie, assertCsrf, clearCsrfCookie, clientIp, createCsrfCookie, createCsrfToken, FixedWindowRateLimiter } from './security.mjs';
 
 class HttpError extends Error {
   constructor(status, message) {
@@ -37,6 +39,22 @@ function send(res, status, body, headers = {}) {
 
 function sendJson(res, status, body, headers = {}) {
   send(res, status, body, { 'Content-Type': 'application/json; charset=utf-8', ...headers });
+}
+
+function safeDecodeURIComponent(value, fallback = '') {
+  try {
+    return decodeURIComponent(String(value ?? fallback));
+  } catch {
+    return fallback;
+  }
+}
+
+function decodeUrlPath(value) {
+  try {
+    return decodeURIComponent(String(value ?? ''));
+  } catch {
+    throw new HttpError(400, 'Invalid URL encoding.');
+  }
 }
 
 async function readJson(req, maxBytes = 1024 * 1024) {
@@ -114,9 +132,11 @@ export async function createRuntime(overrides = {}) {
   await fs.mkdir(config.publicDir, { recursive: true });
   await seedDemoData({ store, storage, config });
   const agent = new AgentOrchestrator({ store, storage, config });
+  const authLimiter = new FixedWindowRateLimiter({ windowMs: config.rateLimitWindowMs, max: config.authRateLimitMax, keyPrefix: 'auth' });
+  const writeLimiter = new FixedWindowRateLimiter({ windowMs: config.rateLimitWindowMs, max: config.writeRateLimitMax, keyPrefix: 'write' });
 
   async function currentUser(req) {
-    const sid = parseCookies(req.headers.cookie).get('sid');
+    const sid = req.cookies.get('sid');
     if (!sid) return null;
     const session = store.getSession(sid);
     if (!session || new Date(session.expires_at).getTime() < Date.now()) {
@@ -133,16 +153,39 @@ export async function createRuntime(overrides = {}) {
     return user;
   }
 
+  function rateLimit(req, limiter, key, label) {
+    const result = limiter.check(key);
+    if (!result.ok) {
+      logEvent('warn', 'rate_limited', { requestId: req.requestId, label, key, resetAt: new Date(result.resetAt).toISOString() });
+      throw new HttpError(429, 'Too many requests. Please retry later.');
+    }
+  }
+
   async function handleApi(req, res, url) {
+    req.cookies = parseCookies(req.headers.cookie);
     const user = await currentUser(req);
     const method = req.method ?? 'GET';
+    assertCsrf({ method, pathname: url.pathname, cookies: req.cookies, headers: req.headers, user });
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) rateLimit(req, writeLimiter, `${user?.id ?? clientIp(req, config)}:${url.pathname}`, 'write');
+    if (method === 'POST' && url.pathname.startsWith('/api/auth/')) rateLimit(req, authLimiter, `${clientIp(req, config)}:${url.pathname}`, 'auth');
 
     if (method === 'GET' && url.pathname === '/api/health') {
       return sendJson(res, 200, { ok: true, time: new Date().toISOString(), stats: store.dashboardStats() });
     }
 
+    if (method === 'GET' && url.pathname === '/api/ready') {
+      let database = false;
+      let objectStorage = false;
+      try { database = store.get('SELECT 1 AS ok')?.ok === 1; } catch { database = false; }
+      try { await fs.access(config.storageDir); objectStorage = true; } catch { objectStorage = false; }
+      const ready = database && objectStorage;
+      return sendJson(res, ready ? 200 : 503, { ok: ready, checks: { database, objectStorage }, time: new Date().toISOString() });
+    }
+
     if (method === 'GET' && url.pathname === '/api/me') {
-      return sendJson(res, 200, { user: publicUser(user) });
+      const csrfToken = user ? (req.cookies.get('csrf') || createCsrfToken()) : null;
+      const headers = csrfToken ? { 'Set-Cookie': createCsrfCookie(csrfToken, config) } : {};
+      return sendJson(res, 200, { user: publicUser(user), csrfToken }, headers);
     }
 
     if (method === 'POST' && url.pathname === '/api/auth/register') {
@@ -156,9 +199,12 @@ export async function createRuntime(overrides = {}) {
       if (store.getUserByEmail(email)) throw new HttpError(409, 'Email is already registered.');
       const created = store.createUser({ email, password, name, role: 'creator' });
       const session = createSessionRecord(created.id, config.sessionDays);
+      const csrfToken = createCsrfToken();
       store.createSession(session);
       store.audit({ actorId: created.id, type: 'auth.register', message: `Registered ${email}` });
-      return sendJson(res, 201, { user: publicUser(created) }, { 'Set-Cookie': createSessionCookie(session.id, config) });
+      let headers = { 'Set-Cookie': createSessionCookie(session.id, config) };
+      headers = appendSetCookie(headers, createCsrfCookie(csrfToken, config));
+      return sendJson(res, 201, { user: publicUser(created), csrfToken }, headers);
     }
 
     if (method === 'POST' && url.pathname === '/api/auth/login') {
@@ -166,14 +212,19 @@ export async function createRuntime(overrides = {}) {
       const found = store.getUserByEmail(body.email);
       if (!found || !verifyPassword(body.password, found.password_hash)) throw new HttpError(401, 'Email or password is incorrect.');
       const session = createSessionRecord(found.id, config.sessionDays);
+      const csrfToken = createCsrfToken();
       store.createSession(session);
       store.audit({ actorId: found.id, type: 'auth.login', message: `Logged in ${found.email}` });
-      return sendJson(res, 200, { user: publicUser(found) }, { 'Set-Cookie': createSessionCookie(session.id, config) });
+      let headers = { 'Set-Cookie': createSessionCookie(session.id, config) };
+      headers = appendSetCookie(headers, createCsrfCookie(csrfToken, config));
+      return sendJson(res, 200, { user: publicUser(found), csrfToken }, headers);
     }
 
     if (method === 'POST' && url.pathname === '/api/auth/logout') {
       if (user?.sessionId) store.deleteSession(user.sessionId);
-      return sendJson(res, 200, { ok: true }, { 'Set-Cookie': clearSessionCookie() });
+      let headers = { 'Set-Cookie': clearSessionCookie() };
+      headers = appendSetCookie(headers, clearCsrfCookie());
+      return sendJson(res, 200, { ok: true }, headers);
     }
 
     if (method === 'POST' && url.pathname.startsWith('/api/auth/oauth/')) {
@@ -183,9 +234,12 @@ export async function createRuntime(overrides = {}) {
       const demoEmail = normalizeEmail(body.email || `${provider}-demo@example.com`);
       const oauthUser = store.upsertOAuthUser({ provider, providerUserId: `${provider}-demo-user`, email: demoEmail, name: `${provider[0].toUpperCase()}${provider.slice(1)} Demo` });
       const session = createSessionRecord(oauthUser.id, config.sessionDays);
+      const csrfToken = createCsrfToken();
       store.createSession(session);
       store.audit({ actorId: oauthUser.id, type: `auth.oauth.${provider}`, message: `Demo OAuth login via ${provider}` });
-      return sendJson(res, 200, { user: publicUser(oauthUser), demo: true, note: 'Demo OAuth callback. Replace with real provider exchange in production.' }, { 'Set-Cookie': createSessionCookie(session.id, config) });
+      let headers = { 'Set-Cookie': createSessionCookie(session.id, config) };
+      headers = appendSetCookie(headers, createCsrfCookie(csrfToken, config));
+      return sendJson(res, 200, { user: publicUser(oauthUser), csrfToken, demo: true, note: 'Demo OAuth callback. Replace with real provider exchange in production.' }, headers);
     }
 
     if (method === 'GET' && url.pathname === '/api/games') {
@@ -218,7 +272,7 @@ export async function createRuntime(overrides = {}) {
 
     if (method === 'POST' && url.pathname === '/api/assets') {
       const actor = await requireUser(req);
-      const filename = sanitizeFilename(req.headers['x-filename'] || 'upload.bin');
+      const filename = sanitizeFilename(safeDecodeURIComponent(req.headers['x-filename'], 'upload.bin'));
       const mime = clampText(req.headers['content-type'], 80, 'application/octet-stream');
       const allowed = /^(image\/|video\/|text\/plain|application\/pdf|application\/json|application\/octet-stream)/.test(mime);
       if (!allowed) throw new HttpError(415, 'Unsupported upload type.');
@@ -270,7 +324,7 @@ export async function createRuntime(overrides = {}) {
 
   async function serveStatic(req, res, url) {
     if (url.pathname.startsWith('/objects/')) {
-      const key = decodeURIComponent(url.pathname.slice('/objects/'.length));
+      const key = decodeUrlPath(url.pathname.slice('/objects/'.length));
       const filePath = storage.resolve(key);
       const body = await fs.readFile(filePath);
       return send(res, 200, body, {
@@ -280,7 +334,7 @@ export async function createRuntime(overrides = {}) {
       });
     }
 
-    let relative = decodeURIComponent(url.pathname);
+    let relative = decodeUrlPath(url.pathname);
     if (relative === '/' || !path.extname(relative)) relative = '/index.html';
     const filePath = requireInside(config.publicDir, path.join(config.publicDir, relative));
     const body = await fs.readFile(filePath);
@@ -292,14 +346,19 @@ export async function createRuntime(overrides = {}) {
   }
 
   const server = http.createServer(async (req, res) => {
+    const started = Date.now();
+    req.requestId = req.headers['x-request-id']?.toString().slice(0, 80) || createRequestId();
+    res.setHeader('X-Request-Id', req.requestId);
     try {
       const url = new URL(req.url ?? '/', config.appOrigin);
-      if (url.pathname.startsWith('/api/')) return await handleApi(req, res, url);
-      return await serveStatic(req, res, url);
+      if (url.pathname.startsWith('/api/')) await handleApi(req, res, url);
+      else await serveStatic(req, res, url);
+      logEvent('info', 'http_request', { requestId: req.requestId, method: req.method, path: url.pathname, status: res.statusCode, durationMs: Date.now() - started });
     } catch (error) {
-      const status = error instanceof HttpError ? error.status : error.code === 'ENOENT' ? 404 : 500;
-      if (status >= 500) console.error(error);
-      return sendJson(res, status, { error: status >= 500 ? 'Internal server error.' : error.message });
+      const status = error instanceof HttpError || Number.isInteger(error.status) ? error.status : error.code === 'ENOENT' ? 404 : 500;
+      if (status >= 500) logEvent('error', 'http_error', { requestId: req.requestId, status, error: redactError(error) });
+      else logEvent('warn', 'http_rejected', { requestId: req.requestId, status, message: error.message });
+      return sendJson(res, status, { error: status >= 500 ? 'Internal server error.' : error.message, requestId: req.requestId }, { 'X-Request-Id': req.requestId });
     }
   });
 

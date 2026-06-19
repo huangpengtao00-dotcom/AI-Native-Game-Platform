@@ -1,6 +1,7 @@
 const app = document.querySelector('#app');
 const state = {
   user: null,
+  csrfToken: null,
   route: location.hash.replace('#', '') || '/home',
   games: [],
   tasks: [],
@@ -14,6 +15,7 @@ const state = {
 let pollTimer = null;
 
 const icons = { home: 'H', create: '+', tasks: 'T', play: '>', docs: 'D' };
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 function html(strings, ...values) {
   return strings.reduce((out, part, i) => out + part + (values[i] ?? ''), '');
@@ -29,15 +31,27 @@ function fmtDate(value) {
 }
 
 async function api(path, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+  const body = options.body;
+  const isBinary = body instanceof Blob || body instanceof ArrayBuffer || ArrayBuffer.isView(body);
+  const headers = {
+    ...(body && typeof body !== 'string' && !isBinary ? { 'Content-Type': 'application/json' } : {}),
+    ...(options.headers || {})
+  };
+  if (state.csrfToken && MUTATING_METHODS.has(method) && !headers['X-CSRF-Token'] && !headers['x-csrf-token']) {
+    headers['X-CSRF-Token'] = state.csrfToken;
+  }
   const res = await fetch(path, {
     credentials: 'same-origin',
-    headers: options.body && !(options.body instanceof Blob) && !(options.body instanceof ArrayBuffer) ? { 'Content-Type': 'application/json', ...(options.headers || {}) } : (options.headers || {}),
     ...options,
-    body: options.body && typeof options.body !== 'string' && !(options.body instanceof Blob) && !(options.body instanceof ArrayBuffer) ? JSON.stringify(options.body) : options.body
+    method,
+    headers,
+    body: body && typeof body !== 'string' && !isBinary ? JSON.stringify(body) : body
   });
   const text = await res.text();
   let data = {};
   try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+  if (data.csrfToken) state.csrfToken = data.csrfToken;
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
@@ -128,7 +142,7 @@ function renderShell(content) {
         </div>
       </aside>
       <main class="main">
-        <header class="topbar"><div><div class="page-title">${esc(title)}</div><div class="page-sub">${esc(sub)}</div></div><div class="actions"><button class="ghost" id="refreshBtn">鈫?Refresh</button><button class="primary" id="quickCreate">+ Create</button></div></header>
+        <header class="topbar"><div><div class="page-title">${esc(title)}</div><div class="page-sub">${esc(sub)}</div></div><div class="actions"><button class="ghost" id="refreshBtn">Refresh</button><button class="primary" id="quickCreate">+ Create</button></div></header>
         <section class="content">${content}</section>
       </main>
     </div>`;
@@ -164,11 +178,11 @@ function gameCard(game) {
   return html`<article class="card game-card">
     <div class="cover" style="background:${esc(game.coverGradient)}"><span>${esc(game.origin)}</span></div>
     <div class="game-body">
-      <div><div class="game-title">${esc(game.title)}</div><div class="hint">by ${esc(game.authorName)} 路 ${fmtDate(game.publishedAt)}</div></div>
+      <div><div class="game-title">${esc(game.title)}</div><div class="hint">by ${esc(game.authorName)} - ${fmtDate(game.publishedAt)}</div></div>
       <p class="summary">${esc(game.summary)}</p>
       <div class="tags">${(game.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
       <div class="metrics"><div class="metric"><strong>${game.playCount}</strong><span>plays</span></div><div class="metric"><strong>${game.likeCount}</strong><span>likes</span></div><div class="metric"><strong>${game.favoriteCount}</strong><span>saves</span></div></div>
-      <div class="actions"><button class="primary" data-play="${esc(game.id)}">鈻?Play</button><button class="ghost" data-detail="${esc(game.id)}">Manifest</button></div>
+      <div class="actions"><button class="primary" data-play="${esc(game.id)}">Play</button><button class="ghost" data-detail="${esc(game.id)}">Manifest</button></div>
     </div>
   </article>`;
 }
@@ -212,7 +226,7 @@ function tasksView() {
 }
 
 function taskDetail(task) {
-  return html`<section class="panel"><h2>Agent execution log</h2><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div><p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} 路 ${esc(log.step)}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
+  return html`<section class="panel"><h2>Agent execution log</h2><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div><p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} - ${esc(log.step)}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
 }
 
 function playView() {
@@ -224,7 +238,7 @@ function playView() {
 }
 
 function playFrameContent() {
-  if (state.playState.status === 'loading') return '<div class="loader"><h2>Loading game files鈥?/h2><p>Fetching manifest, validating entry URL, then mounting sandboxed runtime.</p></div>';
+  if (state.playState.status === 'loading') return '<div class="loader"><h2>Loading game files</h2><p>Fetching manifest, validating entry URL, then mounting sandboxed runtime.</p></div>';
   if (state.playState.status === 'failed') return `<div class="loader"><h2>Load failed</h2><p>${esc(state.playState.error)}</p></div>`;
   if (state.playState.status === 'loaded' && state.playState.manifest) {
     const src = esc(state.playState.manifest.entry);
@@ -323,7 +337,7 @@ async function uploadSelectedAssets(event) {
   const files = Array.from(event.target.files || []).slice(0, 5);
   for (const file of files) {
     try {
-      msg.innerHTML = `<div class="alert">Uploading ${esc(file.name)}鈥?/div>`;
+      msg.innerHTML = `<div class="alert">Uploading ${esc(file.name)}</div>`;
       const data = await api('/api/assets', { method: 'POST', headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-Filename': encodeURIComponent(file.name) }, body: await file.arrayBuffer() });
       state.uploadedAssets.push(data.asset);
     } catch (error) { msg.innerHTML = `<div class="alert error">${esc(error.message)}</div>`; }
@@ -348,6 +362,7 @@ async function refreshAll() {
 
 async function logout() {
   await api('/api/auth/logout', { method: 'POST', body: {} });
+  state.csrfToken = null;
   state.user = null;
   state.tasks = [];
   state.activeTask = null;
