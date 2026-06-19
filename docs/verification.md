@@ -64,3 +64,16 @@ Additional audit hardening added after review:
 ## Final Local Verification - 2026-06-20
 
 `npm.cmd run audit:local` passed after enterprise hardening. The run verified health, readiness, request IDs, 401 unauthenticated task access, 403 missing CSRF rejection, 415 invalid upload MIME rejection, upload sha256 persistence, Create task success, publish, manifest loading, object bundle fetch, and Home visibility for the newly published game.
+
+## Delivery Media Verification - 2026-06-20
+
+Generated final visual evidence under `delivery/media/`:
+
+- `01-home.png`
+- `02-login.png`
+- `03-create.png`
+- `04-tasks.png`
+- `05-play.png`
+- `demo-walkthrough.webm`
+
+The screenshots were captured from the real local browser flow. The video was assembled from those captured screenshots to keep the interview package reproducible without external video tooling.

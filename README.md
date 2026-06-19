@@ -40,6 +40,10 @@ npm.cmd test
 npm.cmd run audit:local
 ```
 
+## Interview Package
+
+Start with `INTERVIEW_SUBMISSION.md` for the final handoff checklist. Demo screenshots and video are under `delivery/media/`, including `delivery/media/demo-walkthrough.webm`.
+
 ## Tech Stack
 
 - Node.js native HTTP server, no external runtime dependencies

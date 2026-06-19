@@ -18,7 +18,7 @@
 | Item | Status | Evidence |
 | --- | --- | --- |
 | Tests and validation | Done | `npm.cmd test` and `npm.cmd run audit:local`; `docs/verification.md` records automated and manual smoke coverage. |
-| Demo video | Not included | The app is prepared for a five-minute walkthrough covering login, Create, publish, Home, and Play. |
+| Demo video | Done | `delivery/media/demo-walkthrough.webm` plus screenshots in `delivery/media/` cover Home, login, Create, Tasks, and Play. |
 | AI collaboration record | Done | `docs/ai-collaboration.md` describes tools, prompt direction, AI contribution, review/test method, and human-supervised fixes. |
 
 ## Non-Acceptance Risk Check

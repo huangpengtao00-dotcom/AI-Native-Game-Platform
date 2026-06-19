@@ -16,6 +16,12 @@ let pollTimer = null;
 
 const icons = { home: 'H', create: '+', tasks: 'T', play: '>', docs: 'D' };
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const COVER_ASSETS = {
+  memory: '/assets/covers/memory.png',
+  reaction: '/assets/covers/reaction.png',
+  adventure: '/assets/covers/adventure.png',
+  quiz: '/assets/covers/quiz.png'
+};
 
 function html(strings, ...values) {
   return strings.reduce((out, part, i) => out + part + (values[i] ?? ''), '');
@@ -175,8 +181,12 @@ function homeView() {
 }
 
 function gameCard(game) {
+  const cover = coverAssetFor(game);
+  const coverStyle = cover
+    ? `background-image:linear-gradient(180deg,rgba(2,6,23,.02),rgba(2,6,23,.34)),url('${cover}');`
+    : `background:${esc(game.coverGradient)};`;
   return html`<article class="card game-card">
-    <div class="cover" style="background:${esc(game.coverGradient)}"><span>${esc(game.origin)}</span></div>
+    <div class="cover" style="${coverStyle}"><span>${esc(game.origin)}</span></div>
     <div class="game-body">
       <div><div class="game-title">${esc(game.title)}</div><div class="hint">by ${esc(game.authorName)} - ${fmtDate(game.publishedAt)}</div></div>
       <p class="summary">${esc(game.summary)}</p>
@@ -185,6 +195,15 @@ function gameCard(game) {
       <div class="actions"><button class="primary" data-play="${esc(game.id)}">Play</button><button class="ghost" data-detail="${esc(game.id)}">Manifest</button></div>
     </div>
   </article>`;
+}
+
+function coverAssetFor(game) {
+  const haystack = [game.title, game.summary, ...(game.tags || [])].join(' ').toLowerCase();
+  if (haystack.includes('reaction') || haystack.includes('starship')) return COVER_ASSETS.reaction;
+  if (haystack.includes('memory') || haystack.includes('robot') || haystack.includes('greenhouse')) return COVER_ASSETS.memory;
+  if (haystack.includes('quiz') || haystack.includes('trivia')) return COVER_ASSETS.quiz;
+  if (haystack.includes('adventure') || haystack.includes('archive') || haystack.includes('agent')) return COVER_ASSETS.adventure;
+  return '';
 }
 
 function createView() {

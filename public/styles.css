@@ -53,7 +53,7 @@ textarea { min-height: 128px; resize: vertical; line-height: 1.55; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
 .game-card { display: flex; flex-direction: column; min-height: 330px; }
-.cover { height: 132px; display: flex; align-items: end; padding: 14px; color: white; position: relative; }
+.cover { height: 150px; display: flex; align-items: end; padding: 14px; color: white; position: relative; background-size: cover; background-position: center; }
 .cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.28)); }
 .cover span { position: relative; z-index: 1; font-size: 12px; font-weight: 900; padding: 6px 8px; border-radius: 8px; background: rgba(0,0,0,.34); }
 .game-body { padding: 15px; display: grid; gap: 12px; flex: 1; }

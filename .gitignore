@@ -15,11 +15,12 @@ node_modules/
 *.log
 npm-debug.log*
 
+# Generated media working frames
+/delivery/media/frames/
+/delivery/media/walkthrough-frames/
+
 # OS/editor noise
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# Draft visual assets pending final art direction
-/public/assets/covers/
