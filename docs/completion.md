@@ -7,7 +7,7 @@
 - CSRF token flow for cookie-authenticated mutating requests.
 - Request IDs, structured logs, rate limits, and readiness checks.
 - Published Home list from backend/database.
-- At least three seeded playable games.
+- At least three seeded playable games, including one published Create-flow sample with persisted task logs.
 - Create prompt and upload flow.
 - Async generation tasks with visible progress.
 - Agent logs persisted in database.

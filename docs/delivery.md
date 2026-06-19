@@ -7,7 +7,7 @@
 | Source repository | Done | GitHub: `https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform`; branch `main`; commit history includes architecture, UI/runtime, verification, and hardening commits. |
 | Demo address | Done | Local demo runs at `http://127.0.0.1:4173`; README includes the startup path and seeded accounts. |
 | Startup command | Done | `npm.cmd start`; no global install, Docker, or external service is required for the MVP. |
-| Test data | Done | `src/seed.mjs` seeds creator/player accounts and at least three published games. End-to-end tests create an additional game through Create and publish it. |
+| Test data | Done | `src/seed.mjs` seeds creator/player accounts and at least three published games, including one `create-agent` origin game with a succeeded task/log trail. End-to-end tests create another game through Create and publish it. |
 | Environment variables | Done | `.env.example` documents port, host, origin, data/storage paths, upload limit, cookie security, proxy trust, rate limits, OAuth placeholders, and model provider placeholders. No real secret is committed. |
 | System design docs | Done | `docs/system-design.md`, `docs/data-model.md`, `docs/agent-workflow.md`, `docs/artifact-protocol.md`, `docs/security.md`, and `docs/completion.md`. |
 | Technical stack | Done | Node native HTTP, Node 24 `node:sqlite`, SQLite, local object storage adapter, vanilla HTML/CSS/JS, deterministic Agent harness, sandboxed iframe runtime. |

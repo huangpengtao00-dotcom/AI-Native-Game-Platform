@@ -43,6 +43,7 @@ npm.cmd run audit:local
 ## Interview Package
 
 Start with `INTERVIEW_SUBMISSION.md` for the final handoff checklist. Demo screenshots and video are under `delivery/media/`, including `delivery/media/demo-walkthrough.webm`.
+For strict screenshot-requirement mapping, see `docs/strict-requirements-audit.md`.
 
 ## Tech Stack
 
@@ -74,6 +75,7 @@ The target machine has Node 24 and Git, but no Docker. A zero-dependency Node im
 - `docs/delivery.md`: checklist mapped to required submission items
 - `docs/prd-alignment.md`: product roles and page acceptance mapped to implementation
 - `docs/verification.md`: automated and manual validation evidence
+- `docs/strict-requirements-audit.md`: screenshot-requirement compliance matrix
 - `docs/ai-collaboration.md`: AI assistance, review, test, and human-fix record
 - `docs/`: system design and delivery evidence
 

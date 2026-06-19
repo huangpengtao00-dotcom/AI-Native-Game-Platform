@@ -39,6 +39,7 @@ This runs the automated functional tests and the local project audit.
 - Artifact protocol: `docs/artifact-protocol.md`
 - Security review: `docs/security.md`
 - Verification evidence: `docs/verification.md`
+- Strict screenshot-requirement audit: `docs/strict-requirements-audit.md`
 - Completion statement: `docs/completion.md`
 - AI collaboration record: `docs/ai-collaboration.md`
 

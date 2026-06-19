@@ -59,6 +59,12 @@ try {
   assert.equal(health.ok, true);
   assert.ok(health.stats.publishedGames >= 3, 'seed should create three published games');
 
+  const seededGames = await request('/api/games?status=published');
+  const seededCreateGame = seededGames.games.find((game) => game.origin === 'create-agent');
+  assert.ok(seededGames.games.length >= 3, 'fresh seed should expose at least three published games');
+  assert.ok(seededCreateGame, 'fresh seed should include one Create-flow published game');
+  assert.ok(seededCreateGame.manifestUrl?.startsWith('/objects/'), 'seeded Create-flow game should use object manifest');
+
   const ready = await request('/api/ready');
   assert.equal(ready.ok, true);
   assert.equal(ready.checks.database, true);

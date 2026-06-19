@@ -38,7 +38,7 @@ ForgePlay is an AI Native interactive game platform for ordinary players and int
 | Each card shows cover, title, summary, author, tags, publish time. | `public/app.js` `gameCard`. |
 | Click card enters Play. | `data-play` action loads manifest and navigates to `/play`. |
 | Home data comes from backend/database. | The frontend never owns the seeded array; tests verify published Create output appears in Home API. |
-| At least three examples; one from Create-publish loop. | `src/seed.mjs` seeds three; `tests/run-tests.mjs` creates and publishes one additional game. |
+| At least three examples; one from Create-publish loop. | `src/seed.mjs` seeds at least three published games, including one `create-agent` origin game with a succeeded task/log trail; tests also create and publish one additional game. |
 
 ### Play
 
