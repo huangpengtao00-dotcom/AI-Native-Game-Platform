@@ -20,3 +20,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Draft visual assets pending final art direction
+/public/assets/covers/
