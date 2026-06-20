@@ -7,7 +7,7 @@ import { finished } from 'node:stream/promises';
 const root = process.cwd();
 const outPath = path.resolve(root, '..', 'AI-Native-Game-Platform-interview-package.zip');
 const packageRootName = 'AI-Native-Game-Platform';
-const excludedTop = new Set(['.git', 'data', 'storage', 'node_modules', 'output']);
+const excludedTop = new Set(['.git', '.playwright-cli', 'data', 'storage', 'node_modules', 'output']);
 const excludedNames = new Set(['.env']);
 
 function shouldInclude(relativePath, dirent) {

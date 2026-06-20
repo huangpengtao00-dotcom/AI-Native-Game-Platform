@@ -14,10 +14,10 @@ export async function seedDemoData({ store, storage, config }) {
   const hasCreatePublished = existing.some((game) => game.origin === 'create-agent' && game.status === 'published');
 
   const seedPrompts = [
-    '创建一个记忆翻牌挑战：迷路机器人正在修复霓虹温室。',
-    '制作一个反应游戏：玩家需要在倒计时结束前稳定星舰。'
+    '创建一个记忆主题横版挑战：迷路机器人正在修复霓虹温室，玩家需要收集能量核心并抵达出口。',
+    '制作一个反应横版游戏：玩家需要在倒计时结束前稳定星舰能量核心，避开危险并抵达终点闸门。'
   ];
-  const createPrompt = '制作一个互动冒险：智能体探索漂浮档案馆，并通过创作流程发布。';
+  const createPrompt = '制作一个互动横版冒险：智能体探索漂浮档案馆，并通过创作流程发布到游戏大厅。';
 
   for (const prompt of seedPrompts.slice(0, Math.max(0, 3 - existing.length - (hasCreatePublished ? 0 : 1)))) {
     await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'seed' });
@@ -34,8 +34,8 @@ export async function seedDemoData({ store, storage, config }) {
 
 function refreshDemoAccountNames(store) {
   const updatedAt = nowIso();
-  store.run("UPDATE users SET name = '演示创作者', updated_at = $updatedAt WHERE email = 'creator@example.com' AND name = 'Demo Creator'", { $updatedAt: updatedAt });
-  store.run("UPDATE users SET name = '演示玩家', updated_at = $updatedAt WHERE email = 'player@example.com' AND name = 'Demo Player'", { $updatedAt: updatedAt });
+  store.run("UPDATE users SET name = '演示创作者', updated_at = $updatedAt WHERE email = 'creator@example.com'", { $updatedAt: updatedAt });
+  store.run("UPDATE users SET name = '演示玩家', updated_at = $updatedAt WHERE email = 'player@example.com'", { $updatedAt: updatedAt });
 }
 
 async function ensureLocalizedDemoGame({ store, storage, config, creator }) {
@@ -74,7 +74,7 @@ async function createPublishedSeedGame({ store, storage, config, creator, prompt
 async function createPublishedCreateFlowGame({ store, storage, config, creator, prompt }) {
   const task = store.createTask({ userId: creator.id, title: '种子创作流程冒险', prompt });
   store.addLog({ taskId: task.id, level: 'info', step: 'queued', message: '种子创作任务已排队，用于演示完整生成循环。' });
-  store.addLog({ taskId: task.id, level: 'info', step: 'intent-analysis', message: '已解析创作者意图，并选择冒险类型。', meta: { seeded: true } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'intent-analysis', message: '已解析创作者意图，并选择横版冒险类型。', meta: { seeded: true } });
   store.addLog({ taskId: task.id, level: 'info', step: 'artifact-build', message: '已将 bundle 与 manifest 生成到对象存储。', meta: { storage: 'LocalObjectStorage' } });
 
   const game = await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'create-agent' });

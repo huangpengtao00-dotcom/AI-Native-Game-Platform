@@ -51,7 +51,7 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .hero { min-height: 430px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, rgba(6,10,18,.7), rgba(8,17,29,.92)), var(--hero-cover, linear-gradient(135deg,#07111f,#13213a)); background-size: cover; background-position: center; position: relative; box-shadow: var(--shadow); }
 .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,7,11,.94), rgba(5,7,11,.58) 48%, rgba(5,7,11,.14)); }
 .hero-inner { position: relative; z-index: 1; min-height: 430px; display: grid; grid-template-columns: minmax(0, .95fr) minmax(340px, .55fr); gap: 24px; align-items: end; padding: 34px; }
-.eyebrow { color: var(--cyan); text-transform: uppercase; letter-spacing: .16em; font-size: 11px; font-weight: 950; }
+.eyebrow { color: var(--cyan); letter-spacing: 0; font-size: 11px; font-weight: 950; }
 .hero h1 { font-size: clamp(42px, 6vw, 84px); line-height: .94; margin: 10px 0 14px; max-width: 900px; letter-spacing: 0; }
 .hero-copy { color: #c3d1df; font-size: 16px; line-height: 1.7; max-width: 760px; }
 .hero-panel { border: 1px solid rgba(255,255,255,.14); background: rgba(8,13,22,.72); backdrop-filter: blur(16px); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
@@ -96,12 +96,23 @@ label { font-size: 13px; font-weight: 850; color: #d8e3f0; }
 .status.failed { color: #ffd0d6; background: rgba(255,93,115,.1); border-color: rgba(255,93,115,.28); }
 .table { width: 100%; border-collapse: collapse; }
 .table th, .table td { border-bottom: 1px solid var(--line); padding: 12px 8px; text-align: left; vertical-align: top; font-size: 14px; }
-.table th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.table th { color: var(--muted); font-size: 11px; letter-spacing: 0; }
 .log-list { display: grid; gap: 8px; max-height: 420px; overflow: auto; }
 .log-item { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: rgba(255,255,255,.045); display: grid; gap: 4px; }
 .log-head { display: flex; justify-content: space-between; gap: 10px; color: #c8d6e5; font-size: 12px; font-weight: 900; }
 .progress { height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; }
 .progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--mint)); transition: width .22s; }
+.task-live { display: grid; gap: 13px; border-color: rgba(85,240,255,.28); background: linear-gradient(135deg, rgba(85,240,255,.1), rgba(100,244,172,.06)), var(--panel); }
+.task-live-head, .task-detail-head { display: flex; justify-content: space-between; gap: 14px; align-items: center; flex-wrap: wrap; }
+.task-live-head h2, .task-detail-head h2 { margin: 3px 0 0; }
+.task-live-meta { display: flex; flex-wrap: wrap; gap: 8px; color: #d8e3f0; font-size: 12px; font-weight: 900; }
+.task-live-meta span { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 999px; padding: 5px 8px; }
+.status-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--cyan); box-shadow: 0 0 0 6px rgba(85,240,255,.12), 0 0 18px rgba(85,240,255,.75); display: inline-block; flex: 0 0 auto; animation: pulse 1.15s ease-in-out infinite; }
+.task-progress-line { display: grid; grid-template-columns: minmax(120px, 1fr) auto; gap: 8px; align-items: center; margin-top: 7px; color: #d8e3f0; font-size: 12px; font-weight: 900; }
+.alert.loading { display: flex; gap: 10px; align-items: flex-start; }
+.alert.loading strong, .alert.loading span:not(.status-dot) { display: block; }
+.alert.loading span:not(.status-dot) { margin-top: 3px; color: #ffeec5; font-size: 12px; }
+@keyframes pulse { 0%,100% { opacity: .55; transform: scale(.86); } 50% { opacity: 1; transform: scale(1); } }
 .auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 25% 15%,rgba(85,240,255,.18),transparent 30%),linear-gradient(135deg,#05070b,#0b1524); }
 .auth-card { width: min(440px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 22px; display: grid; gap: 16px; }
 .auth-card h1 { margin: 0; font-size: 26px; }

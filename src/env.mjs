@@ -55,7 +55,7 @@ export function createConfig(overrides = {}) {
   const modelBaseUrl = String(overrides.modelBaseUrl ?? process.env.MODEL_BASE_URL ?? '');
   const modelName = String(overrides.modelName ?? process.env.MODEL_NAME ?? '');
   const modelApiKey = String(overrides.modelApiKey ?? process.env.MODEL_API_KEY ?? '');
-  const modelTimeoutMs = Number(overrides.modelTimeoutMs ?? numberSetting('MODEL_TIMEOUT_MS', 12000, { min: 1000, max: 60000 }));
+  const modelTimeoutMs = Number(overrides.modelTimeoutMs ?? numberSetting('MODEL_TIMEOUT_MS', 60000, { min: 1000, max: 60000 }));
   const modelReasoningEffort = String(overrides.modelReasoningEffort ?? process.env.MODEL_REASONING_EFFORT ?? '');
   const modelDisableResponseStorage = overrides.modelDisableResponseStorage ?? booleanSetting('MODEL_DISABLE_RESPONSE_STORAGE', true);
 

@@ -1,8 +1,8 @@
-﻿# Interview Submission
+# Interview Submission
 
 ## Project
 
-- Project: ForgePlay Agent Platform / AI Native Game Platform
+- Project: ForgePlay 智能体游戏平台 / AI Native Game Platform
 - GitHub: https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform
 - Branch: `main`
 - Local demo: `http://127.0.0.1:4173`

@@ -10,7 +10,7 @@ const viewport = { width: 1440, height: 960 };
 const screenshotMap = [
   ['01-home.png', '中文游戏大厅'],
   ['02-login.png', '登录'],
-  ['03-create.png', 'Agent 创作'],
+  ['03-create.png', '创作工坊'],
   ['04-tasks.png', '生成任务'],
   ['05-play.png', '试玩运行时']
 ];

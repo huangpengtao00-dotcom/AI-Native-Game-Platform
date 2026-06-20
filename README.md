@@ -1,6 +1,6 @@
-﻿# ForgePlay Agent Platform
+# ForgePlay 智能体游戏平台
 
-AI Native interactive game platform MVP for the AI Agent full-stack system design test.
+AI Native interactive game platform MVP for the AI-native full-stack system design test.
 
 Repository: https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform
 

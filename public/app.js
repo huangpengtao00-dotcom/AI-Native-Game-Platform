@@ -1,4 +1,4 @@
-﻿const app = document.querySelector('#app');
+const app = document.querySelector('#app');
 const state = {
   user: null,
   csrfToken: null,
@@ -100,7 +100,7 @@ function routeTitle() {
   const map = {
     '/home': ['游戏大厅', 'AI 生成的横版游戏，从对象存储发布并运行。'],
     '/create': ['创作工坊', '设计、生成、检查并发布可玩的横版游戏。'],
-    '/tasks': ['Agent 控制台', '查看模型设计、构建日志、产物持久化和发布状态。'],
+    '/tasks': ['智能体控制台', '查看模型设计、构建日志、产物持久化和发布状态。'],
     '/play': ['试玩运行时', '通过 manifest 加载的 16:9 沙盒对象运行时。'],
     '/docs': ['交付系统', '架构、运维、风险与验证证据。']
   };
@@ -111,7 +111,7 @@ function renderAuth() {
   app.innerHTML = html`
     <div class="auth-wrap">
       <section class="auth-card">
-        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay Agent Platform</div><div class="brand-sub">AI 原生游戏 MVP</div></div></div>
+        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay 智能体平台</div><div class="brand-sub">AI 原生游戏 MVP</div></div></div>
         <div><h1>登录后开始创作</h1><p class="muted">使用演示账号或注册新创作者。演示：<span class="kbd">creator@example.com</span> / <span class="kbd">password123</span></p></div>
         <div class="auth-tabs"><button id="loginTab" class="active">登录</button><button id="registerTab">注册</button></div>
         <form id="authForm" class="form-row">
@@ -134,7 +134,7 @@ function renderShell(content) {
   app.innerHTML = html`
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay</div><div class="brand-sub">Agent 游戏平台</div></div></div>
+        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay</div><div class="brand-sub">智能体游戏平台</div></div></div>
         <nav class="nav">
           ${navButton('/home', icons.home, '大厅')}
           ${navButton('/create', icons.create, '创作')}
@@ -183,6 +183,49 @@ function stepLabel(value) {
   }[value] || value;
 }
 
+function isLiveTask(task) {
+  return task && ['pending', 'running'].includes(task.status);
+}
+
+function runningTasks() {
+  return state.tasks.filter(isLiveTask);
+}
+
+function liveTaskCandidates() {
+  const byId = new Map();
+  if (isLiveTask(state.activeTask)) byId.set(state.activeTask.id, state.activeTask);
+  for (const task of runningTasks()) byId.set(task.id, task);
+  return [...byId.values()];
+}
+
+function progressValue(task) {
+  return Math.max(0, Math.min(100, Number(task?.progress) || 0));
+}
+
+function taskWaitCopy(task) {
+  if (!task) return '等待智能体接收任务。';
+  if (task.status === 'pending') return '任务已进入队列，正在等待智能体执行。';
+  if (task.currentStep === 'model-design') return '外部模型正在生成设计 JSON，通常需要 10-60 秒。';
+  if (task.currentStep === 'artifact-build') return '正在构建可运行 HTML bundle 与 manifest。';
+  if (task.currentStep === 'persistence') return '正在写入数据库和对象存储。';
+  if (task.status === 'running') return '智能体正在执行，页面会自动刷新状态。';
+  if (task.status === 'succeeded') return '生成已完成，可以预览或发布。';
+  if (task.status === 'failed') return '生成失败，请查看日志定位原因。';
+  return '任务状态已更新。';
+}
+
+function taskLivePanel(tasks) {
+  if (!tasks.length) return '';
+  const task = tasks[0];
+  const percent = progressValue(task);
+  return html`<section class="panel task-live">
+    <div class="task-live-head"><span class="status-dot"></span><div><div class="eyebrow">智能体正在运行</div><h2>${esc(task.title)}</h2></div></div>
+    <div class="task-live-meta"><span>${esc(statusLabel(task.status))}</span><span>${esc(stepLabel(task.currentStep))}</span><span>${percent}%</span><span>自动刷新中</span></div>
+    <div class="progress"><span style="width:${percent}%"></span></div>
+    <p class="summary">${esc(taskWaitCopy(task))}</p>
+    <div class="actions"><button class="secondary" data-task="${esc(task.id)}">查看实时日志</button></div>
+  </section>`;
+}
 function render() {
   clearInterval(pollTimer);
   pollTimer = null;
@@ -205,8 +248,8 @@ function homeView() {
       <div class="hero-inner">
         <div>
           <div class="eyebrow">ForgePlay Studio · AI 原生游戏平台</div>
-          <h1>用 AI Agent 生成可玩的横版游戏</h1>
-          <p class="hero-copy">输入游戏想法，Agent 会设计并构建可移植 HTML 产物，发布到数据库驱动的游戏大厅，再从对象存储加载到沙盒运行时中试玩。</p>
+          <h1>用 AI 智能体生成可玩的横版游戏</h1>
+          <p class="hero-copy">输入游戏想法，智能体会设计并构建可移植 HTML 产物，发布到数据库驱动的游戏大厅，再从对象存储加载到沙盒运行时中试玩。</p>
           <div class="actions"><button class="primary" data-nav="/create">创建游戏</button>${featured ? `<button class="secondary" data-play="${esc(featured.id)}">试玩精选</button>` : ''}<button class="ghost" data-nav="/docs">查看架构</button></div>
         </div>
         <aside class="hero-panel">
@@ -261,7 +304,7 @@ function createView() {
         <h2>创作工坊</h2>
         <form id="createForm" class="form-row">
           <div class="form-row"><label>游戏标题提示</label><input class="input" name="title" value="信号奔跑：霓虹中继"></div>
-          <div class="form-row"><label>创意提示词</label><textarea name="prompt">创建一个高级横版卷轴街机游戏。玩家需要修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门，拥有明确胜利状态。</textarea><div class="hint">配置 fighting API 变量后，Agent 会请求模型设计 JSON，再构建沙盒 Canvas 产物。</div></div>
+          <div class="form-row"><label>创意提示词</label><textarea name="prompt">创建一个高级横版卷轴街机游戏。玩家需要修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门，拥有明确胜利状态。</textarea><div class="hint">配置 fighting API 变量后，智能体会请求模型设计 JSON，再构建沙盒 Canvas 产物。</div></div>
           <div class="form-row"><label>参考素材</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">文件会带 sha256 元数据保存为对象 key，并关联到生成任务。</div></div>
           <div id="assetList" class="tags">${state.uploadedAssets.map((asset) => `<span class="tag">${esc(asset.filename)}</span>`).join('')}</div>
           <button class="primary" type="submit">生成横版游戏</button>
@@ -281,18 +324,24 @@ function createView() {
 }
 
 function tasksView() {
-  const rows = state.tasks.map((task) => html`<tr>
-    <td><strong>${esc(task.title)}</strong><div class="hint">${esc(task.id)}</div></td>
-    <td><span class="status ${esc(task.status)}">${esc(statusLabel(task.status))}</span><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div></td>
-    <td>${esc(stepLabel(task.currentStep))}</td>
-    <td>${task.gameId ? `<button class="ghost" data-play="${esc(task.gameId)}">预览</button> ${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">发布</button>`}` : '-'}</td>
-    <td><button class="ghost" data-task="${esc(task.id)}">日志</button></td>
-  </tr>`).join('');
-  return html`<section class="panel"><h2>任务历史</h2>${state.tasks.length ? `<table class="table"><thead><tr><th>任务</th><th>状态</th><th>步骤</th><th>产物</th><th>检查</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">还没有任务。创建一个游戏后可查看 Agent 日志。</div>'}</section>${state.activeTask ? taskDetail(state.activeTask) : ''}`;
+  const liveTasks = liveTaskCandidates();
+  const rows = state.tasks.map((task) => {
+    const percent = progressValue(task);
+    return html`<tr>
+      <td><strong>${esc(task.title)}</strong><div class="hint">${esc(task.id)}</div></td>
+      <td><span class="status ${esc(task.status)}">${esc(statusLabel(task.status))}</span><div class="task-progress-line"><div class="progress"><span style="width:${percent}%"></span></div><span>${percent}%</span></div><div class="hint">${esc(taskWaitCopy(task))}</div></td>
+      <td>${esc(stepLabel(task.currentStep))}</td>
+      <td>${task.gameId ? `<button class="ghost" data-play="${esc(task.gameId)}">预览试玩</button> ${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">发布并试玩</button>`}` : '<span class="hint">等待产物</span>'}</td>
+      <td><button class="ghost" data-task="${esc(task.id)}">日志</button></td>
+    </tr>`;
+  }).join('');
+  return html`${taskLivePanel(liveTasks)}<section class="panel"><h2>任务历史</h2>${state.tasks.length ? `<table class="table"><thead><tr><th>任务</th><th>状态</th><th>步骤</th><th>产物</th><th>检查</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">还没有任务。创建一个游戏后可查看智能体日志。</div>'}</section>${state.activeTask ? taskDetail(state.activeTask) : ''}`;
 }
 
 function taskDetail(task) {
-  return html`<section class="panel"><h2>Agent 执行日志</h2><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div><p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} · ${esc(stepLabel(log.step))}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
+  const percent = progressValue(task);
+  const actions = task.gameId ? `<div class="actions"><button class="primary" data-play="${esc(task.gameId)}">预览试玩</button>${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">发布并试玩</button>`}</div>` : '';
+  return html`<section class="panel task-detail"><div class="task-detail-head"><div><div class="eyebrow">实时执行日志</div><h2>智能体执行日志</h2></div><span class="status ${esc(task.status)}">${esc(statusLabel(task.status))}</span></div><div class="task-live-meta"><span>${esc(stepLabel(task.currentStep))}</span><span>${percent}%</span><span>${['pending', 'running'].includes(task.status) ? '自动刷新中' : '已停止刷新'}</span></div><div class="progress"><span style="width:${percent}%"></span></div><p class="summary">${esc(taskWaitCopy(task))}</p>${actions}<p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} · ${esc(stepLabel(log.step))}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
 }
 
 function playView() {
@@ -313,10 +362,16 @@ function playFrameContent() {
   return '<div class="loader"><h2>准备加载</h2><p>正在等待选择游戏；进入试玩页时会自动加载第一个已发布游戏。</p></div>';
 }
 
+function preferredPlayGameId() {
+  if (state.activeTask?.gameId) return state.activeTask.gameId;
+  const latestTaskGame = state.tasks.find((task) => task.gameId)?.gameId;
+  if (latestTaskGame) return latestTaskGame;
+  return state.games[0]?.id || '';
+}
 function docsView() {
   return html`<section class="panel"><div class="eyebrow">工程交付</div><h2>提交边界</h2><p class="summary">运行时状态保留在项目文件夹内：SQLite 位于 <span class="kbd">data/</span>，对象产物位于 <span class="kbd">storage/objects</span>，交付证据位于 <span class="kbd">docs/</span>。默认演示不需要 Docker 或全局安装。</p></section>
   <section class="panel"><h2>评审清单</h2><table class="table"><tbody>
-    <tr><th>产品</th><td>游戏大厅、创作工坊、Agent 控制台和试玩运行时组成完整产品工作流。</td></tr>
+    <tr><th>产品</th><td>游戏大厅、创作工坊、智能体控制台和试玩运行时组成完整产品工作流。</td></tr>
     <tr><th>游戏运行时</th><td>生成 bundle 是可玩的 16:9 Canvas 横版游戏，并通过 manifest 从对象存储加载。</td></tr>
     <tr><th>安全</th><td>包含 HttpOnly SameSite Cookie、CSRF、上传限制、对象 key 清洗、iframe 沙盒、CSP 和提示词注入筛查。</td></tr>
     <tr><th>工程化</th><td>包含模型供应商契约测试、本地审计、API 冒烟测试、CI 工作流、运维手册和风险登记。</td></tr>
@@ -339,11 +394,22 @@ function afterRender() {
   document.querySelector('#backHome')?.addEventListener('click', () => navigate('/home'));
   wireAuth();
   wireCreate();
-  if (state.route === '/play' && state.playState.status === 'idle' && !state.playGame && state.games[0]) {
-    queueMicrotask(() => loadPlay(state.games[0].id));
+  if (state.route === '/play' && state.playState.status === 'idle' && !state.playGame) {
+    const gameId = preferredPlayGameId();
+    if (gameId) queueMicrotask(() => loadPlay(gameId));
   }
-  if (state.route === '/tasks' && state.tasks.some((task) => ['pending', 'running'].includes(task.status))) {
-    pollTimer = setInterval(async () => { await loadTasks(); if (state.activeTask) await openTask(state.activeTask.id, false); render(); afterRender(); }, 1200);
+  const liveTasks = liveTaskCandidates();
+  if (state.route === '/tasks' && liveTasks.length) {
+    if (!state.activeTask) queueMicrotask(() => openTask(liveTasks[0].id));
+    pollTimer = setInterval(async () => {
+      await loadTasks();
+      const freshLiveTasks = runningTasks();
+      const stillActive = state.activeTask && state.tasks.some((task) => task.id === state.activeTask.id);
+      const activeId = stillActive ? state.activeTask.id : freshLiveTasks[0]?.id;
+      if (activeId) await openTask(activeId, false);
+      render();
+      afterRender();
+    }, 1200);
   }
 }
 
@@ -390,14 +456,24 @@ function wireCreate() {
     event.preventDefault();
     const fd = new FormData(form);
     const msg = document.querySelector('#createMsg');
-    msg.innerHTML = '<div class="alert">生成任务已排队，Agent 日志会显示在任务页。</div>';
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit) { submit.disabled = true; submit.textContent = '正在提交任务'; }
+    msg.innerHTML = '<div class="alert loading"><span class="status-dot"></span><div><strong>正在创建生成任务</strong><span>提交后会进入智能体控制台，外部模型设计阶段可能需要 10-60 秒。</span></div></div>';
     try {
       const data = await api('/api/tasks', { method: 'POST', body: { title: fd.get('title'), prompt: fd.get('prompt'), assetIds: state.uploadedAssets.map((asset) => asset.id) } });
       state.activeTask = data.task;
       state.uploadedAssets = [];
-      await loadTasks();
+      msg.innerHTML = '<div class="alert loading"><span class="status-dot"></span><div><strong>生成任务已开始</strong><span>正在打开智能体控制台并自动刷新执行进度。</span></div></div>';
       navigate('/tasks');
-    } catch (error) { msg.innerHTML = `<div class="alert error">${esc(error.message)}</div>`; }
+      await loadTasks();
+      await openTask(data.task.id, false);
+      render();
+      afterRender();
+    } catch (error) {
+      msg.innerHTML = `<div class="alert error">${esc(error.message)}</div>`;
+    } finally {
+      if (submit) { submit.disabled = false; submit.textContent = '生成横版游戏'; }
+    }
   });
 }
 
@@ -446,8 +522,10 @@ async function openTask(taskId, rerender = true) {
 
 async function publish(gameId) {
   try {
-    await api(`/api/games/${gameId}/publish`, { method: 'POST', body: {} });
-    await refreshAll();
+    const data = await api(`/api/games/${gameId}/publish`, { method: 'POST', body: {} });
+    await loadGames();
+    if (state.user) await loadTasks();
+    await loadPlay(data.game?.id || gameId);
   } catch (error) { alert(error.message); }
 }
 
