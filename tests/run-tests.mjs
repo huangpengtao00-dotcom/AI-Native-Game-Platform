@@ -118,6 +118,7 @@ try {
   const bundleText = await bundleRes.text();
   assert.match(bundleText, /AI Agent 横版游戏|可玩的横版卷轴游戏画布|开始任务/);
   assert.match(bundleText, /<canvas id="game"/);
+  assert.match(bundleText, /function initWorld\(\).*initWorld\(\);draw\(\);requestAnimationFrame\(loop\)/s);
 
   const games = await request('/api/games?status=published');
   assert.ok(games.games.some((game) => game.id === task.gameId), 'published Create game should be visible on Home');
