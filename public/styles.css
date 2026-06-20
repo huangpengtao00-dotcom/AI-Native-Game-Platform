@@ -67,8 +67,8 @@ textarea { min-height: 150px; resize: vertical; line-height: 1.55; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(320px, 430px); gap: 16px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
-.game-card { display: grid; grid-template-rows: 190px 1fr; min-height: 420px; scroll-snap-align: start; }
-.cover { display: flex; align-items: end; padding: 14px; color: white; position: relative; background-size: cover; background-position: center; }
+.game-card { display: grid; grid-template-rows: 216px 1fr; min-height: 452px; scroll-snap-align: start; }
+.cover { display: flex; align-items: end; padding: 14px; color: white; position: relative; background-size: 100%; background-position: center; transform: translateZ(0); transition: background-size .7s ease; }
 .cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 28%, rgba(0,0,0,.66)); }
 .cover span { position: relative; z-index: 1; font-size: 11px; font-weight: 950; padding: 6px 8px; border-radius: 8px; background: rgba(0,0,0,.42); border: 1px solid rgba(255,255,255,.15); }
 .game-body { padding: 15px; display: grid; gap: 12px; align-content: start; }
@@ -83,9 +83,21 @@ textarea { min-height: 150px; resize: vertical; line-height: 1.55; }
 .studio { display: grid; grid-template-columns: minmax(360px,.72fr) minmax(0,1fr); gap: 18px; align-items: start; }
 .studio-preview { min-height: 520px; background: linear-gradient(135deg, rgba(85,240,255,.12), rgba(255,209,102,.08)), #070b12; position: relative; overflow: hidden; }
 .studio-preview::before { content:''; position:absolute; inset:20px; border:1px solid rgba(85,240,255,.2); border-radius:8px; }
-.studio-preview .mock-stage { position:absolute; left:32px; right:32px; bottom:32px; aspect-ratio:16/9; border:1px solid rgba(255,255,255,.14); border-radius:8px; background:linear-gradient(180deg,#081525,#0b1420); overflow:hidden; }
-.mock-stage::before { content:''; position:absolute; left:9%; right:7%; bottom:18%; height:8px; background:linear-gradient(90deg,var(--cyan),var(--mint)); box-shadow:0 0 28px rgba(85,240,255,.32); }
-.mock-stage::after { content:''; position:absolute; width:32px; height:52px; left:18%; bottom:20%; background:var(--cyan); box-shadow:0 0 24px rgba(85,240,255,.45); }
+.studio-preview .mock-stage { position:absolute; left:32px; right:32px; bottom:32px; aspect-ratio:16/9; border:1px solid rgba(255,255,255,.14); border-radius:8px; background:
+  radial-gradient(circle at 32% 44%, var(--gold) 0 8px, transparent 9px),
+  radial-gradient(circle at 56% 30%, var(--jade) 0 8px, transparent 9px),
+  radial-gradient(circle at 74% 52%, var(--gold) 0 8px, transparent 9px),
+  linear-gradient(var(--jade), var(--jade)) 16% 66% / 180px 7px no-repeat,
+  linear-gradient(var(--gold), var(--gold)) 45% 50% / 140px 7px no-repeat,
+  linear-gradient(var(--vermillion), var(--vermillion)) 78% 62% / 170px 7px no-repeat,
+  linear-gradient(135deg, transparent 0 45%, rgba(216,97,69,.9) 46% 64%, transparent 65%) 64% 76% / 48px 42px no-repeat,
+  linear-gradient(90deg, rgba(216,184,108,.75), rgba(216,184,108,.75)) 88% 45% / 16px 96px no-repeat,
+  radial-gradient(circle at 76% 30%, rgba(216,184,108,.18), transparent 12%),
+  radial-gradient(circle at 22% 62%, rgba(118,200,173,.16), transparent 14%),
+  linear-gradient(180deg,#081525,#0b1420 56%, #172016);
+  overflow:hidden; }
+.mock-stage::before { content:''; position:absolute; left:9%; right:7%; bottom:18%; height:8px; background:linear-gradient(90deg,var(--cyan),var(--mint),var(--gold),var(--vermillion)); box-shadow:0 0 28px rgba(216,184,108,.32), 120px -78px 0 -1px rgba(216,184,108,.9), 260px -124px 0 -1px rgba(118,200,173,.9), 390px -54px 0 -1px rgba(216,184,108,.9); }
+.mock-stage::after { content:''; position:absolute; width:32px; height:52px; left:18%; bottom:20%; background:var(--cyan); border-radius:10px 10px 6px 6px; box-shadow:0 0 24px rgba(85,240,255,.45), 360px 28px 0 0 var(--vermillion), 482px -58px 0 -5px var(--gold); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-row { display: grid; gap: 7px; }
 label { font-size: 13px; font-weight: 850; color: #d8e3f0; }
@@ -217,12 +229,26 @@ button:hover:not(:disabled) .ui-icon { transform: translateY(-1px) rotate(-4deg)
 .hero-panel:hover, .card:hover, .panel:hover, .auth-card:hover { border-color: rgba(216,184,108,.32); box-shadow: 0 32px 86px rgba(0,0,0,.46); transform: translateY(-2px); }
 .hero-panel:hover::after, .card:hover::after, .panel:hover::after, .auth-card:hover::after, .play-frame-wrap:hover::after { opacity: 1; transform: translateX(120%); }
 .cover::after { background: linear-gradient(180deg, transparent 24%, rgba(7,17,15,.76)); }
+.cover::before { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 8%, rgba(255,248,234,.12) 40%, transparent 62%); opacity: 0; transform: translateX(-80%); transition: opacity .28s ease, transform .72s ease; }
+.game-card:hover .cover::before { opacity: 1; transform: translateX(80%); }
+.game-card:hover .cover { background-size: 106%; }
 .cover span, .tag, .kbd, .task-live-meta span { border-color: rgba(216,184,108,.2); background: rgba(255,248,234,.07); color: #eadfc7; }
 .input, textarea, select { background: rgba(255,248,234,.06); border-color: rgba(231,203,148,.17); color: var(--ink); }
 .input:focus, textarea:focus, select:focus { border-color: rgba(118,200,173,.72); box-shadow: 0 0 0 3px rgba(118,200,173,.14); }
 .studio-preview { background: linear-gradient(140deg, rgba(118,200,173,.13), rgba(216,184,108,.08), rgba(216,97,69,.08)), #0a120f; }
 .studio-preview::before { border-color: rgba(216,184,108,.24); background: repeating-linear-gradient(90deg, transparent 0 46px, rgba(216,184,108,.07) 46px 47px); }
-.studio-preview .mock-stage { background: linear-gradient(180deg, #10231e, #18231d 54%, #2a2116); border-color: rgba(216,184,108,.22); }
+.studio-preview .mock-stage { background:
+  radial-gradient(circle at 32% 44%, var(--gold) 0 8px, transparent 9px),
+  radial-gradient(circle at 56% 30%, var(--jade) 0 8px, transparent 9px),
+  radial-gradient(circle at 74% 52%, var(--gold) 0 8px, transparent 9px),
+  linear-gradient(var(--jade), var(--jade)) 16% 66% / 180px 7px no-repeat,
+  linear-gradient(var(--gold), var(--gold)) 45% 50% / 140px 7px no-repeat,
+  linear-gradient(var(--vermillion), var(--vermillion)) 78% 62% / 170px 7px no-repeat,
+  linear-gradient(135deg, transparent 0 45%, rgba(216,97,69,.9) 46% 64%, transparent 65%) 64% 76% / 48px 42px no-repeat,
+  linear-gradient(90deg, rgba(216,184,108,.75), rgba(216,184,108,.75)) 88% 45% / 16px 96px no-repeat,
+  radial-gradient(circle at 72% 26%, rgba(216,184,108,.2), transparent 13%),
+  radial-gradient(circle at 24% 64%, rgba(118,200,173,.18), transparent 15%),
+  linear-gradient(180deg, #10231e, #18231d 54%, #2a2116); border-color: rgba(216,184,108,.22); }
 .mock-stage::before { background: linear-gradient(90deg, var(--jade), var(--gold), var(--vermillion)); box-shadow: 0 0 24px rgba(216,184,108,.28); }
 .mock-stage::after { background: var(--gold); box-shadow: 0 0 26px rgba(216,184,108,.42); animation: lanternFloat 2.8s ease-in-out infinite; }
 .progress span { background: linear-gradient(90deg, var(--jade), var(--gold), var(--vermillion)); }

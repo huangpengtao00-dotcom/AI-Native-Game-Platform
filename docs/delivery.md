@@ -7,7 +7,7 @@
 | Source repository | Done | GitHub: `https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform`; branch `main`; commit history includes architecture, UI/runtime, verification, and hardening commits. |
 | Demo address | Done | Local demo runs at `http://127.0.0.1:4173`; README includes the startup path and seeded accounts. |
 | Startup command | Done | `npm.cmd start`; no global install, Docker, or external service is required for the MVP. |
-| Test data | Done | `src/seed.mjs` seeds creator/player accounts and at least three published games, including one `create-agent` origin game with a succeeded task/log trail. End-to-end tests create another game through Create and publish it. |
+| Test data | Done | `src/seed.mjs` seeds creator/player accounts and a multi-style published game library, including adventure, memory, reaction, quiz, rhythm, stealth, shooter, gravity, and one `create-agent` origin game with a succeeded task/log trail. End-to-end tests create another game through Create and publish it. |
 | Environment variables | Done | `.env.example` documents port, host, origin, data/storage paths, upload limit, cookie security, proxy trust, rate limits, OAuth placeholders, and model provider placeholders. No real secret is committed. |
 | System design docs | Done | `docs/system-design.md`, `docs/data-model.md`, `docs/agent-workflow.md`, `docs/artifact-protocol.md`, `docs/security.md`, and `docs/completion.md`. |
 | Technical stack | Done | Node native HTTP, Node 24 `node:sqlite`, SQLite, local object storage adapter, vanilla HTML/CSS/JS, deterministic Agent harness, optional OpenAI-compatible Responses provider, sandboxed iframe runtime. |
@@ -20,6 +20,7 @@
 | --- | --- | --- |
 | Tests and validation | Done | `npm.cmd test`, `npm.cmd run audit:local`, `npm.cmd run smoke:model`, CI workflow, and `docs/verification.md` record automated/manual smoke coverage. |
 | Demo video | Done | `delivery/media/demo-walkthrough.webm` plus screenshots in `delivery/media/` cover Home, login, Create, Tasks, and Play. |
+| Game cover system | Done | `scripts/generate-covers.mjs` rebuilds eight polished game-style covers under `public/assets/covers/`, each with visible character, platform, hazard, collectible, goal, or motion elements instead of generic background art. |
 | AI collaboration record | Done | `docs/ai-collaboration.md` describes tools, prompt direction, AI contribution, review/test method, and human-supervised fixes. |
 
 ## Non-Acceptance Risk Check

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-label="gravity">
+    
+    <defs>
+      <linearGradient id="gravity-bg" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0%" stop-color="#18130f"/>
+        <stop offset="48%" stop-color="#4a3a76"/>
+        <stop offset="100%" stop-color="#b8d890"/>
+      </linearGradient>
+      <radialGradient id="gravity-glow" cx="70%" cy="22%" r="74%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity=".34"/>
+        <stop offset="38%" stop-color="#ffffff" stop-opacity=".08"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="gravity-soft" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="18"/>
+      </filter>
+      <pattern id="gravity-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#fff8ea" stroke-opacity=".08" stroke-width="1"/>
+      </pattern>
+      <filter id="gravity-shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity=".35"/>
+      </filter>
+    </defs>
+    <rect width="1200" height="720" fill="url(#gravity-bg)"/>
+    <rect width="1200" height="720" fill="url(#gravity-grid)"/>
+    <rect width="1200" height="720" fill="url(#gravity-glow)"/>
+    <circle cx="1000" cy="130" r="210" fill="#fff8ea" opacity=".08" filter="url(#gravity-soft)"/>
+    <circle cx="188" cy="610" r="190" fill="#000000" opacity=".16" filter="url(#gravity-soft)"/>
+    
+    <g opacity=".28">
+      <path d="M190 114v482M526 82v546M858 116v474" stroke="#fff8ea" stroke-width="3" stroke-dasharray="16 18"/>
+      <path d="M170 138l20-28l20 28M506 604l20 28l20-28M838 138l20-28l20 28" stroke="#fff8ea" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+    
+    <g transform="translate(154 512) rotate(-7)" filter="url(#gravity-shadow)">
+      <rect width="260" height="22" rx="11" fill="#b8d890"/>
+      <rect x="12" y="7" width="236" height="4" rx="2" fill="#18130f" opacity=".42"/>
+    </g>
+    <g transform="translate(448 396) rotate(6)" filter="url(#gravity-shadow)">
+      <rect width="220" height="22" rx="11" fill="#d8b4fe"/>
+      <rect x="12" y="7" width="196" height="4" rx="2" fill="#18130f" opacity=".42"/>
+    </g>
+    <g transform="translate(722 274) rotate(-5)" filter="url(#gravity-shadow)">
+      <rect width="250" height="22" rx="11" fill="#b8d890"/>
+      <rect x="12" y="7" width="226" height="4" rx="2" fill="#18130f" opacity=".42"/>
+    </g>
+    <g transform="translate(836 574) rotate(7)" filter="url(#gravity-shadow)">
+      <rect width="230" height="22" rx="11" fill="#d8b4fe"/>
+      <rect x="12" y="7" width="206" height="4" rx="2" fill="#18130f" opacity=".42"/>
+    </g>
+    <g transform="translate(498 206)" filter="url(#gravity-shadow)">
+      <path d="M0 132 L150 0 L300 132 L248 132 L248 258 L52 258 L52 132 Z" fill="#0f172a" opacity=".92"/>
+      <path d="M78 124h144M98 166h104M118 208h64" stroke="#fff8ea" stroke-opacity=".34" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="150" cy="88" r="30" fill="#b8d890"/>
+    </g>
+    <g transform="translate(316 438) rotate(-18)" filter="url(#gravity-shadow)">
+      <rect width="54" height="70" rx="18" fill="#f2c879"/>
+      <circle cx="38" cy="22" r="7" fill="#18130f"/>
+      <path d="M-78 38c34-38 78-58 132-60" stroke="#fff8ea" stroke-opacity=".58" stroke-width="9" stroke-linecap="round" fill="none"/>
+    </g>
+    <g filter="url(#gravity-shadow)">
+      <rect x="930" y="168" width="78" height="166" rx="30" fill="#b8d890"/>
+      <circle cx="969" cy="210" r="18" fill="#18130f"/>
+      <path d="M950 270h38" stroke="#18130f" stroke-opacity=".44" stroke-width="9" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(76 76)">
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">GRAVITY</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Gravity Pagoda</text>
+    </g>
+    <rect x="0" y="0" width="1200" height="720" fill="none" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
+  </svg>

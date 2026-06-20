@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-label="rhythm">
+    
+    <defs>
+      <linearGradient id="rhythm-bg" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0%" stop-color="#140d25"/>
+        <stop offset="48%" stop-color="#3b246d"/>
+        <stop offset="100%" stop-color="#f2c879"/>
+      </linearGradient>
+      <radialGradient id="rhythm-glow" cx="70%" cy="22%" r="74%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity=".34"/>
+        <stop offset="38%" stop-color="#ffffff" stop-opacity=".08"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="rhythm-soft" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="18"/>
+      </filter>
+      <pattern id="rhythm-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#fff8ea" stroke-opacity=".08" stroke-width="1"/>
+      </pattern>
+      <filter id="rhythm-shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity=".35"/>
+      </filter>
+    </defs>
+    <rect width="1200" height="720" fill="url(#rhythm-bg)"/>
+    <rect width="1200" height="720" fill="url(#rhythm-grid)"/>
+    <rect width="1200" height="720" fill="url(#rhythm-glow)"/>
+    <circle cx="1000" cy="130" r="210" fill="#fff8ea" opacity=".08" filter="url(#rhythm-soft)"/>
+    <circle cx="188" cy="610" r="190" fill="#000000" opacity=".16" filter="url(#rhythm-soft)"/>
+    
+    <path d="M92 520 C260 404 442 616 598 462 C762 300 914 408 1084 238" fill="none" stroke="#f2c879" stroke-opacity=".58" stroke-width="9" stroke-linecap="round" stroke-dasharray="42 26"/>
+    <path d="M120 572h944" stroke="#fff8ea" stroke-opacity=".18" stroke-width="7" stroke-linecap="round"/>
+    <path d="M120 612h944" stroke="#8bd3ff" stroke-opacity=".18" stroke-width="7" stroke-linecap="round"/>
+    
+    <g transform="translate(208 204)" filter="url(#rhythm-shadow)">
+      <circle cx="0" cy="0" r="28" fill="#f2c879"/>
+      <rect x="24" y="-102" width="12" height="108" rx="6" fill="#fff8ea" opacity=".78"/>
+      <path d="M34 -96c48 8 78 26 96 54" stroke="#8bd3ff" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </g>
+    <g transform="translate(376 290)" filter="url(#rhythm-shadow)">
+      <circle cx="0" cy="0" r="36" fill="#f472b6"/>
+      <rect x="24" y="-102" width="12" height="108" rx="6" fill="#fff8ea" opacity=".78"/>
+      <path d="M34 -96c48 8 78 26 96 54" stroke="#8bd3ff" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </g>
+    <g transform="translate(544 204)" filter="url(#rhythm-shadow)">
+      <circle cx="0" cy="0" r="28" fill="#f2c879"/>
+      <rect x="24" y="-102" width="12" height="108" rx="6" fill="#fff8ea" opacity=".78"/>
+      <path d="M34 -96c48 8 78 26 96 54" stroke="#8bd3ff" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </g>
+    <g transform="translate(712 290)" filter="url(#rhythm-shadow)">
+      <circle cx="0" cy="0" r="36" fill="#f472b6"/>
+      <rect x="24" y="-102" width="12" height="108" rx="6" fill="#fff8ea" opacity=".78"/>
+      <path d="M34 -96c48 8 78 26 96 54" stroke="#8bd3ff" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </g>
+    <g transform="translate(880 204)" filter="url(#rhythm-shadow)">
+      <circle cx="0" cy="0" r="28" fill="#f2c879"/>
+      <rect x="24" y="-102" width="12" height="108" rx="6" fill="#fff8ea" opacity=".78"/>
+      <path d="M34 -96c48 8 78 26 96 54" stroke="#8bd3ff" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </g>
+    <g transform="translate(472 414)" filter="url(#rhythm-shadow)">
+      <rect x="0" y="74" width="340" height="40" rx="20" fill="#0f1026"/>
+      <rect x="34" y="0" width="46" height="82" rx="18" fill="#f2c879"/>
+      <path d="M80 38c72-70 178-72 242-6" stroke="#f472b6" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M112 28l52 52M232 24l-42 62" stroke="#fff8ea" stroke-opacity=".78" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="318" cy="28" r="22" fill="#8bd3ff"/>
+    </g>
+    <g opacity=".72">
+      <path d="M126 318h112M886 144h164M936 604h102" stroke="#fff8ea" stroke-width="6" stroke-linecap="round"/>
+      <path d="M156 348h72M916 174h94M964 634h62" stroke="#f472b6" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(76 76)">
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">RHYTHM</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Neon Scoreline</text>
+    </g>
+    <rect x="0" y="0" width="1200" height="720" fill="none" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
+  </svg>

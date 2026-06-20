@@ -28,6 +28,26 @@ const covers = [
     name: 'quiz',
     label: 'Moon Observatory',
     svg: quizObservatory()
+  },
+  {
+    name: 'rhythm',
+    label: 'Neon Scoreline',
+    svg: rhythmScoreline()
+  },
+  {
+    name: 'stealth',
+    label: 'Shadow Lantern',
+    svg: stealthLantern()
+  },
+  {
+    name: 'shooter',
+    label: 'Star Skiff',
+    svg: starSkiff()
+  },
+  {
+    name: 'gravity',
+    label: 'Gravity Pagoda',
+    svg: gravityPagoda()
   }
 ];
 
@@ -275,5 +295,132 @@ function quizObservatory() {
     <g transform="translate(76 76)">
       <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">QUIZ</text>
       <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Moon Observatory</text>
+    </g>`);
+}
+
+function rhythmScoreline() {
+  const notes = [0, 1, 2, 3, 4].map((i) => `
+    <g transform="translate(${208 + i * 168} ${204 + (i % 2) * 86})" filter="url(#rhythm-shadow)">
+      <circle cx="0" cy="0" r="${28 + i % 2 * 8}" fill="${i % 2 ? '#f472b6' : '#f2c879'}"/>
+      <rect x="24" y="-102" width="12" height="108" rx="6" fill="#fff8ea" opacity=".78"/>
+      <path d="M34 -96c48 8 78 26 96 54" stroke="#8bd3ff" stroke-width="10" stroke-linecap="round" fill="none"/>
+    </g>`).join('');
+
+  return coverShell('rhythm', ['#140d25', '#3b246d', '#f2c879'], `
+    <path d="M92 520 C260 404 442 616 598 462 C762 300 914 408 1084 238" fill="none" stroke="#f2c879" stroke-opacity=".58" stroke-width="9" stroke-linecap="round" stroke-dasharray="42 26"/>
+    <path d="M120 572h944" stroke="#fff8ea" stroke-opacity=".18" stroke-width="7" stroke-linecap="round"/>
+    <path d="M120 612h944" stroke="#8bd3ff" stroke-opacity=".18" stroke-width="7" stroke-linecap="round"/>
+    ${notes}
+    <g transform="translate(472 414)" filter="url(#rhythm-shadow)">
+      <rect x="0" y="74" width="340" height="40" rx="20" fill="#0f1026"/>
+      <rect x="34" y="0" width="46" height="82" rx="18" fill="#f2c879"/>
+      <path d="M80 38c72-70 178-72 242-6" stroke="#f472b6" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M112 28l52 52M232 24l-42 62" stroke="#fff8ea" stroke-opacity=".78" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="318" cy="28" r="22" fill="#8bd3ff"/>
+    </g>
+    <g opacity=".72">
+      <path d="M126 318h112M886 144h164M936 604h102" stroke="#fff8ea" stroke-width="6" stroke-linecap="round"/>
+      <path d="M156 348h72M916 174h94M964 634h62" stroke="#f472b6" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(76 76)">
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">RHYTHM</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Neon Scoreline</text>
+    </g>`);
+}
+
+function stealthLantern() {
+  const cones = [224, 520, 830].map((x, i) => `
+    <g opacity="${i === 1 ? '.42' : '.34'}">
+      <path d="M${x} 126 L${x - 130} 590 L${x + 170} 590 Z" fill="${i === 1 ? '#d8b86c' : '#76c8ad'}"/>
+      <circle cx="${x}" cy="126" r="22" fill="#fff8ea"/>
+    </g>`).join('');
+
+  return coverShell('stealth', ['#05070b', '#1d2930', '#76c8ad'], `
+    ${cones}
+    <path d="M0 594 C150 548 300 626 460 570 C626 512 784 610 948 534 C1062 480 1138 492 1200 514 L1200 720 L0 720 Z" fill="#020617" opacity=".78"/>
+    <g transform="translate(164 456)" filter="url(#stealth-shadow)">
+      <rect x="0" y="74" width="940" height="50" rx="25" fill="#0b1118"/>
+      <path d="M80 54h180M362 34h168M646 58h210" stroke="#76c8ad" stroke-opacity=".5" stroke-width="12" stroke-linecap="round"/>
+      <g transform="translate(418 10)">
+        <path d="M0 82c38-58 94-86 168-82c-6 78-50 132-132 164Z" fill="#0f172a"/>
+        <circle cx="78" cy="48" r="17" fill="#c4b5fd"/>
+        <path d="M48 104c54-16 98-14 132 6" stroke="#fff8ea" stroke-opacity=".62" stroke-width="9" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g filter="url(#stealth-shadow)">
+      <rect x="880" y="300" width="96" height="150" rx="18" fill="#18231d"/>
+      <circle cx="928" cy="334" r="18" fill="#f43f5e"/>
+      <path d="M912 380h32M900 414h56" stroke="#fff8ea" stroke-opacity=".44" stroke-width="8" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(76 76)">
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">STEALTH</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Shadow Lantern</text>
+    </g>`);
+}
+
+function starSkiff() {
+  const bullets = [0, 1, 2, 3, 4, 5].map((i) => `
+    <g transform="translate(${244 + i * 132} ${166 + (i % 3) * 98}) rotate(${i % 2 ? -12 : 16})" filter="url(#shooter-shadow)">
+      <path d="M0 0h86" stroke="${i % 2 ? '#facc15' : '#67e8f9'}" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="94" cy="0" r="17" fill="${i % 2 ? '#f97364' : '#67e8f9'}"/>
+    </g>`).join('');
+
+  return coverShell('shooter', ['#081325', '#285a8f', '#f97364'], `
+    <path d="M80 584 C240 492 382 616 538 518 C728 400 856 492 1056 310" fill="none" stroke="#67e8f9" stroke-opacity=".44" stroke-width="5"/>
+    <g opacity=".62">
+      <circle cx="160" cy="164" r="5" fill="#fff8ea"/><circle cx="390" cy="94" r="4" fill="#fff8ea"/><circle cx="1028" cy="136" r="6" fill="#fff8ea"/><circle cx="948" cy="520" r="4" fill="#fff8ea"/>
+    </g>
+    ${bullets}
+    <g transform="translate(332 356)" filter="url(#shooter-shadow)">
+      <path d="M0 90 C124 2 286 -16 426 48 C332 164 166 212 10 162 Z" fill="#f8fafc" opacity=".96"/>
+      <path d="M112 94 C194 44 274 38 352 72" stroke="#081325" stroke-opacity=".45" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M424 52l118-42l-48 108Z" fill="#f97364"/>
+      <circle cx="176" cy="82" r="28" fill="#67e8f9"/>
+      <path d="M-70 126c42-28 82-40 122-34" stroke="#facc15" stroke-width="14" stroke-linecap="round" fill="none"/>
+    </g>
+    <g filter="url(#shooter-shadow)">
+      <rect x="914" y="396" width="118" height="118" rx="34" fill="#0f172a"/>
+      <circle cx="973" cy="455" r="34" fill="#facc15"/>
+      <path d="M946 455h54M973 428v54" stroke="#081325" stroke-width="9" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(76 76)">
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">SHOOTER</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Star Skiff</text>
+    </g>`);
+}
+
+function gravityPagoda() {
+  const platforms = [
+    [154, 512, 260, 22, -7], [448, 396, 220, 22, 6], [722, 274, 250, 22, -5], [836, 574, 230, 22, 7]
+  ].map(([x, y, w, h, r], i) => `
+    <g transform="translate(${x} ${y}) rotate(${r})" filter="url(#gravity-shadow)">
+      <rect width="${w}" height="${h}" rx="11" fill="${i % 2 ? '#d8b4fe' : '#b8d890'}"/>
+      <rect x="12" y="7" width="${w - 24}" height="4" rx="2" fill="#18130f" opacity=".42"/>
+    </g>`).join('');
+
+  return coverShell('gravity', ['#18130f', '#4a3a76', '#b8d890'], `
+    <g opacity=".28">
+      <path d="M190 114v482M526 82v546M858 116v474" stroke="#fff8ea" stroke-width="3" stroke-dasharray="16 18"/>
+      <path d="M170 138l20-28l20 28M506 604l20 28l20-28M838 138l20-28l20 28" stroke="#fff8ea" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+    ${platforms}
+    <g transform="translate(498 206)" filter="url(#gravity-shadow)">
+      <path d="M0 132 L150 0 L300 132 L248 132 L248 258 L52 258 L52 132 Z" fill="#0f172a" opacity=".92"/>
+      <path d="M78 124h144M98 166h104M118 208h64" stroke="#fff8ea" stroke-opacity=".34" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="150" cy="88" r="30" fill="#b8d890"/>
+    </g>
+    <g transform="translate(316 438) rotate(-18)" filter="url(#gravity-shadow)">
+      <rect width="54" height="70" rx="18" fill="#f2c879"/>
+      <circle cx="38" cy="22" r="7" fill="#18130f"/>
+      <path d="M-78 38c34-38 78-58 132-60" stroke="#fff8ea" stroke-opacity=".58" stroke-width="9" stroke-linecap="round" fill="none"/>
+    </g>
+    <g filter="url(#gravity-shadow)">
+      <rect x="930" y="168" width="78" height="166" rx="30" fill="#b8d890"/>
+      <circle cx="969" cy="210" r="18" fill="#18130f"/>
+      <path d="M950 270h38" stroke="#18130f" stroke-opacity=".44" stroke-width="9" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(76 76)">
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">GRAVITY</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Gravity Pagoda</text>
     </g>`);
 }

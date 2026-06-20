@@ -1,6 +1,6 @@
 ﻿import { clampText, safeSlug } from './util.mjs';
 
-const ALLOWED_GENRES = new Set(['adventure', 'memory', 'reaction', 'quiz']);
+const ALLOWED_GENRES = new Set(['adventure', 'memory', 'reaction', 'quiz', 'rhythm', 'stealth', 'shooter', 'gravity']);
 const RETRYABLE_PROVIDER_STATUS = new Set([400, 404, 422, 500, 502, 503, 504]);
 
 function normalizeBaseUrl(value) {
@@ -36,7 +36,7 @@ function designSystemPrompt() {
   return [
     'You are a senior AI game designer embedded in an interview MVP.',
     'Return strict JSON only. No markdown.',
-    'Allowed genres: adventure, memory, reaction, quiz.',
+    'Allowed genres: adventure, memory, reaction, quiz, rhythm, stealth, shooter, gravity.',
     'Schema: {"title":string,"genre":string,"summary":string,"tags":string[],"mechanics":string,"visualDirection":string}.',
     'Keep the scope compact, playable in one HTML file, and safe for a sandboxed iframe.'
   ].join(' ');

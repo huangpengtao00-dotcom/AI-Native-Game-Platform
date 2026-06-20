@@ -71,6 +71,7 @@ The target machine has Node 24 and Git, but no Docker. A zero-dependency Node im
 ## Important Files
 
 - `server.mjs`: app entrypoint
+- `INTERVIEW_EMAIL.md`: ready-to-send interview handoff email body
 - `src/http.mjs`: routing, auth endpoints, API, static/object serving
 - `src/db.mjs`: schema and data access
 - `src/agent.mjs`: async generation workflow and bundle builder

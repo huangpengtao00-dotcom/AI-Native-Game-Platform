@@ -48,7 +48,11 @@ const COVER_ASSETS = {
   memory: '/assets/covers/memory.png',
   reaction: '/assets/covers/reaction.png',
   adventure: '/assets/covers/adventure.png',
-  quiz: '/assets/covers/quiz.png'
+  quiz: '/assets/covers/quiz.png',
+  rhythm: '/assets/covers/rhythm.png',
+  stealth: '/assets/covers/stealth.png',
+  shooter: '/assets/covers/shooter.png',
+  gravity: '/assets/covers/gravity.png'
 };
 
 function html(strings, ...values) {
@@ -317,6 +321,10 @@ function gameCard(game) {
 
 function coverAssetFor(game) {
   const haystack = [game.title, game.summary, ...(game.tags || [])].join(' ').toLowerCase();
+  if (haystack.includes('rhythm') || haystack.includes('music') || haystack.includes('beat') || haystack.includes('节奏') || haystack.includes('音乐') || haystack.includes('连击') || haystack.includes('乐谱')) return COVER_ASSETS.rhythm;
+  if (haystack.includes('stealth') || haystack.includes('shadow') || haystack.includes('sneak') || haystack.includes('潜行') || haystack.includes('影') || haystack.includes('巡逻') || haystack.includes('警戒')) return COVER_ASSETS.stealth;
+  if (haystack.includes('shooter') || haystack.includes('flight') || haystack.includes('bullet') || haystack.includes('shoot') || haystack.includes('射击') || haystack.includes('飞行') || haystack.includes('弹幕') || haystack.includes('星槎')) return COVER_ASSETS.shooter;
+  if (haystack.includes('gravity') || haystack.includes('flip') || haystack.includes('重力') || haystack.includes('翻转') || haystack.includes('浮空')) return COVER_ASSETS.gravity;
   if (haystack.includes('reaction') || haystack.includes('cinnabar') || haystack.includes('反应') || haystack.includes('朱砂') || haystack.includes('机关')) return COVER_ASSETS.reaction;
   if (haystack.includes('memory') || haystack.includes('jade') || haystack.includes('courtyard') || haystack.includes('记忆') || haystack.includes('玉灯') || haystack.includes('庭院')) return COVER_ASSETS.memory;
   if (haystack.includes('quiz') || haystack.includes('trivia') || haystack.includes('moon') || haystack.includes('问答') || haystack.includes('谜题') || haystack.includes('观星')) return COVER_ASSETS.quiz;

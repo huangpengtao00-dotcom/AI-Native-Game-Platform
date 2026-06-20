@@ -13,13 +13,19 @@ export async function seedDemoData({ store, storage, config }) {
   const existing = store.listGames({ status: '' });
   const hasCreatePublished = existing.some((game) => game.origin === 'create-agent' && game.status === 'published');
 
+  const targetPublishedGames = 8;
   const seedPrompts = [
     '创建一个记忆主题横版挑战：迷路机关偶正在修复云岚庭院，玩家需要点亮玉灯并抵达出口。',
-    '制作一个反应横版游戏：玩家需要在倒计时结束前稳定朱砂机关阵，点亮玉灯并抵达终点闸门。'
+    '制作一个反应横版游戏：玩家需要在倒计时结束前稳定朱砂机关阵，点亮玉灯并抵达终点闸门。',
+    '设计一个节奏横版动作游戏：玩家跟随霓虹乐谱跳跃，踩准节拍收集音符玉灯，并保持连击。',
+    '制作一个潜行横版游戏：玩家穿过影戏长廊，躲避巡逻灯、暗影机关和警戒门。',
+    '创建一个飞行射击横版游戏：星槎穿过云海弹幕，收集能量核心并冲入终点星门。',
+    '设计一个重力翻转平台游戏：玩家在浮空石阶之间切换重力，避开机关并解开终点门。',
+    '制作一个谜题问答横版游戏：玩家在月相观星台选择正确机关路径，回答谜题后点亮星盘出口。'
   ];
   const createPrompt = '制作一个互动横版冒险：智能体探索漂浮档案馆，并通过创作流程发布到游戏大厅。';
 
-  for (const prompt of seedPrompts.slice(0, Math.max(0, 3 - existing.length - (hasCreatePublished ? 0 : 1)))) {
+  for (const prompt of seedPrompts.slice(0, Math.max(0, targetPublishedGames - existing.length - (hasCreatePublished ? 0 : 1)))) {
     await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'seed' });
   }
 

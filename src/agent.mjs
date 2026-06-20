@@ -1,18 +1,58 @@
 import { clampText, escapeHtml, id, nowIso, safeJson, safeSlug, sleep } from './util.mjs';
 import { isExternalModelConfigured, requestModelDesign } from './model-provider.mjs';
 
-const PALETTES = [
-  'linear-gradient(135deg, #10231e 0%, #3d6f5e 46%, #d8b86c 100%)',
-  'linear-gradient(135deg, #1a1110 0%, #8f3a2b 48%, #d8b86c 100%)',
-  'linear-gradient(135deg, #101814 0%, #76c8ad 44%, #d76145 100%)',
-  'linear-gradient(135deg, #07110f 0%, #1f3f33 48%, #b8894f 100%)'
-];
+const GENRE_LIBRARY = {
+  adventure: {
+    tags: ['冒险', '东方画卷', '智能体生成'],
+    summary: '一个可玩的现代东方横版平台冒险，可预览、发布，并从对象存储中运行。',
+    palette: 'linear-gradient(135deg, #10231e 0%, #3d6f5e 46%, #d8b86c 100%)'
+  },
+  memory: {
+    tags: ['记忆主题', '东方横版', '智能体生成'],
+    summary: '一个带记忆主题和东方庭院气质的中文横版挑战，以可移植 Web 产物交付。',
+    palette: 'linear-gradient(135deg, #07110f 0%, #1f3f33 48%, #b8894f 100%)'
+  },
+  reaction: {
+    tags: ['反应', '朱砂机关', '智能体生成'],
+    summary: '一个带分数、计时、朱砂机关和可重玩规则的中文横版反应游戏，由本地智能体编排器生成。',
+    palette: 'linear-gradient(135deg, #1a1110 0%, #8f3a2b 48%, #d8b86c 100%)'
+  },
+  quiz: {
+    tags: ['剧情谜题', '云岚推理', '智能体生成'],
+    summary: '一个带云岚谜题、清晰目标和胜利条件的中文横版试玩体验。',
+    palette: 'linear-gradient(135deg, #101814 0%, #76c8ad 44%, #d76145 100%)'
+  },
+  rhythm: {
+    tags: ['节奏', '霓虹乐谱', '智能体生成'],
+    summary: '一个强调节奏窗口、连击反馈和灯阵同步的中文横版音乐动作游戏。',
+    palette: 'linear-gradient(135deg, #140d25 0%, #6d4cc2 48%, #f2c879 100%)'
+  },
+  stealth: {
+    tags: ['潜行', '影戏机关', '智能体生成'],
+    summary: '一个以躲避巡逻灯、穿越影幕和抵达暗门为目标的中文横版潜行挑战。',
+    palette: 'linear-gradient(135deg, #05070b 0%, #1d2930 50%, #76c8ad 100%)'
+  },
+  shooter: {
+    tags: ['飞行射击', '星槎弹幕', '智能体生成'],
+    summary: '一个带弹幕躲避、能量收集和终点穿梭门的中文横版飞行射击体验。',
+    palette: 'linear-gradient(135deg, #081325 0%, #285a8f 48%, #f97364 100%)'
+  },
+  gravity: {
+    tags: ['重力平台', '机关解谜', '智能体生成'],
+    summary: '一个围绕重力翻转、浮空平台和机关门的中文横版平台解谜游戏。',
+    palette: 'linear-gradient(135deg, #18130f 0%, #4a3a76 46%, #b8d890 100%)'
+  }
+};
 
 function classifyPrompt(prompt) {
   const text = String(prompt ?? '').toLowerCase();
+  if (/rhythm|music|beat|combo|\u8282\u594f|\u97f3\u4e50|\u8fde\u51fb|\u8282\u62cd/.test(text)) return 'rhythm';
+  if (/stealth|shadow|sneak|\u6f5c\u884c|\u6697\u5f71|\u5de1\u903b|\u8eb2\u85cf/.test(text)) return 'stealth';
+  if (/shooter|bullet|flight|shoot|\u5c04\u51fb|\u5f39\u5e55|\u98de\u884c|\u661f\u69ce/.test(text)) return 'shooter';
+  if (/gravity|flip|\u91cd\u529b|\u7ffb\u8f6c|\u6d6e\u7a7a|\u53cd\u91cd\u529b/.test(text)) return 'gravity';
   if (/memory|card|\u8bb0\u5fc6|\u7ffb\u724c/.test(text)) return 'memory';
   if (/click|reaction|\u53cd\u5e94|\u70b9\u51fb|\u8eb2\u907f/.test(text)) return 'reaction';
-  if (/quiz|\u95ee\u7b54|\u8c1c\u9898|\u63a8\u7406/.test(text)) return 'quiz';
+  if (/quiz|puzzle|trivia|\u95ee\u7b54|\u8c1c\u9898|\u63a8\u7406|\u89e3\u8c1c/.test(text)) return 'quiz';
   return 'adventure';
 }
 
@@ -20,14 +60,8 @@ export function buildDesign(prompt) {
   const genre = classifyPrompt(prompt);
   const titleSeed = clampText(prompt, 48, '智能体任务').replace(/[\u3002.!?\uff1f].*$/, '');
   const title = titleSeed.length < 8 ? '智能体任务：信号奔跑' : titleSeed;
-  const tags = genre === 'memory' ? ['记忆主题', '东方横版', '智能体生成'] : genre === 'reaction' ? ['反应', '朱砂机关', '智能体生成'] : genre === 'quiz' ? ['剧情主题', '云岚谜题', '智能体生成'] : ['冒险', '东方画卷', '智能体生成'];
-  const summaryMap = {
-    memory: '一个带记忆主题和东方庭院气质的中文横版挑战，以可移植 Web 产物交付。',
-    reaction: '一个带分数、计时、朱砂机关和可重玩规则的中文横版反应游戏，由本地智能体编排器生成。',
-    quiz: '一个带云岚谜题、清晰目标和胜利条件的中文横版试玩体验。',
-    adventure: '一个可玩的现代东方横版平台冒险，可预览、发布，并从对象存储中运行。'
-  };
-  return { genre, title, tags, summary: summaryMap[genre], palette: PALETTES[Math.abs(title.length + prompt.length) % PALETTES.length] };
+  const preset = GENRE_LIBRARY[genre] ?? GENRE_LIBRARY.adventure;
+  return { genre, title, tags: preset.tags, summary: preset.summary, palette: preset.palette };
 }
 
 function bundleTemplate({ gameId, title, summary, genre, prompt }) {
@@ -71,7 +105,11 @@ const config = {
   adventure:{sky:['#0b1714','#20372d'],accent:'#d8b86c',hazard:'#d76145',jade:'#76c8ad'},
   memory:{sky:['#0d1813','#244132'],accent:'#76c8ad',hazard:'#d76145',jade:'#b8d890'},
   reaction:{sky:['#1a1110','#3a1c16'],accent:'#d8b86c',hazard:'#e66a52',jade:'#76c8ad'},
-  quiz:{sky:['#101814','#24352c'],accent:'#b8d890',hazard:'#d76145',jade:'#76c8ad'}
+  quiz:{sky:['#101814','#24352c'],accent:'#b8d890',hazard:'#d76145',jade:'#76c8ad'},
+  rhythm:{sky:['#140d25','#3b246d'],accent:'#f2c879',hazard:'#f472b6',jade:'#8bd3ff'},
+  stealth:{sky:['#05070b','#1d2930'],accent:'#76c8ad',hazard:'#f43f5e',jade:'#c4b5fd'},
+  shooter:{sky:['#081325','#285a8f'],accent:'#f97364',hazard:'#facc15',jade:'#67e8f9'},
+  gravity:{sky:['#18130f','#4a3a76'],accent:'#b8d890',hazard:'#fb7185',jade:'#d8b4fe'}
 }[GAME.genre] || {sky:['#0b1714','#20372d'],accent:'#d8b86c',hazard:'#d76145',jade:'#76c8ad'};
 let camera=0,last=performance.now(),started=0,mode='ready';
 let player,cores,hazards,platforms,particles,finish;
