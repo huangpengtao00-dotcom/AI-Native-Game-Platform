@@ -11,22 +11,22 @@ const height = 720;
 const covers = [
   {
     name: 'memory',
-    label: 'Memory Garden',
+    label: 'Jade Courtyard',
     svg: memoryGarden()
   },
   {
     name: 'reaction',
-    label: 'Reaction Bridge',
+    label: 'Cinnabar Bridge',
     svg: reactionBridge()
   },
   {
     name: 'adventure',
-    label: 'Archive Drift',
+    label: 'Cloud Archive',
     svg: archiveDrift()
   },
   {
     name: 'quiz',
-    label: 'Quiz Observatory',
+    label: 'Moon Observatory',
     svg: quizObservatory()
   }
 ];
@@ -117,7 +117,7 @@ function sharedDefs(id, a, b, c) {
         <feGaussianBlur stdDeviation="18"/>
       </filter>
       <pattern id="${id}-grid" width="64" height="64" patternUnits="userSpaceOnUse">
-        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="1"/>
+        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#fff8ea" stroke-opacity=".08" stroke-width="1"/>
       </pattern>
       <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%">
         <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity=".35"/>
@@ -131,28 +131,28 @@ function coverShell(id, palette, body) {
     <rect width="${width}" height="${height}" fill="url(#${id}-bg)"/>
     <rect width="${width}" height="${height}" fill="url(#${id}-grid)"/>
     <rect width="${width}" height="${height}" fill="url(#${id}-glow)"/>
-    <circle cx="1000" cy="130" r="210" fill="#ffffff" opacity=".08" filter="url(#${id}-soft)"/>
+    <circle cx="1000" cy="130" r="210" fill="#fff8ea" opacity=".08" filter="url(#${id}-soft)"/>
     <circle cx="188" cy="610" r="190" fill="#000000" opacity=".16" filter="url(#${id}-soft)"/>
     ${body}
-    <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
+    <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
   </svg>`;
 }
 
 function memoryGarden() {
   const cards = [
-    [176, 210, '#f97316', 'M12 48h80v84H12z'],
-    [332, 152, '#38bdf8', 'M52 20l58 58-58 58-58-58z'],
-    [488, 230, '#a78bfa', 'M18 22h108v108H18z'],
-    [644, 170, '#facc15', 'M70 18l56 104H14z']
+    [176, 210, '#d76145', 'M12 48h80v84H12z'],
+    [332, 152, '#76c8ad', 'M52 20l58 58-58 58-58-58z'],
+    [488, 230, '#b8d890', 'M18 22h108v108H18z'],
+    [644, 170, '#d8b86c', 'M70 18l56 104H14z']
   ].map(([x, y, color, path], i) => `
     <g transform="translate(${x} ${y}) rotate(${[-8, 7, -3, 9][i]})" filter="url(#memory-shadow)">
       <rect width="150" height="188" rx="22" fill="#fff7ed" opacity=".96"/>
       <rect x="14" y="14" width="122" height="160" rx="16" fill="#0f172a" opacity=".88"/>
       <path d="${path}" transform="translate(18 26)" fill="${color}" opacity=".9"/>
-      <path d="M28 142h94" stroke="#ffffff" stroke-opacity=".65" stroke-width="8" stroke-linecap="round"/>
+      <path d="M28 142h94" stroke="#fff8ea" stroke-opacity=".65" stroke-width="8" stroke-linecap="round"/>
     </g>`).join('');
 
-  return coverShell('memory', ['#102a43', '#0f766e', '#fb7185'], `
+  return coverShell('memory', ['#07110f', '#2f5f4f', '#d8b86c'], `
     <path d="M92 552 C250 456 410 620 580 520 C748 420 848 470 1042 344" fill="none" stroke="#d9f99d" stroke-opacity=".58" stroke-width="5"/>
     <path d="M0 612 C160 542 272 626 438 570 C592 518 754 588 916 518 C1052 460 1118 444 1200 462 L1200 720 L0 720 Z" fill="#052e2b" opacity=".72"/>
     <g opacity=".7">
@@ -167,45 +167,45 @@ function memoryGarden() {
       <rect x="128" y="38" width="58" height="44" rx="22" fill="#fef08a"/>
       <path d="M66 118c28 22 58 22 86 0" stroke="#fda4af" stroke-width="10" fill="none" stroke-linecap="round"/>
       <path d="M108 -34v34" stroke="#e0f2fe" stroke-width="10" stroke-linecap="round"/>
-      <circle cx="108" cy="-46" r="16" fill="#fb7185"/>
+      <circle cx="108" cy="-46" r="16" fill="#d76145"/>
     </g>
     <g transform="translate(76 76)">
-      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#ffffff" opacity=".92">MEMORY</text>
-      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#ffffff">Neon Garden</text>
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">MEMORY</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Jade Courtyard</text>
     </g>`);
 }
 
 function reactionBridge() {
   const rings = [0, 1, 2, 3].map((i) => `
-    <circle cx="828" cy="330" r="${90 + i * 52}" fill="none" stroke="${['#22d3ee', '#f97316', '#facc15', '#ffffff'][i]}" stroke-opacity="${.86 - i * .14}" stroke-width="${16 - i * 2}" stroke-dasharray="${i % 2 ? '64 28' : '110 34'}"/>`).join('');
+    <circle cx="828" cy="330" r="${90 + i * 52}" fill="none" stroke="${['#76c8ad', '#d76145', '#d8b86c', '#ffffff'][i]}" stroke-opacity="${.86 - i * .14}" stroke-width="${16 - i * 2}" stroke-dasharray="${i % 2 ? '64 28' : '110 34'}"/>`).join('');
 
-  return coverShell('reaction', ['#111827', '#1d4ed8', '#b42318'], `
+  return coverShell('reaction', ['#1a1110', '#7b2f24', '#d8b86c'], `
     <path d="M120 534 L338 208 L642 482 L918 126 L1080 534 Z" fill="#020617" opacity=".42"/>
     <g transform="translate(134 426)" filter="url(#reaction-shadow)">
       <path d="M0 116h930c42 0 72 30 72 72H-72c0-42 30-72 72-72Z" fill="#0f172a" opacity=".94"/>
       <rect x="68" y="0" width="796" height="166" rx="34" fill="#18233d"/>
       <rect x="102" y="32" width="188" height="74" rx="14" fill="#0ea5e9" opacity=".42"/>
-      <rect x="334" y="32" width="218" height="74" rx="14" fill="#f97316" opacity=".38"/>
-      <rect x="596" y="32" width="226" height="74" rx="14" fill="#22c55e" opacity=".38"/>
-      <path d="M122 68h126M364 68h154M628 68h154" stroke="#ffffff" stroke-opacity=".62" stroke-width="9" stroke-linecap="round"/>
-      <circle cx="220" cy="134" r="18" fill="#fef3c7"/>
+      <rect x="334" y="32" width="218" height="74" rx="14" fill="#d76145" opacity=".38"/>
+      <rect x="596" y="32" width="226" height="74" rx="14" fill="#76c8ad" opacity=".38"/>
+      <path d="M122 68h126M364 68h154M628 68h154" stroke="#fff8ea" stroke-opacity=".62" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="220" cy="134" r="18" fill="#fff0c8"/>
       <circle cx="466" cy="134" r="18" fill="#93c5fd"/>
       <circle cx="724" cy="134" r="18" fill="#fecaca"/>
     </g>
     <g filter="url(#reaction-shadow)">
       ${rings}
-      <circle cx="828" cy="330" r="72" fill="#fef3c7"/>
+      <circle cx="828" cy="330" r="72" fill="#fff0c8"/>
       <circle cx="828" cy="330" r="42" fill="#dc2626"/>
-      <path d="M828 330 L896 192" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+      <path d="M828 330 L896 192" stroke="#fff8ea" stroke-width="12" stroke-linecap="round"/>
     </g>
     <g opacity=".78">
-      <path d="M206 184c126 42 250 40 374-6" stroke="#67e8f9" stroke-width="5" fill="none"/>
-      <path d="M214 240c126 42 250 40 374-6" stroke="#fef3c7" stroke-width="5" fill="none"/>
-      <path d="M214 296c126 42 250 40 374-6" stroke="#fb7185" stroke-width="5" fill="none"/>
+      <path d="M206 184c126 42 250 40 374-6" stroke="#76c8ad" stroke-width="5" fill="none"/>
+      <path d="M214 240c126 42 250 40 374-6" stroke="#fff0c8" stroke-width="5" fill="none"/>
+      <path d="M214 296c126 42 250 40 374-6" stroke="#d76145" stroke-width="5" fill="none"/>
     </g>
     <g transform="translate(76 76)">
-      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#ffffff" opacity=".92">REACTION</text>
-      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#ffffff">Starship Bridge</text>
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">REACTION</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Cinnabar Bridge</text>
     </g>`);
 }
 
@@ -213,53 +213,53 @@ function archiveDrift() {
   const shelves = [0, 1, 2].map((i) => `
     <g transform="translate(${238 + i * 196} ${186 + i * 30}) rotate(${[-5, 4, -2][i]})" filter="url(#adventure-shadow)">
       <rect width="156" height="214" rx="18" fill="#f8fafc" opacity=".94"/>
-      <rect x="22" y="22" width="28" height="150" rx="6" fill="#f97316"/>
+      <rect x="22" y="22" width="28" height="150" rx="6" fill="#d76145"/>
       <rect x="58" y="40" width="28" height="132" rx="6" fill="#14b8a6"/>
       <rect x="94" y="28" width="28" height="144" rx="6" fill="#6366f1"/>
       <path d="M24 184h108" stroke="#111827" stroke-opacity=".72" stroke-width="8" stroke-linecap="round"/>
     </g>`).join('');
 
-  return coverShell('adventure', ['#1e1b4b', '#0f766e', '#c2410c'], `
+  return coverShell('adventure', ['#07110f', '#365948', '#b8894f'], `
     <path d="M114 566 C228 458 390 452 514 514 C670 592 758 438 916 466 C1032 486 1096 564 1200 526 L1200 720 L0 720 L0 628 C42 614 78 598 114 566Z" fill="#021414" opacity=".58"/>
     <g opacity=".76">
-      <path d="M96 278h972" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
-      <path d="M180 154h780" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/>
-      <path d="M270 92v508M520 72v512M780 86v500M1018 156v390" stroke="#ffffff" stroke-opacity=".1" stroke-width="2"/>
+      <path d="M96 278h972" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
+      <path d="M180 154h780" stroke="#fff8ea" stroke-opacity=".12" stroke-width="2"/>
+      <path d="M270 92v508M520 72v512M780 86v500M1018 156v390" stroke="#fff8ea" stroke-opacity=".1" stroke-width="2"/>
     </g>
     ${shelves}
     <g transform="translate(728 232)" filter="url(#adventure-shadow)">
-      <path d="M0 84 C74 10 168 -22 270 12 C230 132 146 198 26 206 Z" fill="#fef3c7" opacity=".96"/>
+      <path d="M0 84 C74 10 168 -22 270 12 C230 132 146 198 26 206 Z" fill="#fff0c8" opacity=".96"/>
       <path d="M52 96c58-50 122-66 194-48" stroke="#0f172a" stroke-opacity=".48" stroke-width="10" fill="none"/>
       <path d="M86 136c36-28 80-38 132-28" stroke="#0f172a" stroke-opacity=".32" stroke-width="8" fill="none"/>
     </g>
     <g opacity=".85">
       <circle cx="162" cy="486" r="9" fill="#fef08a"/>
-      <circle cx="1008" cy="248" r="11" fill="#67e8f9"/>
-      <circle cx="1038" cy="430" r="8" fill="#fb7185"/>
+      <circle cx="1008" cy="248" r="11" fill="#76c8ad"/>
+      <circle cx="1038" cy="430" r="8" fill="#d76145"/>
       <circle cx="676" cy="130" r="7" fill="#fde68a"/>
     </g>
     <g transform="translate(76 76)">
-      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#ffffff" opacity=".92">ADVENTURE</text>
-      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#ffffff">Archive Drift</text>
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">ADVENTURE</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Cloud Archive</text>
     </g>`);
 }
 
 function quizObservatory() {
   const nodes = [
-    [244, 264, 34, '#f97316'], [364, 386, 24, '#22d3ee'], [516, 238, 30, '#a78bfa'],
-    [664, 354, 26, '#fde047'], [820, 220, 38, '#34d399'], [944, 376, 28, '#fb7185']
+    [244, 264, 34, '#d76145'], [364, 386, 24, '#76c8ad'], [516, 238, 30, '#b8d890'],
+    [664, 354, 26, '#d8b86c'], [820, 220, 38, '#76c8ad'], [944, 376, 28, '#d76145']
   ];
   const nodeSvg = nodes.map(([x, y, r, color]) => `
     <circle cx="${x}" cy="${y}" r="${r}" fill="${color}" filter="url(#quiz-shadow)"/>
-    <circle cx="${x}" cy="${y}" r="${Math.max(6, r - 14)}" fill="#ffffff" opacity=".42"/>`).join('');
+    <circle cx="${x}" cy="${y}" r="${Math.max(6, r - 14)}" fill="#fff8ea" opacity=".42"/>`).join('');
   const links = nodes.slice(0, -1).map((node, i) => `
-    <path d="M${node[0]} ${node[1]} C${node[0] + 90} ${node[1] - 80}, ${nodes[i + 1][0] - 90} ${nodes[i + 1][1] + 80}, ${nodes[i + 1][0]} ${nodes[i + 1][1]}" stroke="#ffffff" stroke-opacity=".42" stroke-width="5" fill="none"/>`).join('');
+    <path d="M${node[0]} ${node[1]} C${node[0] + 90} ${node[1] - 80}, ${nodes[i + 1][0] - 90} ${nodes[i + 1][1] + 80}, ${nodes[i + 1][0]} ${nodes[i + 1][1]}" stroke="#fff8ea" stroke-opacity=".42" stroke-width="5" fill="none"/>`).join('');
 
-  return coverShell('quiz', ['#082f49', '#4c1d95', '#166534'], `
+  return coverShell('quiz', ['#0b1714', '#24352c', '#8f3a2b'], `
     <g transform="translate(140 116)">
       <ellipse cx="460" cy="262" rx="420" ry="214" fill="#020617" opacity=".32"/>
-      <ellipse cx="460" cy="262" rx="404" ry="198" fill="none" stroke="#ffffff" stroke-opacity=".24" stroke-width="4"/>
-      <ellipse cx="460" cy="262" rx="310" ry="128" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="3"/>
+      <ellipse cx="460" cy="262" rx="404" ry="198" fill="none" stroke="#fff8ea" stroke-opacity=".24" stroke-width="4"/>
+      <ellipse cx="460" cy="262" rx="310" ry="128" fill="none" stroke="#fff8ea" stroke-opacity=".18" stroke-width="3"/>
     </g>
     ${links}
     ${nodeSvg}
@@ -269,11 +269,11 @@ function quizObservatory() {
       <path d="M36 28h74M138 28h74M42 96h164" stroke="#111827" stroke-opacity=".32" stroke-width="8" stroke-linecap="round"/>
     </g>
     <g opacity=".85">
-      <path d="M106 530h102M980 170h116M880 554h160" stroke="#fef3c7" stroke-width="7" stroke-linecap="round"/>
-      <path d="M132 564h62M1008 204h62M908 588h92" stroke="#67e8f9" stroke-width="5" stroke-linecap="round"/>
+      <path d="M106 530h102M980 170h116M880 554h160" stroke="#fff0c8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M132 564h62M1008 204h62M908 588h92" stroke="#76c8ad" stroke-width="5" stroke-linecap="round"/>
     </g>
     <g transform="translate(76 76)">
-      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#ffffff" opacity=".92">QUIZ</text>
-      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#ffffff">Observatory</text>
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">QUIZ</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Moon Observatory</text>
     </g>`);
 }

@@ -2,9 +2,9 @@
     
     <defs>
       <linearGradient id="adventure-bg" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0%" stop-color="#1e1b4b"/>
-        <stop offset="48%" stop-color="#0f766e"/>
-        <stop offset="100%" stop-color="#c2410c"/>
+        <stop offset="0%" stop-color="#07110f"/>
+        <stop offset="48%" stop-color="#365948"/>
+        <stop offset="100%" stop-color="#b8894f"/>
       </linearGradient>
       <radialGradient id="adventure-glow" cx="70%" cy="22%" r="74%">
         <stop offset="0%" stop-color="#ffffff" stop-opacity=".34"/>
@@ -15,7 +15,7 @@
         <feGaussianBlur stdDeviation="18"/>
       </filter>
       <pattern id="adventure-grid" width="64" height="64" patternUnits="userSpaceOnUse">
-        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="1"/>
+        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#fff8ea" stroke-opacity=".08" stroke-width="1"/>
       </pattern>
       <filter id="adventure-shadow" x="-20%" y="-20%" width="140%" height="150%">
         <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity=".35"/>
@@ -24,51 +24,51 @@
     <rect width="1200" height="720" fill="url(#adventure-bg)"/>
     <rect width="1200" height="720" fill="url(#adventure-grid)"/>
     <rect width="1200" height="720" fill="url(#adventure-glow)"/>
-    <circle cx="1000" cy="130" r="210" fill="#ffffff" opacity=".08" filter="url(#adventure-soft)"/>
+    <circle cx="1000" cy="130" r="210" fill="#fff8ea" opacity=".08" filter="url(#adventure-soft)"/>
     <circle cx="188" cy="610" r="190" fill="#000000" opacity=".16" filter="url(#adventure-soft)"/>
     
     <path d="M114 566 C228 458 390 452 514 514 C670 592 758 438 916 466 C1032 486 1096 564 1200 526 L1200 720 L0 720 L0 628 C42 614 78 598 114 566Z" fill="#021414" opacity=".58"/>
     <g opacity=".76">
-      <path d="M96 278h972" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
-      <path d="M180 154h780" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/>
-      <path d="M270 92v508M520 72v512M780 86v500M1018 156v390" stroke="#ffffff" stroke-opacity=".1" stroke-width="2"/>
+      <path d="M96 278h972" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
+      <path d="M180 154h780" stroke="#fff8ea" stroke-opacity=".12" stroke-width="2"/>
+      <path d="M270 92v508M520 72v512M780 86v500M1018 156v390" stroke="#fff8ea" stroke-opacity=".1" stroke-width="2"/>
     </g>
     
     <g transform="translate(238 186) rotate(-5)" filter="url(#adventure-shadow)">
       <rect width="156" height="214" rx="18" fill="#f8fafc" opacity=".94"/>
-      <rect x="22" y="22" width="28" height="150" rx="6" fill="#f97316"/>
+      <rect x="22" y="22" width="28" height="150" rx="6" fill="#d76145"/>
       <rect x="58" y="40" width="28" height="132" rx="6" fill="#14b8a6"/>
       <rect x="94" y="28" width="28" height="144" rx="6" fill="#6366f1"/>
       <path d="M24 184h108" stroke="#111827" stroke-opacity=".72" stroke-width="8" stroke-linecap="round"/>
     </g>
     <g transform="translate(434 216) rotate(4)" filter="url(#adventure-shadow)">
       <rect width="156" height="214" rx="18" fill="#f8fafc" opacity=".94"/>
-      <rect x="22" y="22" width="28" height="150" rx="6" fill="#f97316"/>
+      <rect x="22" y="22" width="28" height="150" rx="6" fill="#d76145"/>
       <rect x="58" y="40" width="28" height="132" rx="6" fill="#14b8a6"/>
       <rect x="94" y="28" width="28" height="144" rx="6" fill="#6366f1"/>
       <path d="M24 184h108" stroke="#111827" stroke-opacity=".72" stroke-width="8" stroke-linecap="round"/>
     </g>
     <g transform="translate(630 246) rotate(-2)" filter="url(#adventure-shadow)">
       <rect width="156" height="214" rx="18" fill="#f8fafc" opacity=".94"/>
-      <rect x="22" y="22" width="28" height="150" rx="6" fill="#f97316"/>
+      <rect x="22" y="22" width="28" height="150" rx="6" fill="#d76145"/>
       <rect x="58" y="40" width="28" height="132" rx="6" fill="#14b8a6"/>
       <rect x="94" y="28" width="28" height="144" rx="6" fill="#6366f1"/>
       <path d="M24 184h108" stroke="#111827" stroke-opacity=".72" stroke-width="8" stroke-linecap="round"/>
     </g>
     <g transform="translate(728 232)" filter="url(#adventure-shadow)">
-      <path d="M0 84 C74 10 168 -22 270 12 C230 132 146 198 26 206 Z" fill="#fef3c7" opacity=".96"/>
+      <path d="M0 84 C74 10 168 -22 270 12 C230 132 146 198 26 206 Z" fill="#fff0c8" opacity=".96"/>
       <path d="M52 96c58-50 122-66 194-48" stroke="#0f172a" stroke-opacity=".48" stroke-width="10" fill="none"/>
       <path d="M86 136c36-28 80-38 132-28" stroke="#0f172a" stroke-opacity=".32" stroke-width="8" fill="none"/>
     </g>
     <g opacity=".85">
       <circle cx="162" cy="486" r="9" fill="#fef08a"/>
-      <circle cx="1008" cy="248" r="11" fill="#67e8f9"/>
-      <circle cx="1038" cy="430" r="8" fill="#fb7185"/>
+      <circle cx="1008" cy="248" r="11" fill="#76c8ad"/>
+      <circle cx="1038" cy="430" r="8" fill="#d76145"/>
       <circle cx="676" cy="130" r="7" fill="#fde68a"/>
     </g>
     <g transform="translate(76 76)">
-      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#ffffff" opacity=".92">ADVENTURE</text>
-      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#ffffff">Archive Drift</text>
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">ADVENTURE</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Cloud Archive</text>
     </g>
-    <rect x="0" y="0" width="1200" height="720" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
+    <rect x="0" y="0" width="1200" height="720" fill="none" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
   </svg>

@@ -2,9 +2,9 @@
     
     <defs>
       <linearGradient id="quiz-bg" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0%" stop-color="#082f49"/>
-        <stop offset="48%" stop-color="#4c1d95"/>
-        <stop offset="100%" stop-color="#166534"/>
+        <stop offset="0%" stop-color="#0b1714"/>
+        <stop offset="48%" stop-color="#24352c"/>
+        <stop offset="100%" stop-color="#8f3a2b"/>
       </linearGradient>
       <radialGradient id="quiz-glow" cx="70%" cy="22%" r="74%">
         <stop offset="0%" stop-color="#ffffff" stop-opacity=".34"/>
@@ -15,7 +15,7 @@
         <feGaussianBlur stdDeviation="18"/>
       </filter>
       <pattern id="quiz-grid" width="64" height="64" patternUnits="userSpaceOnUse">
-        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="1"/>
+        <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#fff8ea" stroke-opacity=".08" stroke-width="1"/>
       </pattern>
       <filter id="quiz-shadow" x="-20%" y="-20%" width="140%" height="150%">
         <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity=".35"/>
@@ -24,45 +24,45 @@
     <rect width="1200" height="720" fill="url(#quiz-bg)"/>
     <rect width="1200" height="720" fill="url(#quiz-grid)"/>
     <rect width="1200" height="720" fill="url(#quiz-glow)"/>
-    <circle cx="1000" cy="130" r="210" fill="#ffffff" opacity=".08" filter="url(#quiz-soft)"/>
+    <circle cx="1000" cy="130" r="210" fill="#fff8ea" opacity=".08" filter="url(#quiz-soft)"/>
     <circle cx="188" cy="610" r="190" fill="#000000" opacity=".16" filter="url(#quiz-soft)"/>
     
     <g transform="translate(140 116)">
       <ellipse cx="460" cy="262" rx="420" ry="214" fill="#020617" opacity=".32"/>
-      <ellipse cx="460" cy="262" rx="404" ry="198" fill="none" stroke="#ffffff" stroke-opacity=".24" stroke-width="4"/>
-      <ellipse cx="460" cy="262" rx="310" ry="128" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="3"/>
+      <ellipse cx="460" cy="262" rx="404" ry="198" fill="none" stroke="#fff8ea" stroke-opacity=".24" stroke-width="4"/>
+      <ellipse cx="460" cy="262" rx="310" ry="128" fill="none" stroke="#fff8ea" stroke-opacity=".18" stroke-width="3"/>
     </g>
     
-    <path d="M244 264 C334 184, 274 466, 364 386" stroke="#ffffff" stroke-opacity=".42" stroke-width="5" fill="none"/>
-    <path d="M364 386 C454 306, 426 318, 516 238" stroke="#ffffff" stroke-opacity=".42" stroke-width="5" fill="none"/>
-    <path d="M516 238 C606 158, 574 434, 664 354" stroke="#ffffff" stroke-opacity=".42" stroke-width="5" fill="none"/>
-    <path d="M664 354 C754 274, 730 300, 820 220" stroke="#ffffff" stroke-opacity=".42" stroke-width="5" fill="none"/>
-    <path d="M820 220 C910 140, 854 456, 944 376" stroke="#ffffff" stroke-opacity=".42" stroke-width="5" fill="none"/>
+    <path d="M244 264 C334 184, 274 466, 364 386" stroke="#fff8ea" stroke-opacity=".42" stroke-width="5" fill="none"/>
+    <path d="M364 386 C454 306, 426 318, 516 238" stroke="#fff8ea" stroke-opacity=".42" stroke-width="5" fill="none"/>
+    <path d="M516 238 C606 158, 574 434, 664 354" stroke="#fff8ea" stroke-opacity=".42" stroke-width="5" fill="none"/>
+    <path d="M664 354 C754 274, 730 300, 820 220" stroke="#fff8ea" stroke-opacity=".42" stroke-width="5" fill="none"/>
+    <path d="M820 220 C910 140, 854 456, 944 376" stroke="#fff8ea" stroke-opacity=".42" stroke-width="5" fill="none"/>
     
-    <circle cx="244" cy="264" r="34" fill="#f97316" filter="url(#quiz-shadow)"/>
-    <circle cx="244" cy="264" r="20" fill="#ffffff" opacity=".42"/>
-    <circle cx="364" cy="386" r="24" fill="#22d3ee" filter="url(#quiz-shadow)"/>
-    <circle cx="364" cy="386" r="10" fill="#ffffff" opacity=".42"/>
-    <circle cx="516" cy="238" r="30" fill="#a78bfa" filter="url(#quiz-shadow)"/>
-    <circle cx="516" cy="238" r="16" fill="#ffffff" opacity=".42"/>
-    <circle cx="664" cy="354" r="26" fill="#fde047" filter="url(#quiz-shadow)"/>
-    <circle cx="664" cy="354" r="12" fill="#ffffff" opacity=".42"/>
-    <circle cx="820" cy="220" r="38" fill="#34d399" filter="url(#quiz-shadow)"/>
-    <circle cx="820" cy="220" r="24" fill="#ffffff" opacity=".42"/>
-    <circle cx="944" cy="376" r="28" fill="#fb7185" filter="url(#quiz-shadow)"/>
-    <circle cx="944" cy="376" r="14" fill="#ffffff" opacity=".42"/>
+    <circle cx="244" cy="264" r="34" fill="#d76145" filter="url(#quiz-shadow)"/>
+    <circle cx="244" cy="264" r="20" fill="#fff8ea" opacity=".42"/>
+    <circle cx="364" cy="386" r="24" fill="#76c8ad" filter="url(#quiz-shadow)"/>
+    <circle cx="364" cy="386" r="10" fill="#fff8ea" opacity=".42"/>
+    <circle cx="516" cy="238" r="30" fill="#b8d890" filter="url(#quiz-shadow)"/>
+    <circle cx="516" cy="238" r="16" fill="#fff8ea" opacity=".42"/>
+    <circle cx="664" cy="354" r="26" fill="#d8b86c" filter="url(#quiz-shadow)"/>
+    <circle cx="664" cy="354" r="12" fill="#fff8ea" opacity=".42"/>
+    <circle cx="820" cy="220" r="38" fill="#76c8ad" filter="url(#quiz-shadow)"/>
+    <circle cx="820" cy="220" r="24" fill="#fff8ea" opacity=".42"/>
+    <circle cx="944" cy="376" r="28" fill="#d76145" filter="url(#quiz-shadow)"/>
+    <circle cx="944" cy="376" r="14" fill="#fff8ea" opacity=".42"/>
     <g transform="translate(476 422)" filter="url(#quiz-shadow)">
       <rect width="248" height="120" rx="24" fill="#f8fafc" opacity=".96"/>
       <text x="124" y="82" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="78" font-weight="900" fill="#111827">?</text>
       <path d="M36 28h74M138 28h74M42 96h164" stroke="#111827" stroke-opacity=".32" stroke-width="8" stroke-linecap="round"/>
     </g>
     <g opacity=".85">
-      <path d="M106 530h102M980 170h116M880 554h160" stroke="#fef3c7" stroke-width="7" stroke-linecap="round"/>
-      <path d="M132 564h62M1008 204h62M908 588h92" stroke="#67e8f9" stroke-width="5" stroke-linecap="round"/>
+      <path d="M106 530h102M980 170h116M880 554h160" stroke="#fff0c8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M132 564h62M1008 204h62M908 588h92" stroke="#76c8ad" stroke-width="5" stroke-linecap="round"/>
     </g>
     <g transform="translate(76 76)">
-      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#ffffff" opacity=".92">QUIZ</text>
-      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#ffffff">Observatory</text>
+      <text y="0" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="800" fill="#fff8ea" opacity=".92">QUIZ</text>
+      <text y="42" font-family="Inter, Segoe UI, sans-serif" font-size="48" font-weight="900" fill="#fff8ea">Moon Observatory</text>
     </g>
-    <rect x="0" y="0" width="1200" height="720" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
+    <rect x="0" y="0" width="1200" height="720" fill="none" stroke="#fff8ea" stroke-opacity=".14" stroke-width="2"/>
   </svg>

@@ -14,7 +14,35 @@ const state = {
 };
 let pollTimer = null;
 
-const icons = { home: 'H', create: '+', tasks: 'T', play: '>', docs: 'D' };
+const iconPaths = {
+  home: ['M3 10.5 12 3l9 7.5', 'M5 10v10h14V10', 'M9 20v-6h6v6'],
+  create: ['M15 4V2', 'M15 16v-2', 'M8 9h2', 'M20 9h2', 'M17.8 6.2l1.4-1.4', 'M10.8 13.2l-1.4 1.4', 'M10.8 4.8 9.4 3.4', 'M17.8 11.8l1.4 1.4', 'M14.5 8.5 4 19l-1-1 10.5-10.5'],
+  tasks: ['M8 6h13', 'M8 12h13', 'M8 18h13', 'M3.5 6l1 1 2-2', 'M3.5 12l1 1 2-2', 'M3.5 18l1 1 2-2'],
+  play: ['M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z', 'M10 8.5v7l5.5-3.5L10 8.5Z'],
+  docs: ['M6 2h8l4 4v16H6z', 'M14 2v5h5', 'M9 13h6', 'M9 17h6'],
+  refresh: ['M20 7v5h-5', 'M4 17v-5h5', 'M18.2 9A7 7 0 0 0 6.1 6.8L4 12', 'M5.8 15A7 7 0 0 0 17.9 17.2L20 12'],
+  search: ['M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z', 'M21 21l-4.3-4.3'],
+  manifest: ['M7 3h7l4 4v14H7z', 'M14 3v5h5', 'M10 13h6', 'M10 17h4'],
+  log: ['M4 4h16v16H4z', 'M8 9l3 3-3 3', 'M13 15h4'],
+  publish: ['M12 16V4', 'M7 9l5-5 5 5', 'M5 20h14'],
+  login: ['M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4', 'M10 17l5-5-5-5', 'M15 12H3'],
+  logout: ['M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4', 'M16 17l5-5-5-5', 'M21 12H9'],
+  key: ['M21 2l-2 2', 'M15.5 7.5l2 2', 'M7 14a4 4 0 1 1 5.7-5.7L22 18v4h-4v-3h-3v-3h-3.3A4 4 0 0 1 7 14Z'],
+  branch: ['M6 3v12', 'M18 9a3 3 0 1 0-3-3', 'M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z', 'M18 9c0 5-12 4-12 9'],
+  upload: ['M12 15V3', 'M7 8l5-5 5 5', 'M4 21h16'],
+  sparkles: ['M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3Z', 'M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z', 'M5 4l.7 1.8L7.5 6.5 5.7 7.2 5 9l-.7-1.8-1.8-.7 1.8-.7L5 4Z'],
+  arrowLeft: ['M19 12H5', 'M12 19l-7-7 7-7']
+};
+
+function icon(name, label = '') {
+  const paths = iconPaths[name] || iconPaths.sparkles;
+  const attrs = label ? 'role="img" aria-label="' + esc(label) + '"' : 'aria-hidden="true"';
+  return '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" ' + attrs + '><g>' + paths.map((d) => '<path d="' + d + '"></path>').join('') + '</g></svg>';
+}
+
+function buttonIcon(name, label) {
+  return icon(name) + '<span>' + esc(label) + '</span>';
+}
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const COVER_ASSETS = {
   memory: '/assets/covers/memory.png',
@@ -111,18 +139,18 @@ function renderAuth() {
   app.innerHTML = html`
     <div class="auth-wrap">
       <section class="auth-card">
-        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay 智能体平台</div><div class="brand-sub">AI 原生游戏 MVP</div></div></div>
+        <div class="brand"><div class="brand-mark" aria-hidden="true">游</div><div><div class="brand-title">ForgePlay 智能体平台</div><div class="brand-sub">AI 原生游戏 MVP</div></div></div>
         <div><h1>登录后开始创作</h1><p class="muted">使用演示账号或注册新创作者。演示：<span class="kbd">creator@example.com</span> / <span class="kbd">password123</span></p></div>
         <div class="auth-tabs"><button id="loginTab" class="active">登录</button><button id="registerTab">注册</button></div>
         <form id="authForm" class="form-row">
           <div class="form-row" id="nameRow" style="display:none"><label>昵称</label><input class="input" name="name" value="新创作者"></div>
           <div class="form-row"><label>邮箱</label><input class="input" name="email" type="email" value="creator@example.com" required></div>
           <div class="form-row"><label>密码</label><input class="input" name="password" type="password" value="password123" required></div>
-          <button class="primary" type="submit">继续</button>
+          <button class="primary icon-button" type="submit">${icon('login')}<span>继续</span></button>
         </form>
         <div class="form-grid">
-          <button class="ghost" id="githubLogin">GitHub 演示 OAuth</button>
-          <button class="ghost" id="googleLogin">Google 演示 OAuth</button>
+          <button class="ghost icon-button" id="githubLogin">${icon('branch')}<span>GitHub 演示 OAuth</span></button>
+          <button class="ghost icon-button" id="googleLogin">${icon('key')}<span>Google 演示 OAuth</span></button>
         </div>
         <div id="authMsg"></div>
       </section>
@@ -134,28 +162,28 @@ function renderShell(content) {
   app.innerHTML = html`
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay</div><div class="brand-sub">智能体游戏平台</div></div></div>
+        <div class="brand"><div class="brand-mark" aria-hidden="true">游</div><div><div class="brand-title">ForgePlay</div><div class="brand-sub">智能体游戏平台</div></div></div>
         <nav class="nav">
-          ${navButton('/home', icons.home, '大厅')}
-          ${navButton('/create', icons.create, '创作')}
-          ${navButton('/tasks', icons.tasks, '任务')}
-          ${navButton('/play', icons.play, '试玩')}
-          ${navButton('/docs', icons.docs, '文档')}
+          ${navButton('/home', 'home', '大厅')}
+          ${navButton('/create', 'create', '创作')}
+          ${navButton('/tasks', 'tasks', '任务')}
+          ${navButton('/play', 'play', '试玩')}
+          ${navButton('/docs', 'docs', '文档')}
         </nav>
         <div class="sidebar-foot">
           <div class="user-chip"><strong>${esc(state.user?.name || '访客')}</strong><span>${esc(state.user?.email || '匿名浏览')}</span></div>
-          ${state.user ? '<button class="ghost" id="logoutBtn">退出</button>' : '<button class="primary" id="showLogin">登录 / 注册</button>'}
+          ${state.user ? `<button class="ghost icon-button" id="logoutBtn">${icon('logout')}<span>退出</span></button>` : `<button class="primary icon-button" id="showLogin">${icon('login')}<span>登录 / 注册</span></button>`}
         </div>
       </aside>
       <main class="main">
-        <header class="topbar"><div><div class="page-title">${esc(title)}</div><div class="page-sub">${esc(sub)}</div></div><div class="actions"><button class="ghost" id="refreshBtn">刷新</button><button class="primary" id="quickCreate">+ 创作</button></div></header>
+        <header class="topbar"><div><div class="page-title">${esc(title)}</div><div class="page-sub">${esc(sub)}</div></div><div class="actions"><button class="ghost icon-button" id="refreshBtn">${icon('refresh')}<span>刷新</span></button><button class="primary icon-button" id="quickCreate">${icon('create')}<span>创作</span></button></div></header>
         <section class="content">${content}</section>
       </main>
     </div>`;
 }
 
-function navButton(route, icon, label) {
-  return `<button data-nav="${route}" class="${state.route === route ? 'active' : ''}"><span class="icon">${icon}</span><span>${label}</span></button>`;
+function navButton(route, iconName, label) {
+  return `<button data-nav="${route}" class="${state.route === route ? 'active' : ''}"><span class="icon">${icon(iconName)}</span><span>${label}</span></button>`;
 }
 
 function statusLabel(value) {
@@ -223,7 +251,7 @@ function taskLivePanel(tasks) {
     <div class="task-live-meta"><span>${esc(statusLabel(task.status))}</span><span>${esc(stepLabel(task.currentStep))}</span><span>${percent}%</span><span>自动刷新中</span></div>
     <div class="progress"><span style="width:${percent}%"></span></div>
     <p class="summary">${esc(taskWaitCopy(task))}</p>
-    <div class="actions"><button class="secondary" data-task="${esc(task.id)}">查看实时日志</button></div>
+    <div class="actions"><button class="secondary icon-button" data-task="${esc(task.id)}">${icon('log')}<span>查看实时日志</span></button></div>
   </section>`;
 }
 function render() {
@@ -250,7 +278,7 @@ function homeView() {
           <div class="eyebrow">ForgePlay Studio · AI 原生游戏平台</div>
           <h1>用 AI 智能体生成可玩的横版游戏</h1>
           <p class="hero-copy">输入游戏想法，智能体会设计并构建可移植 HTML 产物，发布到数据库驱动的游戏大厅，再从对象存储加载到沙盒运行时中试玩。</p>
-          <div class="actions"><button class="primary" data-nav="/create">创建游戏</button>${featured ? `<button class="secondary" data-play="${esc(featured.id)}">试玩精选</button>` : ''}<button class="ghost" data-nav="/docs">查看架构</button></div>
+          <div class="actions"><button class="primary icon-button" data-nav="/create">${icon('create')}<span>创建游戏</span></button>${featured ? `<button class="secondary icon-button" data-play="${esc(featured.id)}">${icon('play')}<span>试玩精选</span></button>` : ''}<button class="ghost icon-button" data-nav="/docs">${icon('docs')}<span>查看架构</span></button></div>
         </div>
         <aside class="hero-panel">
           <div class="eyebrow">运行时栈</div>
@@ -264,7 +292,7 @@ function homeView() {
       </div>
     </section>
     <div class="toolbar">
-      <div class="searchbar"><input class="input" id="searchInput" placeholder="搜索游戏、类型、标签" value="${esc(state.query)}"><button class="secondary" id="searchBtn">搜索</button></div>
+      <div class="searchbar"><input class="input" id="searchInput" placeholder="搜索游戏、类型、标签" value="${esc(state.query)}"><button class="secondary icon-button" id="searchBtn">${icon('search')}<span>搜索</span></button></div>
       <select id="tagFilter" style="max-width:220px"><option value="">全部标签</option>${tags.map((tag) => `<option ${state.tag === tag ? 'selected' : ''} value="${esc(tag)}">${esc(tag)}</option>`).join('')}</select>
     </div>
     ${state.games.length ? `<div class="rail">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">当前筛选下没有已发布游戏。</div>'}`;
@@ -282,32 +310,32 @@ function gameCard(game) {
       <p class="summary">${esc(game.summary)}</p>
       <div class="tags">${(game.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
       <div class="metrics"><div class="metric"><strong>${game.playCount}</strong><span>试玩</span></div><div class="metric"><strong>${game.likeCount}</strong><span>喜欢</span></div><div class="metric"><strong>${game.favoriteCount}</strong><span>收藏</span></div></div>
-      <div class="actions"><button class="primary" data-play="${esc(game.id)}">试玩</button><button class="ghost" data-detail="${esc(game.id)}">Manifest</button></div>
+      <div class="actions"><button class="primary icon-button" data-play="${esc(game.id)}">${icon('play')}<span>试玩</span></button><button class="ghost icon-button" data-detail="${esc(game.id)}">${icon('manifest')}<span>Manifest</span></button></div>
     </div>
   </article>`;
 }
 
 function coverAssetFor(game) {
   const haystack = [game.title, game.summary, ...(game.tags || [])].join(' ').toLowerCase();
-  if (haystack.includes('reaction') || haystack.includes('starship') || haystack.includes('反应') || haystack.includes('星舰')) return COVER_ASSETS.reaction;
-  if (haystack.includes('memory') || haystack.includes('robot') || haystack.includes('greenhouse') || haystack.includes('记忆') || haystack.includes('机器人') || haystack.includes('温室')) return COVER_ASSETS.memory;
-  if (haystack.includes('quiz') || haystack.includes('trivia') || haystack.includes('问答') || haystack.includes('谜题')) return COVER_ASSETS.quiz;
-  if (haystack.includes('adventure') || haystack.includes('archive') || haystack.includes('agent') || haystack.includes('冒险') || haystack.includes('档案') || haystack.includes('智能体') || haystack.includes('特工')) return COVER_ASSETS.adventure;
+  if (haystack.includes('reaction') || haystack.includes('cinnabar') || haystack.includes('反应') || haystack.includes('朱砂') || haystack.includes('机关')) return COVER_ASSETS.reaction;
+  if (haystack.includes('memory') || haystack.includes('jade') || haystack.includes('courtyard') || haystack.includes('记忆') || haystack.includes('玉灯') || haystack.includes('庭院')) return COVER_ASSETS.memory;
+  if (haystack.includes('quiz') || haystack.includes('trivia') || haystack.includes('moon') || haystack.includes('问答') || haystack.includes('谜题') || haystack.includes('观星')) return COVER_ASSETS.quiz;
+  if (haystack.includes('adventure') || haystack.includes('archive') || haystack.includes('cloud') || haystack.includes('agent') || haystack.includes('冒险') || haystack.includes('档案') || haystack.includes('云岚') || haystack.includes('智能体')) return COVER_ASSETS.adventure;
   return '';
 }
 
 function createView() {
   return html`
     <div class="studio">
-      <section class="panel">
+      <section class="panel studio-form-panel">
         <div class="eyebrow">AI 创作流水线</div>
         <h2>创作工坊</h2>
         <form id="createForm" class="form-row">
-          <div class="form-row"><label>游戏标题提示</label><input class="input" name="title" value="信号奔跑：霓虹中继"></div>
-          <div class="form-row"><label>创意提示词</label><textarea name="prompt">创建一个高级横版卷轴街机游戏。玩家需要修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门，拥有明确胜利状态。</textarea><div class="hint">配置 fighting API 变量后，智能体会请求模型设计 JSON，再构建沙盒 Canvas 产物。</div></div>
+          <div class="form-row"><label>游戏标题提示</label><input class="input" name="title" value="云岚渡桥：玉灯中继"></div>
+          <div class="form-row"><label>创意提示词</label><textarea name="prompt">创建一个带现代东方美学的横版卷轴游戏。玩家穿过云岚庭院、玉桥和灯阵，收集玉灯能量，避开朱砂机关，并抵达最终闸门，拥有明确胜利状态。</textarea><div class="hint">配置 fighting API 变量后，智能体会请求模型设计 JSON，再构建沙盒 Canvas 产物。</div></div>
           <div class="form-row"><label>参考素材</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">文件会带 sha256 元数据保存为对象 key，并关联到生成任务。</div></div>
           <div id="assetList" class="tags">${state.uploadedAssets.map((asset) => `<span class="tag">${esc(asset.filename)}</span>`).join('')}</div>
-          <button class="primary" type="submit">生成横版游戏</button>
+          <button class="primary icon-button" type="submit">${icon('sparkles')}<span>生成横版游戏</span></button>
         </form>
         <div id="createMsg"></div>
       </section>
@@ -315,7 +343,7 @@ function createView() {
         <div style="position:relative;z-index:1">
           <div class="eyebrow">可玩产物目标</div>
           <h2>16:9 Canvas 运行时</h2>
-          <p class="summary">生成产物包含键盘控制、横向摄像机、可收集核心、危险物、终点闸门、分数、计时、重开，以及沙盒安全渲染。</p>
+          <p class="summary">生成产物包含键盘控制、横向摄像机、可点亮玉灯、朱砂机关、终点闸门、分数、计时、重开，以及沙盒安全渲染。</p>
           <div class="tags"><span class="tag">manifest 驱动</span><span class="tag">对象存储</span><span class="tag">iframe 沙盒</span><span class="tag">模型设计日志</span></div>
         </div>
         <div class="mock-stage"></div>
@@ -331,8 +359,8 @@ function tasksView() {
       <td><strong>${esc(task.title)}</strong><div class="hint">${esc(task.id)}</div></td>
       <td><span class="status ${esc(task.status)}">${esc(statusLabel(task.status))}</span><div class="task-progress-line"><div class="progress"><span style="width:${percent}%"></span></div><span>${percent}%</span></div><div class="hint">${esc(taskWaitCopy(task))}</div></td>
       <td>${esc(stepLabel(task.currentStep))}</td>
-      <td>${task.gameId ? `<button class="ghost" data-play="${esc(task.gameId)}">预览试玩</button> ${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">发布并试玩</button>`}` : '<span class="hint">等待产物</span>'}</td>
-      <td><button class="ghost" data-task="${esc(task.id)}">日志</button></td>
+      <td>${task.gameId ? `<button class="ghost icon-button" data-play="${esc(task.gameId)}">${icon('play')}<span>预览试玩</span></button> ${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary icon-button" data-publish="${esc(task.gameId)}">${icon('publish')}<span>发布并试玩</span></button>`}` : '<span class="hint">等待产物</span>'}</td>
+      <td><button class="ghost icon-button" data-task="${esc(task.id)}">${icon('log')}<span>日志</span></button></td>
     </tr>`;
   }).join('');
   return html`${taskLivePanel(liveTasks)}<section class="panel"><h2>任务历史</h2>${state.tasks.length ? `<table class="table"><thead><tr><th>任务</th><th>状态</th><th>步骤</th><th>产物</th><th>检查</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">还没有任务。创建一个游戏后可查看智能体日志。</div>'}</section>${state.activeTask ? taskDetail(state.activeTask) : ''}`;
@@ -340,14 +368,14 @@ function tasksView() {
 
 function taskDetail(task) {
   const percent = progressValue(task);
-  const actions = task.gameId ? `<div class="actions"><button class="primary" data-play="${esc(task.gameId)}">预览试玩</button>${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">发布并试玩</button>`}</div>` : '';
+  const actions = task.gameId ? `<div class="actions"><button class="primary icon-button" data-play="${esc(task.gameId)}">${icon('play')}<span>预览试玩</span></button>${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary icon-button" data-publish="${esc(task.gameId)}">${icon('publish')}<span>发布并试玩</span></button>`}</div>` : '';
   return html`<section class="panel task-detail"><div class="task-detail-head"><div><div class="eyebrow">实时执行日志</div><h2>智能体执行日志</h2></div><span class="status ${esc(task.status)}">${esc(statusLabel(task.status))}</span></div><div class="task-live-meta"><span>${esc(stepLabel(task.currentStep))}</span><span>${percent}%</span><span>${['pending', 'running'].includes(task.status) ? '自动刷新中' : '已停止刷新'}</span></div><div class="progress"><span style="width:${percent}%"></span></div><p class="summary">${esc(taskWaitCopy(task))}</p>${actions}<p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} · ${esc(stepLabel(log.step))}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
 }
 
 function playView() {
   const game = state.playGame || state.games[0];
   return html`<div class="play-layout">
-    <section class="panel"><div class="toolbar"><div><div class="eyebrow">沙盒对象运行时</div><h2>${esc(game?.title || '选择一个游戏')}</h2><div class="hint">${game ? `Manifest：${esc(game.manifestUrl || '通过 API 加载')}` : '请从游戏大厅选择一个已发布游戏。'}</div></div><div class="actions"><button class="ghost" id="backHome">游戏大厅</button>${game ? `<button class="secondary" data-play="${esc(game.id)}">重新加载</button>` : ''}</div></div></section>
+    <section class="panel"><div class="toolbar"><div><div class="eyebrow">沙盒对象运行时</div><h2>${esc(game?.title || '选择一个游戏')}</h2><div class="hint">${game ? `Manifest：${esc(game.manifestUrl || '通过 API 加载')}` : '请从游戏大厅选择一个已发布游戏。'}</div></div><div class="actions"><button class="ghost icon-button" id="backHome">${icon('arrowLeft')}<span>游戏大厅</span></button>${game ? `<button class="secondary icon-button" data-play="${esc(game.id)}">${icon('refresh')}<span>重新加载</span></button>` : ''}</div></div></section>
     <section class="play-frame-wrap" id="playWrap">${playFrameContent()}</section>
   </div>`;
 }
@@ -394,6 +422,7 @@ function afterRender() {
   document.querySelector('#backHome')?.addEventListener('click', () => navigate('/home'));
   wireAuth();
   wireCreate();
+  bindMotion();
   if (state.route === '/play' && state.playState.status === 'idle' && !state.playGame) {
     const gameId = preferredPlayGameId();
     if (gameId) queueMicrotask(() => loadPlay(gameId));
@@ -413,6 +442,22 @@ function afterRender() {
   }
 }
 
+function bindMotion() {
+  document.querySelectorAll('.card,.panel,.hero,.hero-panel,.auth-card,.play-frame-wrap').forEach((el, index) => {
+    el.style.setProperty('--stagger', `${Math.min(index, 8) * 34}ms`);
+    if (el.dataset.motionBound) return;
+    el.dataset.motionBound = '1';
+    el.addEventListener('pointermove', (event) => {
+      const rect = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${Math.round(event.clientX - rect.left)}px`);
+      el.style.setProperty('--my', `${Math.round(event.clientY - rect.top)}px`);
+    });
+    el.addEventListener('pointerleave', () => {
+      el.style.removeProperty('--mx');
+      el.style.removeProperty('--my');
+    });
+  });
+}
 function wireAuth() {
   const form = document.querySelector('#authForm');
   if (!form) return;
@@ -457,7 +502,7 @@ function wireCreate() {
     const fd = new FormData(form);
     const msg = document.querySelector('#createMsg');
     const submit = form.querySelector('button[type="submit"]');
-    if (submit) { submit.disabled = true; submit.textContent = '正在提交任务'; }
+    if (submit) { submit.disabled = true; submit.innerHTML = icon('sparkles') + '<span>正在提交任务</span>'; }
     msg.innerHTML = '<div class="alert loading"><span class="status-dot"></span><div><strong>正在创建生成任务</strong><span>提交后会进入智能体控制台，外部模型设计阶段可能需要 10-60 秒。</span></div></div>';
     try {
       const data = await api('/api/tasks', { method: 'POST', body: { title: fd.get('title'), prompt: fd.get('prompt'), assetIds: state.uploadedAssets.map((asset) => asset.id) } });
@@ -472,7 +517,7 @@ function wireCreate() {
     } catch (error) {
       msg.innerHTML = `<div class="alert error">${esc(error.message)}</div>`;
     } finally {
-      if (submit) { submit.disabled = false; submit.textContent = '生成横版游戏'; }
+      if (submit) { submit.disabled = false; submit.innerHTML = icon('sparkles') + '<span>生成横版游戏</span>'; }
     }
   });
 }

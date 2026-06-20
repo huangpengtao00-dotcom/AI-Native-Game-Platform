@@ -14,8 +14,8 @@ export async function seedDemoData({ store, storage, config }) {
   const hasCreatePublished = existing.some((game) => game.origin === 'create-agent' && game.status === 'published');
 
   const seedPrompts = [
-    '创建一个记忆主题横版挑战：迷路机器人正在修复霓虹温室，玩家需要收集能量核心并抵达出口。',
-    '制作一个反应横版游戏：玩家需要在倒计时结束前稳定星舰能量核心，避开危险并抵达终点闸门。'
+    '创建一个记忆主题横版挑战：迷路机关偶正在修复云岚庭院，玩家需要点亮玉灯并抵达出口。',
+    '制作一个反应横版游戏：玩家需要在倒计时结束前稳定朱砂机关阵，点亮玉灯并抵达终点闸门。'
   ];
   const createPrompt = '制作一个互动横版冒险：智能体探索漂浮档案馆，并通过创作流程发布到游戏大厅。';
 
@@ -40,7 +40,7 @@ function refreshDemoAccountNames(store) {
 
 async function ensureLocalizedDemoGame({ store, storage, config, creator }) {
   const published = store.listGames({ status: 'published' });
-  const hasLocalizedGame = published.some((game) => /中文演示|霓虹中继|横版|能量核心|智能体|星舰|温室/.test([game.title, game.summary, ...(game.tags || [])].join(' ')));
+  const hasLocalizedGame = published.some((game) => /中文演示|云岚|横版|玉灯|智能体|朱砂|庭院/.test([game.title, game.summary, ...(game.tags || [])].join(' ')));
   if (hasLocalizedGame) return null;
   return createPublishedSeedGame({
     store,
@@ -48,7 +48,7 @@ async function ensureLocalizedDemoGame({ store, storage, config, creator }) {
     config,
     creator,
     origin: 'seed-cn',
-    prompt: '中文演示：创建一个高级横版卷轴街机游戏。玩家修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门。'
+    prompt: '中文演示：创建一个高级现代东方横版卷轴游戏。玩家穿过云岚庭院，在玉桥间跳跃，点亮玉灯，避开朱砂机关，并抵达最终闸门。'
   });
 }
 

@@ -70,7 +70,7 @@ try {
         const title = document.querySelector('input[name="title"]');
         const prompt = document.querySelector('textarea[name="prompt"]');
         if (title) title.value = '信号奔跑：面试中继';
-        if (prompt) prompt.value = '创建一个用于面试评审的高级横版卷轴街机游戏。玩家修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门，拥有明确胜利状态和可重玩反馈。';
+        if (prompt) prompt.value = '创建一个用于面试评审的高级现代东方横版卷轴游戏。玩家穿过云岚庭院，在玉桥间跳跃，点亮玉灯，避开朱砂机关，并抵达最终闸门，拥有明确胜利状态和可重玩反馈。';
       });
       await page.screenshot(join(outDir, '03-create.png'));
       await page.click('#createForm button[type="submit"]');
