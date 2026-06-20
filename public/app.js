@@ -32,8 +32,8 @@ function esc(value) {
 }
 
 function fmtDate(value) {
-  if (!value) return 'not published';
-  return new Intl.DateTimeFormat(undefined, { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+  if (!value) return '未发布';
+  return new Intl.DateTimeFormat('zh-CN', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
 async function api(path, options = {}) {
@@ -58,7 +58,7 @@ async function api(path, options = {}) {
   let data = {};
   try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
   if (data.csrfToken) state.csrfToken = data.csrfToken;
-  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  if (!res.ok) throw new Error(data.error || `请求失败 (${res.status})`);
   return data;
 }
 
@@ -98,11 +98,11 @@ async function loadTasks() {
 
 function routeTitle() {
   const map = {
-    '/home': ['Game Hall', 'AI-generated side-scrollers, published from object storage.'],
-    '/create': ['Create Studio', 'Design, generate, inspect, and publish a playable side-scroller.'],
-    '/tasks': ['Agent Console', 'Review model-design, build logs, artifact persistence, and publish state.'],
-    '/play': ['Play Runtime', 'Sandboxed 16:9 object runtime with manifest loading.'],
-    '/docs': ['Delivery System', 'Architecture, operations, risk, and verification evidence.']
+    '/home': ['游戏大厅', 'AI 生成的横版游戏，从对象存储发布并运行。'],
+    '/create': ['创作工坊', '设计、生成、检查并发布可玩的横版游戏。'],
+    '/tasks': ['Agent 控制台', '查看模型设计、构建日志、产物持久化和发布状态。'],
+    '/play': ['试玩运行时', '通过 manifest 加载的 16:9 沙盒对象运行时。'],
+    '/docs': ['交付系统', '架构、运维、风险与验证证据。']
   };
   return map[state.route] || map['/home'];
 }
@@ -111,18 +111,18 @@ function renderAuth() {
   app.innerHTML = html`
     <div class="auth-wrap">
       <section class="auth-card">
-        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay Agent Platform</div><div class="brand-sub">AI Native game MVP</div></div></div>
-        <div><h1>Sign in to create</h1><p class="muted">Use the demo account or register a new creator. Demo: <span class="kbd">creator@example.com</span> / <span class="kbd">password123</span></p></div>
-        <div class="auth-tabs"><button id="loginTab" class="active">Login</button><button id="registerTab">Register</button></div>
+        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay Agent Platform</div><div class="brand-sub">AI 原生游戏 MVP</div></div></div>
+        <div><h1>登录后开始创作</h1><p class="muted">使用演示账号或注册新创作者。演示：<span class="kbd">creator@example.com</span> / <span class="kbd">password123</span></p></div>
+        <div class="auth-tabs"><button id="loginTab" class="active">登录</button><button id="registerTab">注册</button></div>
         <form id="authForm" class="form-row">
-          <div class="form-row" id="nameRow" style="display:none"><label>Name</label><input class="input" name="name" value="New Creator"></div>
-          <div class="form-row"><label>Email</label><input class="input" name="email" type="email" value="creator@example.com" required></div>
-          <div class="form-row"><label>Password</label><input class="input" name="password" type="password" value="password123" required></div>
-          <button class="primary" type="submit">Continue</button>
+          <div class="form-row" id="nameRow" style="display:none"><label>昵称</label><input class="input" name="name" value="新创作者"></div>
+          <div class="form-row"><label>邮箱</label><input class="input" name="email" type="email" value="creator@example.com" required></div>
+          <div class="form-row"><label>密码</label><input class="input" name="password" type="password" value="password123" required></div>
+          <button class="primary" type="submit">继续</button>
         </form>
         <div class="form-grid">
-          <button class="ghost" id="githubLogin">GitHub demo OAuth</button>
-          <button class="ghost" id="googleLogin">Google demo OAuth</button>
+          <button class="ghost" id="githubLogin">GitHub 演示 OAuth</button>
+          <button class="ghost" id="googleLogin">Google 演示 OAuth</button>
         </div>
         <div id="authMsg"></div>
       </section>
@@ -134,21 +134,21 @@ function renderShell(content) {
   app.innerHTML = html`
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay</div><div class="brand-sub">Agent game platform</div></div></div>
+        <div class="brand"><div class="brand-mark">FP</div><div><div class="brand-title">ForgePlay</div><div class="brand-sub">Agent 游戏平台</div></div></div>
         <nav class="nav">
-          ${navButton('/home', icons.home, 'Home')}
-          ${navButton('/create', icons.create, 'Create')}
-          ${navButton('/tasks', icons.tasks, 'Tasks')}
-          ${navButton('/play', icons.play, 'Play')}
-          ${navButton('/docs', icons.docs, 'Docs')}
+          ${navButton('/home', icons.home, '大厅')}
+          ${navButton('/create', icons.create, '创作')}
+          ${navButton('/tasks', icons.tasks, '任务')}
+          ${navButton('/play', icons.play, '试玩')}
+          ${navButton('/docs', icons.docs, '文档')}
         </nav>
         <div class="sidebar-foot">
-          <div class="user-chip"><strong>${esc(state.user?.name || 'Guest')}</strong><span>${esc(state.user?.email || 'Browsing anonymously')}</span></div>
-          ${state.user ? '<button class="ghost" id="logoutBtn">Logout</button>' : '<button class="primary" id="showLogin">Login / Register</button>'}
+          <div class="user-chip"><strong>${esc(state.user?.name || '访客')}</strong><span>${esc(state.user?.email || '匿名浏览')}</span></div>
+          ${state.user ? '<button class="ghost" id="logoutBtn">退出</button>' : '<button class="primary" id="showLogin">登录 / 注册</button>'}
         </div>
       </aside>
       <main class="main">
-        <header class="topbar"><div><div class="page-title">${esc(title)}</div><div class="page-sub">${esc(sub)}</div></div><div class="actions"><button class="ghost" id="refreshBtn">Refresh</button><button class="primary" id="quickCreate">+ Create</button></div></header>
+        <header class="topbar"><div><div class="page-title">${esc(title)}</div><div class="page-sub">${esc(sub)}</div></div><div class="actions"><button class="ghost" id="refreshBtn">刷新</button><button class="primary" id="quickCreate">+ 创作</button></div></header>
         <section class="content">${content}</section>
       </main>
     </div>`;
@@ -156,6 +156,31 @@ function renderShell(content) {
 
 function navButton(route, icon, label) {
   return `<button data-nav="${route}" class="${state.route === route ? 'active' : ''}"><span class="icon">${icon}</span><span>${label}</span></button>`;
+}
+
+function statusLabel(value) {
+  return {
+    pending: '排队中',
+    running: '生成中',
+    succeeded: '已完成',
+    failed: '失败',
+    draft: '草稿',
+    published: '已发布'
+  }[value] || value;
+}
+
+function stepLabel(value) {
+  return {
+    queued: '已排队',
+    'intent-analysis': '意图分析',
+    'model-design': '模型设计',
+    'safety-screen': '安全筛查',
+    'artifact-build': '产物构建',
+    persistence: '持久化',
+    'ready-to-preview': '可预览',
+    published: '已发布',
+    failed: '失败'
+  }[value] || value;
 }
 
 function render() {
@@ -179,27 +204,27 @@ function homeView() {
     <section class="hero" style="${heroStyle}">
       <div class="hero-inner">
         <div>
-          <div class="eyebrow">ForgePlay Studio · AI Native Game Platform</div>
-          <h1>Generate Side-Scrolling Games With AI Agents</h1>
-          <p class="hero-copy">Prompt a game idea, let the Agent design and build a portable HTML artifact, publish it to the database-backed hall, then play it from object storage inside a sandboxed runtime.</p>
-          <div class="actions"><button class="primary" data-nav="/create">Create Game</button>${featured ? `<button class="secondary" data-play="${esc(featured.id)}">Play Featured</button>` : ''}<button class="ghost" data-nav="/docs">Review Architecture</button></div>
+          <div class="eyebrow">ForgePlay Studio · AI 原生游戏平台</div>
+          <h1>用 AI Agent 生成可玩的横版游戏</h1>
+          <p class="hero-copy">输入游戏想法，Agent 会设计并构建可移植 HTML 产物，发布到数据库驱动的游戏大厅，再从对象存储加载到沙盒运行时中试玩。</p>
+          <div class="actions"><button class="primary" data-nav="/create">创建游戏</button>${featured ? `<button class="secondary" data-play="${esc(featured.id)}">试玩精选</button>` : ''}<button class="ghost" data-nav="/docs">查看架构</button></div>
         </div>
         <aside class="hero-panel">
-          <div class="eyebrow">Runtime stack</div>
+          <div class="eyebrow">运行时栈</div>
           <div class="status-grid">
-            <div class="status-cell"><strong>${state.games.length}</strong><span>published</span></div>
-            <div class="status-cell"><strong>16:9</strong><span>side-scroll</span></div>
-            <div class="status-cell"><strong>API</strong><span>fighting ready</span></div>
+            <div class="status-cell"><strong>${state.games.length}</strong><span>已发布</span></div>
+            <div class="status-cell"><strong>16:9</strong><span>横版运行</span></div>
+            <div class="status-cell"><strong>API</strong><span>模型就绪</span></div>
           </div>
-          <p class="summary">Every Play session fetches a manifest, mounts <span class="kbd">/objects/.../bundle.html</span>, and keeps generated code isolated in an iframe sandbox.</p>
+          <p class="summary">每次试玩都会拉取 manifest，挂载 <span class="kbd">/objects/.../bundle.html</span>，并把生成代码隔离在 iframe 沙盒中。</p>
         </aside>
       </div>
     </section>
     <div class="toolbar">
-      <div class="searchbar"><input class="input" id="searchInput" placeholder="Search games, genres, tags" value="${esc(state.query)}"><button class="secondary" id="searchBtn">Search</button></div>
-      <select id="tagFilter" style="max-width:220px"><option value="">All tags</option>${tags.map((tag) => `<option ${state.tag === tag ? 'selected' : ''} value="${esc(tag)}">${esc(tag)}</option>`).join('')}</select>
+      <div class="searchbar"><input class="input" id="searchInput" placeholder="搜索游戏、类型、标签" value="${esc(state.query)}"><button class="secondary" id="searchBtn">搜索</button></div>
+      <select id="tagFilter" style="max-width:220px"><option value="">全部标签</option>${tags.map((tag) => `<option ${state.tag === tag ? 'selected' : ''} value="${esc(tag)}">${esc(tag)}</option>`).join('')}</select>
     </div>
-    ${state.games.length ? `<div class="rail">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">No published games match the current filter.</div>'}`;
+    ${state.games.length ? `<div class="rail">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">当前筛选下没有已发布游戏。</div>'}`;
 }
 
 function gameCard(game) {
@@ -210,21 +235,21 @@ function gameCard(game) {
   return html`<article class="card game-card">
     <div class="cover" style="${coverStyle}"><span>${esc(game.origin)}</span></div>
     <div class="game-body">
-      <div><div class="game-title">${esc(game.title)}</div><div class="hint">by ${esc(game.authorName)} - ${fmtDate(game.publishedAt)}</div></div>
+      <div><div class="game-title">${esc(game.title)}</div><div class="hint">作者 ${esc(game.authorName)} · ${fmtDate(game.publishedAt)}</div></div>
       <p class="summary">${esc(game.summary)}</p>
       <div class="tags">${(game.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
-      <div class="metrics"><div class="metric"><strong>${game.playCount}</strong><span>plays</span></div><div class="metric"><strong>${game.likeCount}</strong><span>likes</span></div><div class="metric"><strong>${game.favoriteCount}</strong><span>saves</span></div></div>
-      <div class="actions"><button class="primary" data-play="${esc(game.id)}">Play</button><button class="ghost" data-detail="${esc(game.id)}">Manifest</button></div>
+      <div class="metrics"><div class="metric"><strong>${game.playCount}</strong><span>试玩</span></div><div class="metric"><strong>${game.likeCount}</strong><span>喜欢</span></div><div class="metric"><strong>${game.favoriteCount}</strong><span>收藏</span></div></div>
+      <div class="actions"><button class="primary" data-play="${esc(game.id)}">试玩</button><button class="ghost" data-detail="${esc(game.id)}">Manifest</button></div>
     </div>
   </article>`;
 }
 
 function coverAssetFor(game) {
   const haystack = [game.title, game.summary, ...(game.tags || [])].join(' ').toLowerCase();
-  if (haystack.includes('reaction') || haystack.includes('starship')) return COVER_ASSETS.reaction;
-  if (haystack.includes('memory') || haystack.includes('robot') || haystack.includes('greenhouse')) return COVER_ASSETS.memory;
-  if (haystack.includes('quiz') || haystack.includes('trivia')) return COVER_ASSETS.quiz;
-  if (haystack.includes('adventure') || haystack.includes('archive') || haystack.includes('agent')) return COVER_ASSETS.adventure;
+  if (haystack.includes('reaction') || haystack.includes('starship') || haystack.includes('反应') || haystack.includes('星舰')) return COVER_ASSETS.reaction;
+  if (haystack.includes('memory') || haystack.includes('robot') || haystack.includes('greenhouse') || haystack.includes('记忆') || haystack.includes('机器人') || haystack.includes('温室')) return COVER_ASSETS.memory;
+  if (haystack.includes('quiz') || haystack.includes('trivia') || haystack.includes('问答') || haystack.includes('谜题')) return COVER_ASSETS.quiz;
+  if (haystack.includes('adventure') || haystack.includes('archive') || haystack.includes('agent') || haystack.includes('冒险') || haystack.includes('档案') || haystack.includes('智能体') || haystack.includes('特工')) return COVER_ASSETS.adventure;
   return '';
 }
 
@@ -232,23 +257,23 @@ function createView() {
   return html`
     <div class="studio">
       <section class="panel">
-        <div class="eyebrow">AI Creation Pipeline</div>
-        <h2>Create Studio</h2>
+        <div class="eyebrow">AI 创作流水线</div>
+        <h2>创作工坊</h2>
         <form id="createForm" class="form-row">
-          <div class="form-row"><label>Game title hint</label><input class="input" name="title" value="Signal Run: Neon Relay"></div>
-          <div class="form-row"><label>Creative prompt</label><textarea name="prompt">Create a premium horizontal side-scrolling arcade game. The player repairs a neon relay, jumps across platforms, collects energy cores, avoids hazards, and reaches a final gate with a clear win state.</textarea><div class="hint">The Agent requests model design JSON when fighting API variables are configured, then builds a sandboxed Canvas artifact.</div></div>
-          <div class="form-row"><label>Reference material</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">Files are stored as object keys with sha256 metadata and linked to the generation task.</div></div>
+          <div class="form-row"><label>游戏标题提示</label><input class="input" name="title" value="信号奔跑：霓虹中继"></div>
+          <div class="form-row"><label>创意提示词</label><textarea name="prompt">创建一个高级横版卷轴街机游戏。玩家需要修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门，拥有明确胜利状态。</textarea><div class="hint">配置 fighting API 变量后，Agent 会请求模型设计 JSON，再构建沙盒 Canvas 产物。</div></div>
+          <div class="form-row"><label>参考素材</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">文件会带 sha256 元数据保存为对象 key，并关联到生成任务。</div></div>
           <div id="assetList" class="tags">${state.uploadedAssets.map((asset) => `<span class="tag">${esc(asset.filename)}</span>`).join('')}</div>
-          <button class="primary" type="submit">Generate Side-Scroller</button>
+          <button class="primary" type="submit">生成横版游戏</button>
         </form>
         <div id="createMsg"></div>
       </section>
       <section class="panel studio-preview">
         <div style="position:relative;z-index:1">
-          <div class="eyebrow">Playable output target</div>
-          <h2>16:9 Canvas Runtime</h2>
-          <p class="summary">The generated artifact includes keyboard controls, side-scrolling camera, collectible cores, hazards, a relay gate, score, timer, restart, and sandbox-safe rendering.</p>
-          <div class="tags"><span class="tag">manifest-driven</span><span class="tag">object storage</span><span class="tag">iframe sandbox</span><span class="tag">model-design logs</span></div>
+          <div class="eyebrow">可玩产物目标</div>
+          <h2>16:9 Canvas 运行时</h2>
+          <p class="summary">生成产物包含键盘控制、横向摄像机、可收集核心、危险物、终点闸门、分数、计时、重开，以及沙盒安全渲染。</p>
+          <div class="tags"><span class="tag">manifest 驱动</span><span class="tag">对象存储</span><span class="tag">iframe 沙盒</span><span class="tag">模型设计日志</span></div>
         </div>
         <div class="mock-stage"></div>
       </section>
@@ -258,43 +283,43 @@ function createView() {
 function tasksView() {
   const rows = state.tasks.map((task) => html`<tr>
     <td><strong>${esc(task.title)}</strong><div class="hint">${esc(task.id)}</div></td>
-    <td><span class="status ${esc(task.status)}">${esc(task.status)}</span><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div></td>
-    <td>${esc(task.currentStep)}</td>
-    <td>${task.gameId ? `<button class="ghost" data-play="${esc(task.gameId)}">Preview</button> ${task.gameStatus === 'published' ? '<span class="status published">published</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">Publish</button>`}` : '-'}</td>
-    <td><button class="ghost" data-task="${esc(task.id)}">Logs</button></td>
+    <td><span class="status ${esc(task.status)}">${esc(statusLabel(task.status))}</span><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div></td>
+    <td>${esc(stepLabel(task.currentStep))}</td>
+    <td>${task.gameId ? `<button class="ghost" data-play="${esc(task.gameId)}">预览</button> ${task.gameStatus === 'published' ? '<span class="status published">已发布</span>' : `<button class="secondary" data-publish="${esc(task.gameId)}">发布</button>`}` : '-'}</td>
+    <td><button class="ghost" data-task="${esc(task.id)}">日志</button></td>
   </tr>`).join('');
-  return html`<section class="panel"><h2>Task history</h2>${state.tasks.length ? `<table class="table"><thead><tr><th>Task</th><th>Status</th><th>Step</th><th>Artifact</th><th>Inspect</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">No tasks yet. Create one to see Agent logs.</div>'}</section>${state.activeTask ? taskDetail(state.activeTask) : ''}`;
+  return html`<section class="panel"><h2>任务历史</h2>${state.tasks.length ? `<table class="table"><thead><tr><th>任务</th><th>状态</th><th>步骤</th><th>产物</th><th>检查</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">还没有任务。创建一个游戏后可查看 Agent 日志。</div>'}</section>${state.activeTask ? taskDetail(state.activeTask) : ''}`;
 }
 
 function taskDetail(task) {
-  return html`<section class="panel"><h2>Agent execution log</h2><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div><p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} - ${esc(log.step)}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
+  return html`<section class="panel"><h2>Agent 执行日志</h2><div class="progress"><span style="width:${Number(task.progress) || 0}%"></span></div><p class="summary">${esc(task.prompt)}</p><div class="log-list">${(task.logs || []).map((log) => `<div class="log-item"><div class="log-head"><span>${esc(log.level)} · ${esc(stepLabel(log.step))}</span><span>${fmtDate(log.createdAt)}</span></div><div>${esc(log.message)}</div></div>`).join('')}</div></section>`;
 }
 
 function playView() {
   const game = state.playGame || state.games[0];
   return html`<div class="play-layout">
-    <section class="panel"><div class="toolbar"><div><div class="eyebrow">Sandboxed object runtime</div><h2>${esc(game?.title || 'Select a game')}</h2><div class="hint">${game ? `Manifest: ${esc(game.manifestUrl || 'loaded through API')}` : 'Choose a published game from Game Hall.'}</div></div><div class="actions"><button class="ghost" id="backHome">Game Hall</button>${game ? `<button class="secondary" data-play="${esc(game.id)}">Reload Runtime</button>` : ''}</div></div></section>
+    <section class="panel"><div class="toolbar"><div><div class="eyebrow">沙盒对象运行时</div><h2>${esc(game?.title || '选择一个游戏')}</h2><div class="hint">${game ? `Manifest：${esc(game.manifestUrl || '通过 API 加载')}` : '请从游戏大厅选择一个已发布游戏。'}</div></div><div class="actions"><button class="ghost" id="backHome">游戏大厅</button>${game ? `<button class="secondary" data-play="${esc(game.id)}">重新加载</button>` : ''}</div></div></section>
     <section class="play-frame-wrap" id="playWrap">${playFrameContent()}</section>
   </div>`;
 }
 
 function playFrameContent() {
-  if (state.playState.status === 'loading') return '<div class="loader"><h2>Loading game files</h2><p>Fetching manifest, validating entry URL, then mounting sandboxed runtime.</p></div>';
-  if (state.playState.status === 'failed') return `<div class="loader"><h2>Load failed</h2><p>${esc(state.playState.error)}</p></div>`;
+  if (state.playState.status === 'loading') return '<div class="loader"><h2>正在加载游戏文件</h2><p>正在获取 manifest、校验入口 URL，并挂载沙盒运行时。</p></div>';
+  if (state.playState.status === 'failed') return `<div class="loader"><h2>加载失败</h2><p>${esc(state.playState.error)}</p></div>`;
   if (state.playState.status === 'loaded' && state.playState.manifest) {
     const src = esc(state.playState.manifest.entry);
-    return `<iframe class="play-frame" title="Game runtime" sandbox="allow-scripts" referrerpolicy="no-referrer" src="${src}"></iframe>`;
+    return `<iframe class="play-frame" title="游戏运行时" sandbox="allow-scripts" referrerpolicy="no-referrer" src="${src}"></iframe>`;
   }
-  return '<div class="loader"><h2>Runtime idle</h2><p>Pick a game and Play will dynamically load its manifest and bundle.</p></div>';
+  return '<div class="loader"><h2>准备加载</h2><p>正在等待选择游戏；进入试玩页时会自动加载第一个已发布游戏。</p></div>';
 }
 
 function docsView() {
-  return html`<section class="panel"><div class="eyebrow">Engineering delivery</div><h2>Submission Boundary</h2><p class="summary">Runtime state stays inside the project folder: SQLite in <span class="kbd">data/</span>, object artifacts in <span class="kbd">storage/objects</span>, and delivery evidence in <span class="kbd">docs/</span>. The app does not require Docker or global installs for the default demo.</p></section>
-  <section class="panel"><h2>Reviewer checklist</h2><table class="table"><tbody>
-    <tr><th>Product</th><td>Game Hall, Create Studio, Agent Console, and Play Runtime are organized as a product workflow.</td></tr>
-    <tr><th>Game runtime</th><td>Generated bundles are playable 16:9 Canvas side-scrollers loaded by manifest from object storage.</td></tr>
-    <tr><th>Security</th><td>HttpOnly SameSite cookies, CSRF, upload limits, sanitized object keys, sandbox iframe, CSP, and prompt-injection screening.</td></tr>
-    <tr><th>Enterprise</th><td>Provider contract tests, local audit, API smoke test, CI workflow, operations runbook, and risk register.</td></tr>
+  return html`<section class="panel"><div class="eyebrow">工程交付</div><h2>提交边界</h2><p class="summary">运行时状态保留在项目文件夹内：SQLite 位于 <span class="kbd">data/</span>，对象产物位于 <span class="kbd">storage/objects</span>，交付证据位于 <span class="kbd">docs/</span>。默认演示不需要 Docker 或全局安装。</p></section>
+  <section class="panel"><h2>评审清单</h2><table class="table"><tbody>
+    <tr><th>产品</th><td>游戏大厅、创作工坊、Agent 控制台和试玩运行时组成完整产品工作流。</td></tr>
+    <tr><th>游戏运行时</th><td>生成 bundle 是可玩的 16:9 Canvas 横版游戏，并通过 manifest 从对象存储加载。</td></tr>
+    <tr><th>安全</th><td>包含 HttpOnly SameSite Cookie、CSRF、上传限制、对象 key 清洗、iframe 沙盒、CSP 和提示词注入筛查。</td></tr>
+    <tr><th>工程化</th><td>包含模型供应商契约测试、本地审计、API 冒烟测试、CI 工作流、运维手册和风险登记。</td></tr>
   </tbody></table></section>`;
 }
 
@@ -314,6 +339,9 @@ function afterRender() {
   document.querySelector('#backHome')?.addEventListener('click', () => navigate('/home'));
   wireAuth();
   wireCreate();
+  if (state.route === '/play' && state.playState.status === 'idle' && !state.playGame && state.games[0]) {
+    queueMicrotask(() => loadPlay(state.games[0].id));
+  }
   if (state.route === '/tasks' && state.tasks.some((task) => ['pending', 'running'].includes(task.status))) {
     pollTimer = setInterval(async () => { await loadTasks(); if (state.activeTask) await openTask(state.activeTask.id, false); render(); afterRender(); }, 1200);
   }
@@ -362,7 +390,7 @@ function wireCreate() {
     event.preventDefault();
     const fd = new FormData(form);
     const msg = document.querySelector('#createMsg');
-    msg.innerHTML = '<div class="alert">Generation queued. Agent logs will appear in Tasks.</div>';
+    msg.innerHTML = '<div class="alert">生成任务已排队，Agent 日志会显示在任务页。</div>';
     try {
       const data = await api('/api/tasks', { method: 'POST', body: { title: fd.get('title'), prompt: fd.get('prompt'), assetIds: state.uploadedAssets.map((asset) => asset.id) } });
       state.activeTask = data.task;
@@ -378,7 +406,7 @@ async function uploadSelectedAssets(event) {
   const files = Array.from(event.target.files || []).slice(0, 5);
   for (const file of files) {
     try {
-      msg.innerHTML = `<div class="alert">Uploading ${esc(file.name)}</div>`;
+      msg.innerHTML = `<div class="alert">正在上传 ${esc(file.name)}</div>`;
       const data = await api('/api/assets', { method: 'POST', headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-Filename': encodeURIComponent(file.name) }, body: await file.arrayBuffer() });
       state.uploadedAssets.push(data.asset);
     } catch (error) { msg.innerHTML = `<div class="alert error">${esc(error.message)}</div>`; }
@@ -432,13 +460,13 @@ async function showManifest(gameId) {
 
 async function loadPlay(gameId) {
   const game = state.games.find((item) => item.id === gameId) || state.tasks.find((task) => task.gameId === gameId);
-  state.playGame = state.games.find((item) => item.id === gameId) || { id: gameId, title: game?.gameTitle || 'Preview game', manifestUrl: '' };
+  state.playGame = state.games.find((item) => item.id === gameId) || { id: gameId, title: game?.gameTitle || '预览游戏', manifestUrl: '' };
   state.playState = { status: 'loading', error: '', manifest: null };
   navigate('/play');
   try {
     const data = await api(`/api/games/${gameId}/manifest`);
     const entry = data.manifest?.entry;
-    if (!entry || !entry.startsWith('/objects/')) throw new Error('Manifest entry must point to object storage.');
+    if (!entry || !entry.startsWith('/objects/')) throw new Error('Manifest 入口必须指向对象存储。');
     state.playGame = data.game;
     state.playState = { status: 'loaded', error: '', manifest: data.manifest };
   } catch (error) {

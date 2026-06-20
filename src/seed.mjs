@@ -3,20 +3,21 @@ import { nowIso } from './util.mjs';
 
 export async function seedDemoData({ store, storage, config }) {
   if (!store.getUserByEmail('creator@example.com')) {
-    store.createUser({ email: 'creator@example.com', password: 'password123', name: 'Demo Creator', role: 'creator' });
+    store.createUser({ email: 'creator@example.com', password: 'password123', name: '演示创作者', role: 'creator' });
   }
   if (!store.getUserByEmail('player@example.com')) {
-    store.createUser({ email: 'player@example.com', password: 'password123', name: 'Demo Player', role: 'player' });
+    store.createUser({ email: 'player@example.com', password: 'password123', name: '演示玩家', role: 'player' });
   }
+  refreshDemoAccountNames(store);
   const creator = store.getUserByEmail('creator@example.com');
   const existing = store.listGames({ status: '' });
   const hasCreatePublished = existing.some((game) => game.origin === 'create-agent' && game.status === 'published');
 
   const seedPrompts = [
-    'Create a memory card challenge about lost robots repairing a neon greenhouse.',
-    'Build a reaction game where players stabilize a starship before the timer ends.'
+    '创建一个记忆翻牌挑战：迷路机器人正在修复霓虹温室。',
+    '制作一个反应游戏：玩家需要在倒计时结束前稳定星舰。'
   ];
-  const createPrompt = 'Make an interactive adventure about an agent exploring a floating archive, then publish it from the Create flow.';
+  const createPrompt = '制作一个互动冒险：智能体探索漂浮档案馆，并通过创作流程发布。';
 
   for (const prompt of seedPrompts.slice(0, Math.max(0, 3 - existing.length - (hasCreatePublished ? 0 : 1)))) {
     await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'seed' });
@@ -26,7 +27,29 @@ export async function seedDemoData({ store, storage, config }) {
     await createPublishedCreateFlowGame({ store, storage, config, creator, prompt: createPrompt });
   }
 
+  await ensureLocalizedDemoGame({ store, storage, config, creator });
+
   store.audit({ actorId: creator.id, type: 'seed.completed', message: 'Seeded demo accounts, published games, and one Create-flow published game.', meta: { minimumGames: 3, createFlowGame: true } });
+}
+
+function refreshDemoAccountNames(store) {
+  const updatedAt = nowIso();
+  store.run("UPDATE users SET name = '演示创作者', updated_at = $updatedAt WHERE email = 'creator@example.com' AND name = 'Demo Creator'", { $updatedAt: updatedAt });
+  store.run("UPDATE users SET name = '演示玩家', updated_at = $updatedAt WHERE email = 'player@example.com' AND name = 'Demo Player'", { $updatedAt: updatedAt });
+}
+
+async function ensureLocalizedDemoGame({ store, storage, config, creator }) {
+  const published = store.listGames({ status: 'published' });
+  const hasLocalizedGame = published.some((game) => /中文演示|霓虹中继|横版|能量核心|智能体|星舰|温室/.test([game.title, game.summary, ...(game.tags || [])].join(' ')));
+  if (hasLocalizedGame) return null;
+  return createPublishedSeedGame({
+    store,
+    storage,
+    config,
+    creator,
+    origin: 'seed-cn',
+    prompt: '中文演示：创建一个高级横版卷轴街机游戏。玩家修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门。'
+  });
 }
 
 async function createPublishedSeedGame({ store, storage, config, creator, prompt, origin }) {
@@ -49,10 +72,10 @@ async function createPublishedSeedGame({ store, storage, config, creator, prompt
 }
 
 async function createPublishedCreateFlowGame({ store, storage, config, creator, prompt }) {
-  const task = store.createTask({ userId: creator.id, title: 'Seeded Create Flow Adventure', prompt });
-  store.addLog({ taskId: task.id, level: 'info', step: 'queued', message: 'Seeded Create task queued to demonstrate the full generation loop.' });
-  store.addLog({ taskId: task.id, level: 'info', step: 'intent-analysis', message: 'Parsed creator intent and selected adventure genre.', meta: { seeded: true } });
-  store.addLog({ taskId: task.id, level: 'info', step: 'artifact-build', message: 'Generated bundle and manifest into object storage.', meta: { storage: 'LocalObjectStorage' } });
+  const task = store.createTask({ userId: creator.id, title: '种子创作流程冒险', prompt });
+  store.addLog({ taskId: task.id, level: 'info', step: 'queued', message: '种子创作任务已排队，用于演示完整生成循环。' });
+  store.addLog({ taskId: task.id, level: 'info', step: 'intent-analysis', message: '已解析创作者意图，并选择冒险类型。', meta: { seeded: true } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'artifact-build', message: '已将 bundle 与 manifest 生成到对象存储。', meta: { storage: 'LocalObjectStorage' } });
 
   const game = await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'create-agent' });
   store.updateTask(task.id, {
@@ -63,7 +86,7 @@ async function createPublishedCreateFlowGame({ store, storage, config, creator, 
     artifactManifestKey: game.manifest_key,
     completedAt: nowIso()
   });
-  store.addLog({ taskId: task.id, level: 'info', step: 'published', message: 'Seeded Create-flow game was published and is visible on Home.', meta: { gameId: game.id } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'published', message: '种子创作流程游戏已发布，并可在首页看到。', meta: { gameId: game.id } });
   store.audit({ actorId: creator.id, type: 'seed.create_flow_game', message: `Seeded published Create-flow game ${game.title}`, meta: { gameId: game.id, taskId: task.id } });
   return game;
 }

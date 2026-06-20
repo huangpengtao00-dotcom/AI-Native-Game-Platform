@@ -116,7 +116,7 @@ try {
   const bundleRes = await fetch(base + manifest.manifest.entry, { headers: { Cookie: cookieHeader() } });
   assert.equal(bundleRes.status, 200);
   const bundleText = await bundleRes.text();
-  assert.match(bundleText, /AI Agent Side-Scroller|Playable side-scrolling game canvas|Start Mission/);
+  assert.match(bundleText, /AI Agent 横版游戏|可玩的横版卷轴游戏画布|开始任务/);
   assert.match(bundleText, /<canvas id="game"/);
 
   const games = await request('/api/games?status=published');

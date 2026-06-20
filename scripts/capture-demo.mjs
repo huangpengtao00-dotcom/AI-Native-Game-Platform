@@ -8,11 +8,11 @@ const outDir = resolve(process.argv[2] || 'delivery/media');
 const frameDir = join(outDir, 'frames');
 const viewport = { width: 1440, height: 960 };
 const screenshotMap = [
-  ['01-home.png', 'Published Home'],
-  ['02-login.png', 'Login'],
-  ['03-create.png', 'Create Agent'],
-  ['04-tasks.png', 'Generation Tasks'],
-  ['05-play.png', 'Play Runtime']
+  ['01-home.png', '中文游戏大厅'],
+  ['02-login.png', '登录'],
+  ['03-create.png', 'Agent 创作'],
+  ['04-tasks.png', '生成任务'],
+  ['05-play.png', '试玩运行时']
 ];
 
 async function main() {
@@ -69,8 +69,8 @@ try {
       await page.evaluate(() => {
         const title = document.querySelector('input[name="title"]');
         const prompt = document.querySelector('textarea[name="prompt"]');
-        if (title) title.value = 'Signal Run: Interview Relay';
-        if (prompt) prompt.value = 'Create a premium horizontal side-scrolling arcade game for an interview review. The player repairs a neon relay, jumps across platforms, collects energy cores, avoids hazards, and reaches a final gate with a clear win state and replayable feedback.';
+        if (title) title.value = '信号奔跑：面试中继';
+        if (prompt) prompt.value = '创建一个用于面试评审的高级横版卷轴街机游戏。玩家修复霓虹中继，在平台间跳跃，收集能量核心，避开危险，并抵达最终闸门，拥有明确胜利状态和可重玩反馈。';
       });
       await page.screenshot(join(outDir, '03-create.png'));
       await page.click('#createForm button[type="submit"]');
