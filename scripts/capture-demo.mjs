@@ -6,7 +6,10 @@ import { join, resolve } from 'node:path';
 const appUrl = process.env.DEMO_URL || 'http://127.0.0.1:4173';
 const outDir = resolve(process.argv[2] || 'delivery/media');
 const frameDir = join(outDir, 'frames');
-const viewport = { width: 1440, height: 960 };
+const viewport = {
+  width: Number(process.env.DEMO_VIEWPORT_WIDTH || (process.env.DEMO_4K ? 3840 : 1440)),
+  height: Number(process.env.DEMO_VIEWPORT_HEIGHT || (process.env.DEMO_4K ? 2160 : 960))
+};
 const screenshotMap = [
   ['01-home.png', '中文游戏大厅'],
   ['02-login.png', '登录'],

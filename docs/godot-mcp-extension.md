@@ -10,6 +10,8 @@ Godot MCP is valuable as a future adapter for richer 2D/3D production pipelines,
 
 ## Research Notes
 
+2026-06-21 update: GitHub search found several active Godot MCP options, including `Coding-Solo/godot-mcp` (4k+ stars), `ee0pdt/Godot-MCP`, `DaxianLee/godot-mcp`, `tomyud1/godot-mcp`, and other Godot 4 MCP servers. This confirms the ecosystem is worth tracking, but it does not change the current delivery decision: keep Godot as an optional future adapter so the interview package remains zero-install and browser-verifiable.
+
 - `Coding-Solo/godot-mcp` is a Node/TypeScript MCP server that can launch the Godot editor, run projects, capture debug output, inspect projects, and create or modify scenes. It is configured through `npx @coding-solo/godot-mcp` and requires Godot Engine plus Node/npm on the host.
 - `DaxianLee/godot-mcp` is a Godot editor plugin. It exposes an HTTP MCP endpoint at `http://127.0.0.1:3000/mcp` by default and documents Codex CLI connection through `codex mcp add --transport http godot-mcp http://127.0.0.1:3000/mcp`.
 - `tugcantopaloglu/godot-mcp` is a broader fork that advertises 149 tools across runtime inspection, scene manipulation, file I/O, input simulation, animation, physics, and project configuration.

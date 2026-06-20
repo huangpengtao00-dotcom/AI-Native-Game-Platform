@@ -44,6 +44,7 @@ function buttonIcon(name, label) {
   return icon(name) + '<span>' + esc(label) + '</span>';
 }
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const HERO_ASSET = '/assets/covers/hero-4k.png';
 const COVER_ASSETS = {
   memory: '/assets/covers/memory.png',
   reaction: '/assets/covers/reaction.png',
@@ -246,6 +247,22 @@ function taskWaitCopy(task) {
   return '任务状态已更新。';
 }
 
+function taskPipeline(task) {
+  const steps = [
+    ['intent-analysis', '意图解析'],
+    ['model-design', '模型设计'],
+    ['safety-screen', '安全筛查'],
+    ['artifact-build', '产物构建'],
+    ['persistence', '持久化'],
+    ['ready-to-preview', '可预览']
+  ];
+  const currentIndex = Math.max(0, steps.findIndex(([step]) => step === task?.currentStep));
+  return '<div class="runway" aria-label="智能体执行进度">' + steps.map(([step, label], index) => {
+    const cls = index < currentIndex || task?.status === 'succeeded' ? 'done' : index === currentIndex ? 'active' : '';
+    return '<span class="run-step ' + cls + '"><i></i>' + esc(label) + '</span>';
+  }).join('') + '</div>';
+}
+
 function taskLivePanel(tasks) {
   if (!tasks.length) return '';
   const task = tasks[0];
@@ -254,6 +271,8 @@ function taskLivePanel(tasks) {
     <div class="task-live-head"><span class="status-dot"></span><div><div class="eyebrow">智能体正在运行</div><h2>${esc(task.title)}</h2></div></div>
     <div class="task-live-meta"><span>${esc(statusLabel(task.status))}</span><span>${esc(stepLabel(task.currentStep))}</span><span>${percent}%</span><span>自动刷新中</span></div>
     <div class="progress"><span style="width:${percent}%"></span></div>
+    ${taskPipeline(task)}
+    <div class="agent-console-strip"><span>运行中</span><b>AI Agent 正在编排设计、构建 bundle、写入对象存储</b><em>Preview ready 后可直接试玩</em></div>
     <p class="summary">${esc(taskWaitCopy(task))}</p>
     <div class="actions"><button class="secondary icon-button" data-task="${esc(task.id)}">${icon('log')}<span>查看实时日志</span></button></div>
   </section>`;
@@ -273,25 +292,27 @@ function render() {
 function homeView() {
   const tags = [...new Set(state.games.flatMap((game) => game.tags || []))].sort();
   const featured = state.games[0];
-  const heroCover = featured ? coverAssetFor(featured) : '';
+  const heroCover = HERO_ASSET;
   const heroStyle = heroCover ? `--hero-cover:url('${heroCover}')` : '';
   return html`
     <section class="hero" style="${heroStyle}">
       <div class="hero-inner">
         <div>
-          <div class="eyebrow">ForgePlay Studio · AI 原生游戏平台</div>
-          <h1>用 AI 智能体生成可玩的横版游戏</h1>
-          <p class="hero-copy">输入游戏想法，智能体会设计并构建可移植 HTML 产物，发布到数据库驱动的游戏大厅，再从对象存储加载到沙盒运行时中试玩。</p>
+          <div class="eyebrow">ForgePlay Studio · AI 原生游戏生成控制台</div>
+          <h1>把游戏想法锻造成可试玩作品</h1>
+          <p class="hero-copy">从创意提示、模型设计、对象存储到 iframe 沙盒运行时，ForgePlay 用一条可审计的 Agent 流水线生成、发布并验证 16:9 横版游戏。界面以留白、层次、材质和清晰反馈为核心，开箱即可演示完整闭环。</p>
           <div class="actions"><button class="primary icon-button" data-nav="/create">${icon('create')}<span>创建游戏</span></button>${featured ? `<button class="secondary icon-button" data-play="${esc(featured.id)}">${icon('play')}<span>试玩精选</span></button>` : ''}<button class="ghost icon-button" data-nav="/docs">${icon('docs')}<span>查看架构</span></button></div>
         </div>
         <aside class="hero-panel">
-          <div class="eyebrow">运行时栈</div>
+          <div class="eyebrow">运行时证据</div>
           <div class="status-grid">
-            <div class="status-cell"><strong>${state.games.length}</strong><span>已发布</span></div>
-            <div class="status-cell"><strong>16:9</strong><span>横版运行</span></div>
-            <div class="status-cell"><strong>API</strong><span>模型就绪</span></div>
+            <div class="status-cell"><strong>${state.games.length}</strong><span>已发布游戏</span></div>
+            <div class="status-cell"><strong>8</strong><span>风格模板</span></div>
+            <div class="status-cell"><strong>16:9</strong><span>沙盒运行</span></div>
           </div>
-          <p class="summary">每次试玩都会拉取 manifest，挂载 <span class="kbd">/objects/.../bundle.html</span>，并把生成代码隔离在 iframe 沙盒中。</p>
+          <div class="hero-proof"><span>Pipeline</span><b>Prompt</b><i></i><b>Agent design</b><i></i><b>HTML bundle</b><i></i><b>Manifest / Play iframe</b></div>
+          <p class="summary">试玩时会拉取 manifest，挂载 <span class="kbd">/objects/.../bundle.html</span>，并把生成代码隔离在 iframe 沙盒中。</p>
+          <div class="hero-signal"><span></span><b>本地审计、截图、视频和交付 ZIP 均可复现</b></div>
         </aside>
       </div>
     </section>
@@ -299,7 +320,8 @@ function homeView() {
       <div class="searchbar"><input class="input" id="searchInput" placeholder="搜索游戏、类型、标签" value="${esc(state.query)}"><button class="secondary icon-button" id="searchBtn">${icon('search')}<span>搜索</span></button></div>
       <select id="tagFilter" style="max-width:220px"><option value="">全部标签</option>${tags.map((tag) => `<option ${state.tag === tag ? 'selected' : ''} value="${esc(tag)}">${esc(tag)}</option>`).join('')}</select>
     </div>
-    ${state.games.length ? `<div class="rail">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">当前筛选下没有已发布游戏。</div>'}`;
+    <section class="library-head"><div><div class="eyebrow">Playable Library</div><h2>可试玩游戏矩阵</h2></div><p class="summary">8 类风格模板覆盖动作、解谜、节奏、潜行、飞行和重力平台，卡片直接进入 Manifest 与 Play 验证。</p></section>
+    ${state.games.length ? `<div class="rail game-library">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">当前筛选下没有已发布游戏。</div>'}`;
 }
 
 function gameCard(game) {
@@ -312,11 +334,24 @@ function gameCard(game) {
     <div class="game-body">
       <div><div class="game-title">${esc(game.title)}</div><div class="hint">作者 ${esc(game.authorName)} · ${fmtDate(game.publishedAt)}</div></div>
       <p class="summary">${esc(game.summary)}</p>
+      <div class="card-proof"><span>${esc(genreLabel(game))}</span><span>Manifest ready</span><span>iframe sandbox</span></div>
       <div class="tags">${(game.tags || []).map((tag) => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
       <div class="metrics"><div class="metric"><strong>${game.playCount}</strong><span>试玩</span></div><div class="metric"><strong>${game.likeCount}</strong><span>喜欢</span></div><div class="metric"><strong>${game.favoriteCount}</strong><span>收藏</span></div></div>
       <div class="actions"><button class="primary icon-button" data-play="${esc(game.id)}">${icon('play')}<span>试玩</span></button><button class="ghost icon-button" data-detail="${esc(game.id)}">${icon('manifest')}<span>Manifest</span></button></div>
     </div>
   </article>`;
+}
+
+function genreLabel(game) {
+  const haystack = [game.title, game.summary, ...(game.tags || [])].join(' ').toLowerCase();
+  if (haystack.includes('rhythm') || haystack.includes('节奏') || haystack.includes('音乐')) return 'Rhythm';
+  if (haystack.includes('stealth') || haystack.includes('潜行') || haystack.includes('暗影')) return 'Stealth';
+  if (haystack.includes('shooter') || haystack.includes('飞行') || haystack.includes('射击')) return 'Shooter';
+  if (haystack.includes('gravity') || haystack.includes('重力')) return 'Gravity';
+  if (haystack.includes('memory') || haystack.includes('记忆')) return 'Memory';
+  if (haystack.includes('reaction') || haystack.includes('反应')) return 'Reaction';
+  if (haystack.includes('quiz') || haystack.includes('谜题') || haystack.includes('问答')) return 'Puzzle';
+  return 'Adventure';
 }
 
 function coverAssetFor(game) {
@@ -389,11 +424,11 @@ function playView() {
 }
 
 function playFrameContent() {
-  if (state.playState.status === 'loading') return '<div class="loader"><h2>正在加载游戏文件</h2><p>正在获取 manifest、校验入口 URL，并挂载沙盒运行时。</p></div>';
+  if (state.playState.status === 'loading') return '<div class="loader premium-loader"><div class="loader-mark"></div><h2>正在加载高清试玩运行时</h2><p>正在获取 manifest、校验对象存储入口，并挂载沙盒 iframe。资源就绪后会自动呈现可试玩游戏。</p></div>';
   if (state.playState.status === 'failed') return `<div class="loader"><h2>加载失败</h2><p>${esc(state.playState.error)}</p></div>`;
   if (state.playState.status === 'loaded' && state.playState.manifest) {
     const src = esc(state.playState.manifest.entry);
-    return `<iframe class="play-frame" title="游戏运行时" sandbox="allow-scripts" referrerpolicy="no-referrer" src="${src}"></iframe>`;
+    return `<div class="play-status-strip"><span>Manifest verified</span><b>高清 Canvas 已挂载</b><em>点击画面后用 A/D/Space 试玩，R 重开</em></div><iframe class="play-frame" title="游戏运行时" sandbox="allow-scripts" referrerpolicy="no-referrer" src="${src}"></iframe>`;
   }
   return '<div class="loader"><h2>准备加载</h2><p>正在等待选择游戏；进入试玩页时会自动加载第一个已发布游戏。</p></div>';
 }

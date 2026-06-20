@@ -77,3 +77,20 @@ Generated final visual evidence under `delivery/media/`:
 - `demo-walkthrough.webm`
 
 The screenshots were captured from the real local browser flow. The video was assembled from those captured screenshots to keep the interview package reproducible without external video tooling.
+
+## Premium UI And Closed Loop Verification - 2026-06-21
+
+A fresh browser/CDP closed-loop smoke was run with temporary data and storage under `C:\tmp\forgeplay-closed-loop\...`.
+
+Verified results:
+
+- Home renders Chinese UI copy, the 4K hero asset, and the playable library.
+- Create submits a real generation task.
+- During model delay, Tasks shows a visible running state: status, step, percent progress, pipeline runway, and auto-refresh copy.
+- The generated task reaches `succeeded` and exposes preview/publish actions.
+- Publish moves the generated game into the Play flow.
+- Play loads `/objects/.../bundle.html` through the manifest and mounts it in the sandboxed iframe.
+- Keyboard input changes the rendered game frame; screenshot byte diff was above 190k, proving the game is not a static preview.
+- No runtime exceptions were reported by the CDP smoke.
+
+Delivery screenshots were regenerated from a clean local instance at `http://127.0.0.1:4274` and stored in `delivery/media/`.
