@@ -11,11 +11,12 @@ const bundledPython = join(process.env.USERPROFILE || '', '.cache', 'codex-runti
 const python = process.env.PYTHON_WITH_PIL || (existsSync(bundledPython) ? bundledPython : 'python');
 
 const scenes = [
-  ['01-home.png', '中文游戏大厅'],
-  ['02-login.png', '登录'],
-  ['03-create.png', '创作工坊'],
-  ['04-tasks.png', '生成任务'],
-  ['05-play.png', '试玩运行时']
+  ['01-intro.png', '作者封面页'],
+  ['02-home.png', '中文游戏大厅'],
+  ['03-types.png', '15 类游戏类型'],
+  ['04-create.png', '创作工坊'],
+  ['05-tasks.png', '生成任务'],
+  ['06-play.png', '试玩运行时']
 ];
 
 if (!existsSync(ffmpeg)) throw new Error(`FFmpeg not found at ${ffmpeg}`);

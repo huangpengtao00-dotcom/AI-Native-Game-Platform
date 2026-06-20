@@ -57,12 +57,16 @@ async function request(route, options = {}) {
 try {
   const health = await request('/api/health');
   assert.equal(health.ok, true);
-  assert.ok(health.stats.publishedGames >= 3, 'seed should create three published games');
+  assert.ok(health.stats.publishedGames >= 15, 'seed should create fifteen published games');
 
   const seededGames = await request('/api/games?status=published');
-  const seededCreateGame = seededGames.games.find((game) => game.origin === 'create-agent');
-  assert.ok(seededGames.games.length >= 3, 'fresh seed should expose at least three published games');
-  assert.ok(seededCreateGame, 'fresh seed should include one Create-flow published game');
+  const seededCreateGames = seededGames.games.filter((game) => game.origin === 'create-agent');
+  const seededCreateTitles = new Set(seededCreateGames.map((game) => game.title));
+  assert.ok(seededGames.games.length >= 15, 'fresh seed should expose at least fifteen published games');
+  assert.ok(seededCreateGames.length >= 15, 'fresh seed should include fifteen Create-flow published games');
+  assert.ok(seededCreateTitles.size >= 15, 'fresh seed should include fifteen distinct Create-flow game titles');
+  assert.ok(health.stats.succeededTasks >= 15, 'fresh seed should include succeeded task evidence for the fifteen pre-produced games');
+  const seededCreateGame = seededCreateGames[0];
   assert.ok(seededCreateGame.manifestUrl?.startsWith('/objects/'), 'seeded Create-flow game should use object manifest');
 
   const ready = await request('/api/ready');
@@ -118,7 +122,9 @@ try {
   const bundleText = await bundleRes.text();
   assert.match(bundleText, /AI 智能体横版画卷|可玩的横版卷轴游戏画布|开始任务/);
   assert.match(bundleText, /<canvas id="game"/);
-  assert.match(bundleText, /function initWorld\(\).*initWorld\(\);draw\(\);requestAnimationFrame\(loop\)/s);
+  assert.match(bundleText, /function initWorld\(\)/);
+  assert.match(bundleText, /requestAnimationFrame\(loop\)/);
+  assert.match(bundleText, /autoPlayDemo/);
 
   const games = await request('/api/games?status=published');
   assert.ok(games.games.some((game) => game.id === task.gameId), 'published Create game should be visible on Home');

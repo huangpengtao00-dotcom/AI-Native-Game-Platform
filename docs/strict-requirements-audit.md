@@ -18,7 +18,7 @@ This audit maps the screenshot requirements to concrete project evidence.
 | Auth | Email register/login/logout, persistent session after refresh. | Pass | `/api/auth/register`, `/api/auth/login`, `/api/auth/logout`, `/api/me`; tests cover register and protected task access. |
 | Auth | Google/GitHub login design; real provider exchange can be demo-stage. | Pass | `/api/auth/oauth/:provider`, `oauth_accounts` schema, `docs/security.md` known limits. |
 | Home | Shows all published games from backend/database, not frontend hardcoded array. | Pass | `/api/games?status=published`, `DataStore.listGames`, `public/app.js`. |
-| Home | At least 3 example games; at least 1 from Create-publish loop. | Pass | `src/seed.mjs` now seeds at least 3 published games including one `create-agent` origin game with succeeded task/log trail; `tests/run-tests.mjs` asserts this on a fresh temp database. |
+| Home | At least 15 example games from the Create-publish loop. | Pass | `src/seed.mjs` seeds 15 published games across distinct design directions; all use `create-agent` origin with succeeded task/log evidence, and `tests/run-tests.mjs` asserts this on a fresh temp database. |
 | Home | Cards show cover, title, summary, author, tags, publish time. | Pass | `gameCard()` in `public/app.js`; final covers in `public/assets/covers/`. |
 | Play | Dynamically loads manifest/object artifact, not a local hardcoded component. | Pass | `loadPlay()` fetches `/api/games/:id/manifest`, validates `/objects/`, iframe mounts object entry. |
 | Play | Loading, success, failure, and return/reload states. | Pass | `playFrameContent()`, `Back home`, `Reload manifest`. |
@@ -65,10 +65,10 @@ This audit maps the screenshot requirements to concrete project evidence.
 
 ## Final Verification
 
-- `npm.cmd run audit:local`: passed on 2026-06-20.
+- `npm.cmd run audit:local`: passed on 2026-06-21 after the 15-game seed and light premium UI pass.
 - `npm.cmd run smoke:model`: passed against the configured fighting Responses provider on 2026-06-20, with the API key supplied only through the process environment.
 - ZIP package excludes `.git/`, `data/`, `storage/objects/`, `node_modules/`, `.env`, and `output/`.
-- Latest GitHub commit after this audit should include this file and the fresh-seed Create-flow fix.
+- Latest GitHub commit after this audit should include the author intro page, 15-game Create-flow seed, refreshed delivery media, and packaging checks.
 
 
 

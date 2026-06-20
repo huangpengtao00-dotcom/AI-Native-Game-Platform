@@ -2,7 +2,7 @@ const app = document.querySelector('#app');
 const state = {
   user: null,
   csrfToken: null,
-  route: location.hash.replace('#', '') || '/home',
+  route: location.hash.replace('#', '') || '/intro',
   games: [],
   tasks: [],
   activeTask: null,
@@ -10,9 +10,11 @@ const state = {
   playState: { status: 'idle', error: '', manifest: null },
   uploadedAssets: [],
   query: '',
-  tag: ''
+  tag: '',
+  selectedTemplate: 'fps'
 };
 let pollTimer = null;
+let scrollDynamicsBound = false;
 
 const iconPaths = {
   home: ['M3 10.5 12 3l9 7.5', 'M5 10v10h14V10', 'M9 20v-6h6v6'],
@@ -55,6 +57,128 @@ const COVER_ASSETS = {
   shooter: '/assets/covers/shooter.png',
   gravity: '/assets/covers/gravity.png'
 };
+const GAME_TYPE_CATALOG = [
+  {
+    id: 'fps',
+    label: '小型 FPS',
+    eyebrow: 'First-person trainer',
+    desc: '轻量第一人称目标训练、移动靶、计时命中和清晰反馈，适合展示可扩展的动作生成方向。',
+    title: '玉衡靶场：Opall FPS 原型',
+    prompt: '创建一个小型 FPS 风格的 16:9 Canvas 目标训练游戏。玩家在现代东方靶场中移动准星，命中玉色目标，避开朱砂干扰，包含计时、分数、连击、胜利状态和重新开始反馈。整体要轻量、可试玩、适合面试评审。'
+  },
+  {
+    id: 'adventure',
+    label: '东方冒险',
+    eyebrow: 'Premium platform',
+    desc: '横版探索、玉桥、灯阵、机关和终点闸门，是当前可玩闭环的主展示类型。',
+    title: '云岚渡桥：玉灯中继',
+    prompt: '创建一个带现代东方美学的横版卷轴游戏。玩家穿过云岚庭院、玉桥和灯阵，收集玉灯能量，避开朱砂机关，并抵达最终闸门，拥有明确胜利状态。'
+  },
+  {
+    id: 'puzzle',
+    label: '机关解谜',
+    eyebrow: 'Puzzle room',
+    desc: '把路线选择、机关门和推理提示做成短局挑战，强调目标明确与反馈清楚。',
+    title: '月相观星台：机关解谜',
+    prompt: '设计一个现代东方机关解谜横版游戏。玩家在月相观星台中选择正确路径，点亮星盘机关，避开错误门和朱砂陷阱，完成后打开出口。'
+  },
+  {
+    id: 'rhythm',
+    label: '节奏动作',
+    eyebrow: 'Rhythm action',
+    desc: '节拍窗口、连击反馈和灯阵同步，适合展示更强的动效与反馈能力。',
+    title: '霓虹乐谱：节奏灯阵',
+    prompt: '制作一个节奏横版动作游戏。玩家跟随霓虹乐谱跳跃，在节拍窗口收集音符玉灯，保持连击，并在终点看到胜利反馈。'
+  },
+  {
+    id: 'stealth',
+    label: '潜行闯关',
+    eyebrow: 'Stealth route',
+    desc: '巡逻灯、暗影路径和警戒门，适合做策略路线与失败反馈。',
+    title: '影幕长廊：潜行路线',
+    prompt: '制作一个潜行横版游戏。玩家穿过影幕长廊，躲避巡逻灯、暗影机关和警戒门，在不被发现的情况下抵达出口。'
+  },
+  {
+    id: 'shooter',
+    label: '飞行射击',
+    eyebrow: 'Arcade shooter',
+    desc: '能量核心、弹幕躲避、星门目标，偏街机节奏和视觉冲击。',
+    title: '星槎云海：飞行射击',
+    prompt: '创建一个飞行射击横版游戏。星槎穿过云海弹幕，收集能量核心，躲避朱砂障碍，并冲入终点星门。'
+  },
+  {
+    id: 'gravity',
+    label: '重力平台',
+    eyebrow: 'Gravity puzzle',
+    desc: '重力切换、浮空平台和机关门，强调规则变化和可复玩性。',
+    title: '浮空石阶：重力翻转',
+    prompt: '设计一个重力翻转平台游戏。玩家在浮空石阶之间切换重力，躲开机关，收集能量，并解开终点闸门。'
+  },
+  {
+    id: 'memory',
+    label: '记忆挑战',
+    eyebrow: 'Memory challenge',
+    desc: '庭院路线和玉灯顺序记忆，节奏更平稳，适合轻量试玩。',
+    title: '玉灯庭院：记忆回廊',
+    prompt: '创建一个记忆主题横版挑战。玩家按照玉灯亮起顺序穿过庭院，避开错误机关，最终抵达出口。'
+  },
+  {
+    id: 'reaction',
+    label: '反应挑战',
+    eyebrow: 'Reflex arena',
+    desc: '倒计时、机关节奏、闪避窗口和快速反馈，适合短局高频试玩。',
+    title: '朱砂机关阵：反应挑战',
+    prompt: '制作一个反应横版游戏。玩家需要在倒计时结束前稳定朱砂机关阵，点亮玉灯并抵达终点闸门。'
+  },
+  {
+    id: 'roguelite',
+    label: '轻肉鸽',
+    eyebrow: 'Roguelite run',
+    desc: '随机路线、临时增益、风险选择和终点清算，适合展示生成系统的扩展性。',
+    title: '流云试炼：轻肉鸽短局',
+    prompt: '制作一个轻肉鸽短局游戏。玩家在三条云路中选择风险和增益，收集临时能力，避开机关，最终完成试炼。'
+  },
+  {
+    id: 'tower',
+    label: '塔防策略',
+    eyebrow: 'Defense board',
+    desc: '布置防线、波次压力和核心防守，适合偏策略的玩法生成。',
+    title: '玉塔守阵：策略防线',
+    prompt: '创建一个小型塔防策略游戏。玩家布置玉塔阻挡朱砂波次，保护庭院核心，并在有限回合内守住阵线。'
+  },
+  {
+    id: 'card',
+    label: '卡牌构筑',
+    eyebrow: 'Deck builder',
+    desc: '手牌选择、能量消耗和回合反馈，适合展示规则型游戏设计。',
+    title: '墨契手牌：卡牌构筑',
+    prompt: '设计一个轻量卡牌构筑游戏。玩家使用手牌消耗能量，触发玉色连携，抵御朱砂事件，并完成回合目标。'
+  },
+  {
+    id: 'racing',
+    label: '竞速漂移',
+    eyebrow: 'Arcade racing',
+    desc: '赛道、加速门、计时和漂移反馈，适合更运动化的短局体验。',
+    title: '星桥竞速：弯道漂移',
+    prompt: '制作一个俯视角竞速游戏。玩家沿星桥赛道漂移，穿过加速门，避开路障，并在限定时间内抵达终点。'
+  },
+  {
+    id: 'survival',
+    label: '生存采集',
+    eyebrow: 'Survival loop',
+    desc: '资源采集、危险区域、撤离倒计时和轻量循环，强调任务压力。',
+    title: '雾岛撤离：生存采集',
+    prompt: '创建一个小型生存采集游戏。玩家在雾岛收集资源，避开危险区域，修复信标，并在倒计时结束前撤离。'
+  },
+  {
+    id: 'metroidvania',
+    label: '探索解锁',
+    eyebrow: 'Ability gates',
+    desc: '能力门、区域回访和路线解锁，适合更复杂的关卡结构。',
+    title: '玄门回廊：探索解锁',
+    prompt: '制作一个类银河城探索原型。玩家获得新能力后打开能力门，回访区域，收集玉灯碎片并抵达玄门出口。'
+  }
+];
 
 function html(strings, ...values) {
   return strings.reduce((out, part, i) => out + part + (values[i] ?? ''), '');
@@ -131,13 +255,14 @@ async function loadTasks() {
 
 function routeTitle() {
   const map = {
+    '/intro': ['作者与项目入口', 'Opall / 黄澎涛 的 AI 原生游戏生成平台。'],
     '/home': ['游戏大厅', 'AI 生成的横版游戏，从对象存储发布并运行。'],
     '/create': ['创作工坊', '设计、生成、检查并发布可玩的横版游戏。'],
     '/tasks': ['智能体控制台', '查看模型设计、构建日志、产物持久化和发布状态。'],
     '/play': ['试玩运行时', '通过 manifest 加载的 16:9 沙盒对象运行时。'],
     '/docs': ['交付系统', '架构、运维、风险与验证证据。']
   };
-  return map[state.route] || map['/home'];
+  return map[state.route] || map['/intro'];
 }
 
 function renderAuth() {
@@ -280,6 +405,7 @@ function taskLivePanel(tasks) {
 function render() {
   clearInterval(pollTimer);
   pollTimer = null;
+  if (state.route === '/intro') return renderIntro();
   if (!state.user && ['/create', '/tasks'].includes(state.route)) return renderAuth();
   if (state.route === '/home') return renderShell(homeView());
   if (state.route === '/create') return renderShell(createView());
@@ -289,9 +415,69 @@ function render() {
   return renderShell(homeView());
 }
 
+function renderIntro() {
+  app.innerHTML = introView();
+}
+
+function introView() {
+  const featured = state.games[0];
+  return html`
+    <main class="intro-page">
+      <section class="intro-hero reveal-on-scroll">
+        <div class="intro-copy">
+          <div class="intro-kicker"><span></span> AI Native Game Platform</div>
+          <h1>Opall</h1>
+          <h2>黄澎涛 · 智能体游戏生成作品</h2>
+          <p>一个面向面试展示的 AI 原生游戏平台：从创意提示、Agent 任务编排、对象存储、manifest 合约，到可试玩的沙盒 Canvas 游戏。视觉方向以浅色 Apple 式留白、东方玉色材质和 Steam 式游戏陈列结合。</p>
+          <div class="intro-actions">
+            <button class="primary icon-button" data-nav="/home">${icon('play')}<span>进入游戏大厅</span></button>
+            <button class="secondary icon-button" data-nav="/create">${icon('sparkles')}<span>创建游戏</span></button>
+            ${featured ? `<button class="ghost icon-button" data-play="${esc(featured.id)}">${icon('play')}<span>直接试玩</span></button>` : ''}
+          </div>
+          <div class="intro-proof">
+            <span>GitHub portfolio</span>
+            <span>Agent workflow</span>
+            <span>Playable runtime</span>
+            <span>Interview package</span>
+          </div>
+        </div>
+        <div class="intro-visual" aria-hidden="true">
+          <div class="device-shell">
+            <div class="device-top"><span></span><span></span><span></span></div>
+            <div class="device-scene">
+              <div class="scene-title">ForgePlay Hall</div>
+              <div class="scene-row">
+                <i></i><i></i><i></i><i></i>
+              </div>
+              <div class="scene-stage">
+                <b></b><b></b><b></b><b></b>
+              </div>
+            </div>
+          </div>
+          <div class="floating-ticket ticket-a"><strong>15</strong><span>Game types</span></div>
+          <div class="floating-ticket ticket-b"><strong>16:9</strong><span>Sandbox play</span></div>
+        </div>
+      </section>
+      <section class="intro-author reveal-on-scroll">
+        <div>
+          <div class="eyebrow">Creator</div>
+          <h2>Opall · 黄澎涛</h2>
+          <p class="summary">关注 AI Agent、工程化交付和可演示产品体验。这个项目不是静态页面，而是可登录、可创建、可审计、可发布、可试玩的完整闭环。</p>
+        </div>
+        <div class="author-grid">
+          <div><strong>Agent 后端</strong><span>任务生命周期、日志、模型适配、对象存储。</span></div>
+          <div><strong>前端体验</strong><span>浅色高级感、动态滚动、游戏类型陈列。</span></div>
+          <div><strong>游戏运行时</strong><span>manifest 加载、iframe 沙盒、Canvas 可试玩。</span></div>
+        </div>
+      </section>
+    </main>`;
+}
+
 function homeView() {
   const tags = [...new Set(state.games.flatMap((game) => game.tags || []))].sort();
   const featured = state.games[0];
+  const highlighted = state.games.slice(0, 4);
+  const selected = currentGameTemplate();
   const heroCover = HERO_ASSET;
   const heroStyle = heroCover ? `--hero-cover:url('${heroCover}')` : '';
   return html`
@@ -307,7 +493,7 @@ function homeView() {
           <div class="eyebrow">运行时证据</div>
           <div class="status-grid">
             <div class="status-cell"><strong>${state.games.length}</strong><span>已发布游戏</span></div>
-            <div class="status-cell"><strong>8</strong><span>风格模板</span></div>
+            <div class="status-cell"><strong>${GAME_TYPE_CATALOG.length}</strong><span>游戏类型</span></div>
             <div class="status-cell"><strong>16:9</strong><span>沙盒运行</span></div>
           </div>
           <div class="hero-proof"><span>Pipeline</span><b>Prompt</b><i></i><b>Agent design</b><i></i><b>HTML bundle</b><i></i><b>Manifest / Play iframe</b></div>
@@ -316,12 +502,55 @@ function homeView() {
         </aside>
       </div>
     </section>
+    <section class="hub-spotlight reveal-on-scroll">
+      <div class="spotlight-copy">
+        <div class="eyebrow">One-page showcase</div>
+        <h2>从类型选择到可玩验证，集中在这一页</h2>
+        <p class="summary">这里像 Steam 一样先浏览游戏类型和精选作品，再像 Apple 产品页一样清晰展示创作路径、运行证据和试玩入口。独立的创作、任务、试玩路由仍保留，用于深度操作和测试。</p>
+      </div>
+      <div class="spotlight-grid">
+        <div><strong>${GAME_TYPE_CATALOG.length}</strong><span>设计方向</span></div>
+        <div><strong>${state.games.length}</strong><span>可试玩作品</span></div>
+        <div><strong>FPS+</strong><span>不局限横版</span></div>
+        <div><strong>CDP</strong><span>可自动验收</span></div>
+      </div>
+    </section>
+    <section class="type-section reveal-on-scroll">
+      <div class="library-head"><div><div class="eyebrow">Steam-inspired browse</div><h2>15 类游戏类型橱窗</h2></div><p class="summary">可从小型 FPS、横版冒险、机关解谜、节奏、潜行、飞行射击、重力平台、轻肉鸽、塔防、卡牌、竞速、生存采集和探索解锁等方向中选择，作为后续 Agent 生成模板。</p></div>
+      <div class="type-strip">${GAME_TYPE_CATALOG.map((item) => gameTypeCard(item)).join('')}</div>
+    </section>
+    <section class="quick-lab panel reveal-on-scroll">
+      <div>
+        <div class="eyebrow">Creation setup</div>
+        <h2>当前创作方向：${esc(selected.label)}</h2>
+        <p class="summary">${esc(selected.desc)}</p>
+        <div class="prompt-preview"><strong>${esc(selected.title)}</strong><span>${esc(selected.prompt)}</span></div>
+      </div>
+      <div class="quick-lab-actions">
+        <button class="primary icon-button" data-nav="/create">${icon('sparkles')}<span>打开创作设置</span></button>
+        <button class="secondary icon-button" data-nav="/tasks">${icon('tasks')}<span>查看生成任务</span></button>
+        ${featured ? `<button class="ghost icon-button" data-play="${esc(featured.id)}">${icon('play')}<span>先试玩现有作品</span></button>` : ''}
+      </div>
+    </section>
+    ${highlighted.length ? `<section class="featured-row reveal-on-scroll"><div class="library-head"><div><div class="eyebrow">Featured playable builds</div><h2>精选可玩作品</h2></div><p class="summary">像 Steam 首页一样先给出精选陈列；每张卡片都能直接进入 manifest 和 Play 验证。</p></div><div class="featured-stack">${highlighted.map(gameCard).join('')}</div></section>` : ''}
     <div class="toolbar">
       <div class="searchbar"><input class="input" id="searchInput" placeholder="搜索游戏、类型、标签" value="${esc(state.query)}"><button class="secondary icon-button" id="searchBtn">${icon('search')}<span>搜索</span></button></div>
       <select id="tagFilter" style="max-width:220px"><option value="">全部标签</option>${tags.map((tag) => `<option ${state.tag === tag ? 'selected' : ''} value="${esc(tag)}">${esc(tag)}</option>`).join('')}</select>
     </div>
-    <section class="library-head"><div><div class="eyebrow">Playable Library</div><h2>可试玩游戏矩阵</h2></div><p class="summary">8 类风格模板覆盖动作、解谜、节奏、潜行、飞行和重力平台，卡片直接进入 Manifest 与 Play 验证。</p></section>
+    <section class="library-head"><div><div class="eyebrow">Playable Library</div><h2>可试玩游戏矩阵</h2></div><p class="summary">预生产 15 个网站生成风格游戏，覆盖 FPS、动作、解谜、策略、竞速、生存和探索等方向，卡片直接进入 Manifest 与 Play 验证。</p></section>
     ${state.games.length ? `<div class="rail game-library">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">当前筛选下没有已发布游戏。</div>'}`;
+}
+
+function currentGameTemplate() {
+  return GAME_TYPE_CATALOG.find((item) => item.id === state.selectedTemplate) || GAME_TYPE_CATALOG[0];
+}
+
+function gameTypeCard(item, goCreate = false) {
+  const active = item.id === state.selectedTemplate ? ' active' : '';
+  return html`<article class="type-card${active}" data-template-card="${esc(item.id)}">
+    <div><span>${esc(item.eyebrow)}</span><h3>${esc(item.label)}</h3><p>${esc(item.desc)}</p></div>
+    <button type="button" class="ghost icon-button" data-template="${esc(item.id)}" ${goCreate ? 'data-go-create="true"' : ''}>${icon('sparkles')}<span>${goCreate ? '用此类型创作' : '选择'}</span></button>
+  </article>`;
 }
 
 function gameCard(game) {
@@ -348,6 +577,13 @@ function genreLabel(game) {
   if (haystack.includes('stealth') || haystack.includes('潜行') || haystack.includes('暗影')) return 'Stealth';
   if (haystack.includes('shooter') || haystack.includes('飞行') || haystack.includes('射击')) return 'Shooter';
   if (haystack.includes('gravity') || haystack.includes('重力')) return 'Gravity';
+  if (haystack.includes('fps') || haystack.includes('靶场') || haystack.includes('目标训练')) return 'FPS';
+  if (haystack.includes('roguelite') || haystack.includes('肉鸽') || haystack.includes('试炼')) return 'Roguelite';
+  if (haystack.includes('tower') || haystack.includes('塔防') || haystack.includes('防线')) return 'Tower';
+  if (haystack.includes('card') || haystack.includes('卡牌') || haystack.includes('手牌')) return 'Card';
+  if (haystack.includes('racing') || haystack.includes('竞速') || haystack.includes('漂移')) return 'Racing';
+  if (haystack.includes('survival') || haystack.includes('生存') || haystack.includes('采集')) return 'Survival';
+  if (haystack.includes('metroidvania') || haystack.includes('探索解锁') || haystack.includes('能力门')) return 'Exploration';
   if (haystack.includes('memory') || haystack.includes('记忆')) return 'Memory';
   if (haystack.includes('reaction') || haystack.includes('反应')) return 'Reaction';
   if (haystack.includes('quiz') || haystack.includes('谜题') || haystack.includes('问答')) return 'Puzzle';
@@ -360,6 +596,13 @@ function coverAssetFor(game) {
   if (haystack.includes('stealth') || haystack.includes('shadow') || haystack.includes('sneak') || haystack.includes('潜行') || haystack.includes('影') || haystack.includes('巡逻') || haystack.includes('警戒')) return COVER_ASSETS.stealth;
   if (haystack.includes('shooter') || haystack.includes('flight') || haystack.includes('bullet') || haystack.includes('shoot') || haystack.includes('射击') || haystack.includes('飞行') || haystack.includes('弹幕') || haystack.includes('星槎')) return COVER_ASSETS.shooter;
   if (haystack.includes('gravity') || haystack.includes('flip') || haystack.includes('重力') || haystack.includes('翻转') || haystack.includes('浮空')) return COVER_ASSETS.gravity;
+  if (haystack.includes('fps') || haystack.includes('靶场') || haystack.includes('目标训练') || haystack.includes('准星')) return COVER_ASSETS.reaction;
+  if (haystack.includes('roguelite') || haystack.includes('肉鸽') || haystack.includes('试炼') || haystack.includes('路线选择')) return COVER_ASSETS.adventure;
+  if (haystack.includes('tower') || haystack.includes('塔防') || haystack.includes('防线') || haystack.includes('玉塔')) return COVER_ASSETS.gravity;
+  if (haystack.includes('card') || haystack.includes('卡牌') || haystack.includes('手牌') || haystack.includes('构筑')) return COVER_ASSETS.memory;
+  if (haystack.includes('racing') || haystack.includes('竞速') || haystack.includes('漂移') || haystack.includes('赛道')) return COVER_ASSETS.shooter;
+  if (haystack.includes('survival') || haystack.includes('生存') || haystack.includes('采集') || haystack.includes('撤离')) return COVER_ASSETS.stealth;
+  if (haystack.includes('metroidvania') || haystack.includes('探索解锁') || haystack.includes('能力门') || haystack.includes('回廊')) return COVER_ASSETS.quiz;
   if (haystack.includes('reaction') || haystack.includes('cinnabar') || haystack.includes('反应') || haystack.includes('朱砂') || haystack.includes('机关')) return COVER_ASSETS.reaction;
   if (haystack.includes('memory') || haystack.includes('jade') || haystack.includes('courtyard') || haystack.includes('记忆') || haystack.includes('玉灯') || haystack.includes('庭院')) return COVER_ASSETS.memory;
   if (haystack.includes('quiz') || haystack.includes('trivia') || haystack.includes('moon') || haystack.includes('问答') || haystack.includes('谜题') || haystack.includes('观星')) return COVER_ASSETS.quiz;
@@ -368,28 +611,32 @@ function coverAssetFor(game) {
 }
 
 function createView() {
+  const selected = currentGameTemplate();
   return html`
     <div class="studio">
       <section class="panel studio-form-panel">
         <div class="eyebrow">AI 创作流水线</div>
         <h2>创作工坊</h2>
+        <div class="template-picker">
+          ${GAME_TYPE_CATALOG.map((item) => `<button type="button" class="${item.id === selected.id ? 'active' : ''}" data-template="${esc(item.id)}"><strong>${esc(item.label)}</strong><span>${esc(item.eyebrow)}</span></button>`).join('')}
+        </div>
         <form id="createForm" class="form-row">
-          <div class="form-row"><label>游戏标题提示</label><input class="input" name="title" value="云岚渡桥：玉灯中继"></div>
-          <div class="form-row"><label>创意提示词</label><textarea name="prompt">创建一个带现代东方美学的横版卷轴游戏。玩家穿过云岚庭院、玉桥和灯阵，收集玉灯能量，避开朱砂机关，并抵达最终闸门，拥有明确胜利状态。</textarea><div class="hint">配置 fighting API 变量后，智能体会请求模型设计 JSON，再构建沙盒 Canvas 产物。</div></div>
+          <div class="form-row"><label>游戏标题提示</label><input class="input" name="title" value="${esc(selected.title)}"></div>
+          <div class="form-row"><label>创意提示词</label><textarea name="prompt">${esc(selected.prompt)}</textarea><div class="hint">配置 fighting API 变量后，智能体会请求模型设计 JSON，再构建沙盒 Canvas 产物。当前方向可覆盖小型 FPS、横版、解谜、节奏、潜行、飞行射击等类型。</div></div>
           <div class="form-row"><label>参考素材</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">文件会带 sha256 元数据保存为对象 key，并关联到生成任务。</div></div>
           <div id="assetList" class="tags">${state.uploadedAssets.map((asset) => `<span class="tag">${esc(asset.filename)}</span>`).join('')}</div>
-          <button class="primary icon-button" type="submit">${icon('sparkles')}<span>生成横版游戏</span></button>
+          <button class="primary icon-button" type="submit">${icon('sparkles')}<span>生成${esc(selected.label)}游戏</span></button>
         </form>
         <div id="createMsg"></div>
       </section>
       <section class="panel studio-preview">
         <div style="position:relative;z-index:1">
           <div class="eyebrow">可玩产物目标</div>
-          <h2>16:9 Canvas 运行时</h2>
-          <p class="summary">生成产物包含键盘控制、横向摄像机、可点亮玉灯、朱砂机关、终点闸门、分数、计时、重开，以及沙盒安全渲染。</p>
-          <div class="tags"><span class="tag">manifest 驱动</span><span class="tag">对象存储</span><span class="tag">iframe 沙盒</span><span class="tag">模型设计日志</span></div>
+          <h2>${esc(selected.label)} · 16:9 Canvas 运行时</h2>
+          <p class="summary">${esc(selected.desc)} 生成产物包含键盘/鼠标交互、分数、计时、重开、胜利/失败反馈，以及沙盒安全渲染。</p>
+          <div class="tags"><span class="tag">manifest 驱动</span><span class="tag">对象存储</span><span class="tag">iframe 沙盒</span><span class="tag">模型设计日志</span><span class="tag">FPS 可扩展</span></div>
         </div>
-        <div class="mock-stage"></div>
+        <div class="mock-stage ${esc(selected.id)}"><span class="reticle"></span><span class="mock-player"></span><span class="mock-hud">Score 1200 · Combo 8</span></div>
       </section>
     </div>`;
 }
@@ -427,7 +674,8 @@ function playFrameContent() {
   if (state.playState.status === 'loading') return '<div class="loader premium-loader"><div class="loader-mark"></div><h2>正在加载高清试玩运行时</h2><p>正在获取 manifest、校验对象存储入口，并挂载沙盒 iframe。资源就绪后会自动呈现可试玩游戏。</p></div>';
   if (state.playState.status === 'failed') return `<div class="loader"><h2>加载失败</h2><p>${esc(state.playState.error)}</p></div>`;
   if (state.playState.status === 'loaded' && state.playState.manifest) {
-    const src = esc(state.playState.manifest.entry);
+    const demoAutoplay = new URLSearchParams(location.search).get('demo') === 'autoplay' || location.hash.includes('demo=autoplay');
+    const src = esc(state.playState.manifest.entry + (demoAutoplay ? '#autoplay' : ''));
     return `<div class="play-status-strip"><span>Manifest verified</span><b>高清 Canvas 已挂载</b><em>点击画面后用 A/D/Space 试玩，R 重开</em></div><iframe class="play-frame" title="游戏运行时" sandbox="allow-scripts" referrerpolicy="no-referrer" src="${src}"></iframe>`;
   }
   return '<div class="loader"><h2>准备加载</h2><p>正在等待选择游戏；进入试玩页时会自动加载第一个已发布游戏。</p></div>';
@@ -459,6 +707,7 @@ function afterRender() {
   document.querySelector('#searchInput')?.addEventListener('keydown', (event) => { if (event.key === 'Enter') doSearch(); });
   document.querySelector('#tagFilter')?.addEventListener('change', async (event) => { state.tag = event.target.value; await loadGames(); render(); afterRender(); });
   document.querySelectorAll('[data-play]').forEach((btn) => btn.addEventListener('click', () => loadPlay(btn.dataset.play)));
+  document.querySelectorAll('[data-template]').forEach((btn) => btn.addEventListener('click', () => selectTemplate(btn.dataset.template, btn.dataset.goCreate === 'true')));
   document.querySelectorAll('[data-publish]').forEach((btn) => btn.addEventListener('click', () => publish(btn.dataset.publish)));
   document.querySelectorAll('[data-task]').forEach((btn) => btn.addEventListener('click', () => openTask(btn.dataset.task)));
   document.querySelectorAll('[data-detail]').forEach((btn) => btn.addEventListener('click', () => showManifest(btn.dataset.detail)));
@@ -466,6 +715,7 @@ function afterRender() {
   wireAuth();
   wireCreate();
   bindMotion();
+  bindScrollDynamics();
   if (state.route === '/play' && state.playState.status === 'idle' && !state.playGame) {
     const gameId = preferredPlayGameId();
     if (gameId) queueMicrotask(() => loadPlay(gameId));
@@ -485,6 +735,15 @@ function afterRender() {
   }
 }
 
+function selectTemplate(templateId, goCreate = false) {
+  if (GAME_TYPE_CATALOG.some((item) => item.id === templateId)) state.selectedTemplate = templateId;
+  if (goCreate) navigate('/create');
+  else {
+    render();
+    afterRender();
+  }
+}
+
 function bindMotion() {
   document.querySelectorAll('.card,.panel,.hero,.hero-panel,.auth-card,.play-frame-wrap').forEach((el, index) => {
     el.style.setProperty('--stagger', `${Math.min(index, 8) * 34}ms`);
@@ -500,6 +759,25 @@ function bindMotion() {
       el.style.removeProperty('--my');
     });
   });
+}
+
+function bindScrollDynamics() {
+  const update = () => {
+    const y = window.scrollY || document.documentElement.scrollTop || 0;
+    document.documentElement.style.setProperty('--scroll-y', `${Math.min(1, y / 900).toFixed(3)}`);
+    document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const visible = rect.top < window.innerHeight * 0.86 && rect.bottom > window.innerHeight * 0.08;
+      el.classList.toggle('is-visible', visible);
+      const progress = Math.max(-1, Math.min(1, (window.innerHeight * 0.5 - rect.top) / window.innerHeight));
+      el.style.setProperty('--section-shift', `${Math.round(progress * 18)}px`);
+    });
+  };
+  update();
+  if (scrollDynamicsBound) return;
+  scrollDynamicsBound = true;
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
 }
 function wireAuth() {
   const form = document.querySelector('#authForm');
@@ -560,7 +838,7 @@ function wireCreate() {
     } catch (error) {
       msg.innerHTML = `<div class="alert error">${esc(error.message)}</div>`;
     } finally {
-      if (submit) { submit.disabled = false; submit.innerHTML = icon('sparkles') + '<span>生成横版游戏</span>'; }
+      if (submit) { submit.disabled = false; submit.innerHTML = icon('sparkles') + '<span>生成' + esc(currentGameTemplate().label) + '游戏</span>'; }
     }
   });
 }
@@ -642,6 +920,6 @@ async function loadPlay(gameId) {
   afterRender();
 }
 
-window.addEventListener('hashchange', () => { state.route = location.hash.replace('#', '') || '/home'; render(); afterRender(); });
+window.addEventListener('hashchange', () => { state.route = location.hash.replace('#', '') || '/intro'; render(); afterRender(); });
 bootstrap();
 

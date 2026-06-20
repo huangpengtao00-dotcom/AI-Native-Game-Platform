@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { join, resolve } from 'node:path';
 
 const appUrl = process.env.DEMO_URL || 'http://127.0.0.1:4173';
+const appBase = appUrl.replace(/\/+$/, '');
 const outDir = resolve(process.argv[2] || 'delivery/media');
 const frameDir = join(outDir, 'frames');
 const viewport = {
@@ -11,16 +12,20 @@ const viewport = {
   height: Number(process.env.DEMO_VIEWPORT_HEIGHT || (process.env.DEMO_4K ? 2160 : 960))
 };
 const screenshotMap = [
-  ['01-home.png', '中文游戏大厅'],
-  ['02-login.png', '登录'],
-  ['03-create.png', '创作工坊'],
-  ['04-tasks.png', '生成任务'],
-  ['05-play.png', '试玩运行时']
+  ['01-intro.png', '作者封面页'],
+  ['02-home.png', '中文游戏大厅'],
+  ['03-types.png', '15 类游戏类型'],
+  ['04-create.png', '创作工坊'],
+  ['05-tasks.png', '生成任务'],
+  ['06-play.png', '试玩运行时']
 ];
+const staleScreenshots = ['01-home.png', '02-login.png', '03-create.png', '04-tasks.png', '05-play.png'];
 
 async function main() {
 await mkdir(outDir, { recursive: true });
 await rm(frameDir, { recursive: true, force: true });
+for (const [file] of screenshotMap) await rm(join(outDir, file), { force: true });
+for (const file of staleScreenshots) await rm(join(outDir, file), { force: true });
 
 const chrome = await findChrome();
 if (!chrome) throw new Error('Chromium/Chrome/Edge executable was not found.');
@@ -52,15 +57,26 @@ try {
   });
 
     try {
-      await page.navigate(`${appUrl}/#/home`);
+      await page.navigate(`${appBase}/?demo=autoplay#/intro`);
+      await page.waitForSelector('.intro-hero');
+      await page.wait(900);
+      await page.screenshot(join(outDir, '01-intro.png'));
+
+      await page.click('[data-nav="/home"]');
       await page.waitForSelector('.hero');
       await page.waitForSelector('.rail');
       await page.wait(900);
-      await page.screenshot(join(outDir, '01-home.png'));
+      await page.screenshot(join(outDir, '02-home.png'));
+
+      await page.evaluate(() => {
+        const section = document.querySelector('.type-section');
+        if (section) window.scrollTo({ top: Math.max(0, section.getBoundingClientRect().top + window.scrollY - 112), behavior: 'instant' });
+      });
+      await page.wait(700);
+      await page.screenshot(join(outDir, '03-types.png'));
 
       await page.click('#showLogin');
       await page.waitForSelector('#authForm');
-      await page.screenshot(join(outDir, '02-login.png'));
       await page.type('input[name="email"]', 'creator@example.com');
       await page.type('input[name="password"]', 'password123');
       await page.click('#authForm button[type="submit"]');
@@ -72,15 +88,15 @@ try {
       await page.evaluate(() => {
         const title = document.querySelector('input[name="title"]');
         const prompt = document.querySelector('textarea[name="prompt"]');
-        if (title) title.value = '信号奔跑：面试中继';
-        if (prompt) prompt.value = '创建一个用于面试评审的高级现代东方横版卷轴游戏。玩家穿过云岚庭院，在玉桥间跳跃，点亮玉灯，避开朱砂机关，并抵达最终闸门，拥有明确胜利状态和可重玩反馈。';
+        if (title) title.value = '玉衡靶场：面试 FPS 原型';
+        if (prompt) prompt.value = '创建一个用于面试评审的小型 FPS 风格 16:9 Canvas 目标训练游戏。玩家移动准星命中玉色目标，避开朱砂干扰，包含计时、分数、连击、胜利状态、重新开始反馈和现代东方浅色高级视觉。';
       });
-      await page.screenshot(join(outDir, '03-create.png'));
+      await page.screenshot(join(outDir, '04-create.png'));
       await page.click('#createForm button[type="submit"]');
       await page.waitForSelector('.table');
       await page.waitForSelector('[data-publish]', 65000);
       await page.wait(900);
-      await page.screenshot(join(outDir, '04-tasks.png'));
+      await page.screenshot(join(outDir, '05-tasks.png'));
 
       await page.evaluate(() => {
         const publish = document.querySelector('[data-publish]');
@@ -94,9 +110,7 @@ try {
       await page.waitForSelector('.play-frame-wrap');
       await page.waitForSelector('.play-frame');
       await page.wait(1800);
-      await page.clickCenter('.play-frame');
-      await page.wait(1200);
-      await page.screenshot(join(outDir, '05-play.png'));
+      await page.screenshot(join(outDir, '06-play.png'));
       await page.wait(1600);
 
     } finally {
@@ -274,6 +288,28 @@ class CdpPage {
     await this.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
     await this.wait(350);
   }
+
+  async clickRelative(selector, xRatio = 0.5, yRatio = 0.5) {
+    const box = await this.evaluate((sel, xr, yr) => {
+      const el = document.querySelector(sel);
+      if (!el) throw new Error(`Missing clickable ${sel}`);
+      const rect = el.getBoundingClientRect();
+      return { x: rect.left + rect.width * xr, y: rect.top + rect.height * yr };
+    }, selector, xRatio, yRatio);
+    await this.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await this.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await this.wait(350);
+  }
+
+  async key(key, holdMs = 80) {
+    const windowsKeyCode = key === ' ' ? 32 : key.toUpperCase().charCodeAt(0);
+    const code = key === ' ' ? 'Space' : `Key${key.toUpperCase()}`;
+    const text = key === ' ' ? ' ' : key;
+    await this.send('Input.dispatchKeyEvent', { type: 'keyDown', key, code, windowsVirtualKeyCode: windowsKeyCode, nativeVirtualKeyCode: windowsKeyCode, text });
+    await this.wait(holdMs);
+    await this.send('Input.dispatchKeyEvent', { type: 'keyUp', key, code, windowsVirtualKeyCode: windowsKeyCode, nativeVirtualKeyCode: windowsKeyCode });
+  }
+
   async screenshot(path, options = {}) {
     const params = options.format === 'jpeg'
       ? { format: 'jpeg', quality: options.quality || 88, fromSurface: true }

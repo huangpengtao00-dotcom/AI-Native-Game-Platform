@@ -19,7 +19,7 @@ https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform
 - 工程化后端：Node.js 原生 HTTP、Node 24 `node:sqlite`、SQLite、对象存储适配层、任务日志、审计事件、manifest 合约。
 - 安全边界：HttpOnly SameSite Cookie、CSRF、上传类型限制、对象 key 清洗、CSP、iframe sandbox、提示词注入筛查。
 - AI 接入边界：默认本地确定性 Agent 可离线运行，也支持 OpenAI 兼容模型供应商生成设计 JSON。
-- 展示完整度：内置多风格游戏模板和精修封面，覆盖冒险、记忆、反应、谜题、节奏、潜行、飞行射击、重力平台等风格。
+- 展示完整度：新版浅色高级前端包含 Opall / 黄澎涛 作者封面页、Steam 式 15 类游戏类型橱窗，以及 15 个通过网站 Create-flow 预生产的可试玩游戏。
 
 本地运行方式：
 
@@ -47,7 +47,7 @@ npm.cmd run package:delivery
 交付证据：
 
 - `INTERVIEW_SUBMISSION.md`：提交说明与检查入口
-- `delivery/media/`：演示截图与 walkthrough 视频
+- `delivery/media/`：作者封面、大厅、15 类型橱窗、创作、任务、试玩截图与 walkthrough 视频
 - `docs/delivery.md`：交付清单
 - `docs/system-design.md`：系统设计
 - `docs/security.md`：安全设计

@@ -52,13 +52,14 @@ npm.cmd run package:delivery
 
 - Video: `delivery/media/demo-walkthrough.webm`
 - Screenshots:
-  - `delivery/media/01-home.png`
-  - `delivery/media/02-login.png`
-  - `delivery/media/03-create.png`
-  - `delivery/media/04-tasks.png`
-  - `delivery/media/05-play.png`
+  - `delivery/media/01-intro.png`
+  - `delivery/media/02-home.png`
+  - `delivery/media/03-types.png`
+  - `delivery/media/04-create.png`
+  - `delivery/media/05-tasks.png`
+  - `delivery/media/06-play.png`
 
-The media was generated from the real local browser flow against the running app. The optional fighting Responses provider was smoke-tested through `npm.cmd run smoke:model` without committing any API key.
+The media was generated from the real local browser flow against the running app, including the Opall / 黄澎涛 author intro page and the 15-type game browse section. The optional fighting Responses provider was smoke-tested through `npm.cmd run smoke:model` without committing any API key.
 
 ## Submission Boundary
 

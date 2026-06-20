@@ -14,7 +14,7 @@ The test starts the server on an ephemeral port and verifies:
 - Health endpoint works.
 - Readiness endpoint confirms database and object storage access.
 - Every API response includes `X-Request-Id`.
-- Seed creates at least three published games.
+- Seed creates at least 15 published games, all with website-generation style `create-agent` task evidence.
 - Unauthenticated task access returns 401.
 - Registration creates a creator session and CSRF token.
 - Authenticated mutating requests without CSRF return 403.
@@ -67,13 +67,14 @@ Additional audit hardening added after review:
 
 ## Delivery Media Verification - 2026-06-20
 
-Generated final visual evidence under `delivery/media/`:
+Generated final visual evidence under `delivery/media/` from the refreshed light premium UI:
 
-- `01-home.png`
-- `02-login.png`
-- `03-create.png`
-- `04-tasks.png`
-- `05-play.png`
+- `01-intro.png`
+- `02-home.png`
+- `03-types.png`
+- `04-create.png`
+- `05-tasks.png`
+- `06-play.png`
 - `demo-walkthrough.webm`
 
 The screenshots were captured from the real local browser flow. The video was assembled from those captured screenshots to keep the interview package reproducible without external video tooling.

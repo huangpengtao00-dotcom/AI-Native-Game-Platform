@@ -1,4 +1,4 @@
-import { buildGameArtifact } from './agent.mjs';
+import { DEMO_GAME_BLUEPRINTS, buildDesign, buildGameArtifact } from './agent.mjs';
 import { nowIso } from './util.mjs';
 
 export async function seedDemoData({ store, storage, config }) {
@@ -11,31 +11,21 @@ export async function seedDemoData({ store, storage, config }) {
   refreshDemoAccountNames(store);
   const creator = store.getUserByEmail('creator@example.com');
   const existing = store.listGames({ status: '' });
-  const hasCreatePublished = existing.some((game) => game.origin === 'create-agent' && game.status === 'published');
-
-  const targetPublishedGames = 8;
-  const seedPrompts = [
-    '创建一个记忆主题横版挑战：迷路机关偶正在修复云岚庭院，玩家需要点亮玉灯并抵达出口。',
-    '制作一个反应横版游戏：玩家需要在倒计时结束前稳定朱砂机关阵，点亮玉灯并抵达终点闸门。',
-    '设计一个节奏横版动作游戏：玩家跟随霓虹乐谱跳跃，踩准节拍收集音符玉灯，并保持连击。',
-    '制作一个潜行横版游戏：玩家穿过影戏长廊，躲避巡逻灯、暗影机关和警戒门。',
-    '创建一个飞行射击横版游戏：星槎穿过云海弹幕，收集能量核心并冲入终点星门。',
-    '设计一个重力翻转平台游戏：玩家在浮空石阶之间切换重力，避开机关并解开终点门。',
-    '制作一个谜题问答横版游戏：玩家在月相观星台选择正确机关路径，回答谜题后点亮星盘出口。'
-  ];
-  const createPrompt = '制作一个互动横版冒险：智能体探索漂浮档案馆，并通过创作流程发布到游戏大厅。';
-
-  for (const prompt of seedPrompts.slice(0, Math.max(0, targetPublishedGames - existing.length - (hasCreatePublished ? 0 : 1)))) {
-    await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'seed' });
-  }
-
-  if (!hasCreatePublished) {
-    await createPublishedCreateFlowGame({ store, storage, config, creator, prompt: createPrompt });
+  const existingTitles = new Set(existing.map((game) => game.title));
+  for (const blueprint of DEMO_GAME_BLUEPRINTS) {
+    if (existingTitles.has(blueprint.title)) continue;
+    await createPublishedCreateFlowGame({ store, storage, config, creator, blueprint });
+    existingTitles.add(blueprint.title);
   }
 
   await ensureLocalizedDemoGame({ store, storage, config, creator });
 
-  store.audit({ actorId: creator.id, type: 'seed.completed', message: 'Seeded demo accounts, published games, and one Create-flow published game.', meta: { minimumGames: 3, createFlowGame: true } });
+  store.audit({
+    actorId: creator.id,
+    type: 'seed.completed',
+    message: 'Seeded demo accounts and 15 website-generation style published games.',
+    meta: { minimumGames: 15, createFlowGames: DEMO_GAME_BLUEPRINTS.length }
+  });
 }
 
 function refreshDemoAccountNames(store) {
@@ -77,13 +67,39 @@ async function createPublishedSeedGame({ store, storage, config, creator, prompt
   });
 }
 
-async function createPublishedCreateFlowGame({ store, storage, config, creator, prompt }) {
-  const task = store.createTask({ userId: creator.id, title: '种子创作流程冒险', prompt });
-  store.addLog({ taskId: task.id, level: 'info', step: 'queued', message: '种子创作任务已排队，用于演示完整生成循环。' });
-  store.addLog({ taskId: task.id, level: 'info', step: 'intent-analysis', message: '已解析创作者意图，并选择横版冒险类型。', meta: { seeded: true } });
-  store.addLog({ taskId: task.id, level: 'info', step: 'artifact-build', message: '已将 bundle 与 manifest 生成到对象存储。', meta: { storage: 'LocalObjectStorage' } });
+async function createPublishedCreateFlowGame({ store, storage, config, creator, blueprint }) {
+  const design = buildDesign(blueprint.prompt, { genre: blueprint.genre, title: blueprint.title });
+  const task = store.createTask({ userId: creator.id, title: blueprint.title, prompt: blueprint.prompt });
+  store.addLog({ taskId: task.id, level: 'info', step: 'queued', message: '网站创作请求已提交，用于预生产面试演示游戏。', meta: { seeded: true, source: 'website-create-flow' } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'intent-analysis', message: `已解析创作者意图，并选择 ${blueprint.genre} 类型。`, meta: { genre: blueprint.genre } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'model-design', message: '已生成标准化游戏设计方案，等待构建可玩产物。', meta: { title: design.title, tags: design.tags } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'artifact-build', message: '已将 bundle 与 manifest 生成到对象存储。', meta: { storage: 'LocalObjectStorage', runtime: 'sandboxed-html-v1' } });
 
-  const game = await createPublishedSeedGame({ store, storage, config, creator, prompt, origin: 'create-agent' });
+  const artifact = await buildGameArtifact({
+    storage,
+    prompt: blueprint.prompt,
+    authorName: creator.name,
+    modelProvider: config.modelProvider,
+    assets: [],
+    preferredStatus: 'published',
+    designOverride: design,
+    modelMeta: { name: config.modelName || null, usedExternalModel: false, fallbackUsed: false }
+  });
+  const game = store.createGameWithVersion({
+    title: artifact.design.title,
+    summary: artifact.design.summary,
+    tags: artifact.design.tags,
+    authorId: creator.id,
+    authorName: creator.name,
+    origin: 'create-agent',
+    status: 'published',
+    prompt: blueprint.prompt,
+    manifestKey: artifact.manifestKey,
+    bundleKey: artifact.bundleKey,
+    assetKeys: artifact.assetKeys,
+    modelProvider: config.modelProvider,
+    coverGradient: artifact.coverGradient
+  });
   store.updateTask(task.id, {
     status: 'succeeded',
     currentStep: 'ready-to-preview',
@@ -92,7 +108,7 @@ async function createPublishedCreateFlowGame({ store, storage, config, creator, 
     artifactManifestKey: game.manifest_key,
     completedAt: nowIso()
   });
-  store.addLog({ taskId: task.id, level: 'info', step: 'published', message: '种子创作流程游戏已发布，并可在首页看到。', meta: { gameId: game.id } });
-  store.audit({ actorId: creator.id, type: 'seed.create_flow_game', message: `Seeded published Create-flow game ${game.title}`, meta: { gameId: game.id, taskId: task.id } });
+  store.addLog({ taskId: task.id, level: 'info', step: 'published', message: '网站生成风格游戏已发布，并可在大厅直接试玩。', meta: { gameId: game.id, genre: blueprint.genre } });
+  store.audit({ actorId: creator.id, type: 'seed.create_flow_game', message: `Seeded website-generation game ${game.title}`, meta: { gameId: game.id, taskId: task.id, genre: blueprint.genre } });
   return game;
 }
