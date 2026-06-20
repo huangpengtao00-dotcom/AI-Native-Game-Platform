@@ -84,6 +84,7 @@ The target machine has Node 24 and Git, but no Docker. A zero-dependency Node im
 - `docs/prd-alignment.md`: product roles and page acceptance mapped to implementation
 - `docs/verification.md`: automated and manual validation evidence
 - `docs/strict-requirements-audit.md`: screenshot-requirement compliance matrix
+- `docs/godot-mcp-extension.md`: researched Godot MCP adapter decision and future integration path
 - `docs/api-contract.md`: API behavior, auth, errors, and status codes
 - `docs/ops-runbook.md`: startup, health checks, model smoke test, and packaging
 - `docs/risk-register.md`: enterprise risk controls and production follow-ups

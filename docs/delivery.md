@@ -1,4 +1,4 @@
-﻿# Delivery Checklist
+# Delivery Checklist
 
 ## Required Items
 
@@ -12,6 +12,7 @@
 | System design docs | Done | `docs/system-design.md`, `docs/data-model.md`, `docs/agent-workflow.md`, `docs/artifact-protocol.md`, `docs/security.md`, and `docs/completion.md`. |
 | Technical stack | Done | Node native HTTP, Node 24 `node:sqlite`, SQLite, local object storage adapter, vanilla HTML/CSS/JS, deterministic Agent harness, optional OpenAI-compatible Responses provider, sandboxed iframe runtime. |
 | Completion statement | Done | `docs/completion.md` lists completed, mocked/local-by-design, and one-week iteration items. |
+| Godot MCP decision | Done | `docs/godot-mcp-extension.md` records researched MCP options, why they are not in the current zero-install delivery, and how to add a future optional adapter. |
 
 ## Optional Evidence
 
@@ -29,6 +30,3 @@
 - Agent process is not fixed fake data only: `AgentOrchestrator` has explicit steps, persisted logs, model-provider metadata, and documented replacement points for real model providers or Agent harnesses.
 - README is enough to reproduce the core path: clone, run `npm.cmd start`, log in, Create, watch Tasks, publish, return Home, and Play.
 - Enterprise handoff is reproducible: `npm.cmd run package:delivery` rebuilds the ZIP with runtime/secrets excluded, and `docs/ops-runbook.md` plus `docs/risk-register.md` document operational boundaries.
-
-
-

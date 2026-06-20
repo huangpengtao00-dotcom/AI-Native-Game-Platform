@@ -53,6 +53,11 @@ flowchart LR
 
 - Replace `LocalObjectStorage` with S3/OSS-compatible adapter.
 - Replace local Agent harness with model/tool orchestration.
+- Add optional Godot MCP adapter as a secondary generator/export path while keeping HTML Canvas bundles as the default zero-install runtime.
 - Add job queue durability using Redis/BullMQ or database polling.
 - Add OAuth provider exchanges and CSRF state validation.
 - Add Postgres migrations and row-level authorization tests.
+
+## Extension Decision
+
+Godot MCP is intentionally not part of the current default runtime. The platform is web-native and manifest-driven, so the reliable path is prompt -> Agent task -> generated HTML bundle -> object storage -> sandboxed Play iframe. A future Godot adapter can sit behind the same Agent and object-storage contracts, but it should remain optional because it adds Godot installation, export-template, WebAssembly/WebGL, and hosting-header requirements. See `docs/godot-mcp-extension.md`.

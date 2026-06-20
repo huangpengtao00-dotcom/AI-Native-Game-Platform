@@ -22,6 +22,7 @@
 - OAuth provider exchange is demo mode.
 - Agent generation is deterministic local harness, not a paid model call.
 - Object storage is local adapter compatible with future S3/OSS migration.
+- Godot MCP is researched and documented as a future optional adapter, not required for the default interview demo.
 
 ## One-Week Iteration Plan
 
@@ -31,3 +32,4 @@
 4. Origin/Referer validation and gateway-level rate limiting.
 5. Admin moderation for unsafe games.
 6. More game templates and version remixing.
+7. Optional Godot MCP export adapter after local Godot/export-template prerequisites are controlled.
