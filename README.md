@@ -1,4 +1,4 @@
-# ForgePlay Agent Platform
+﻿# ForgePlay Agent Platform
 
 AI Native interactive game platform MVP for the AI Agent full-stack system design test.
 
@@ -14,7 +14,7 @@ The project implements a complete business loop:
 1. Player discovers published games on Home.
 2. Creator registers or logs in.
 3. Creator uploads reference material and submits a natural-language idea.
-4. Local Agent Orchestrator creates an async generation task.
+4. Agent Orchestrator creates an async generation task, optionally calling an OpenAI-compatible Responses provider.
 5. The task emits readable logs, creates a portable HTML game bundle, writes a manifest and bundle into object storage, and persists metadata in SQLite.
 6. Creator previews and publishes.
 7. Published game appears on Home and Play dynamically loads the manifest and remote bundle into a sandboxed iframe.
@@ -38,7 +38,11 @@ Run verification:
 ```bash
 npm.cmd test
 npm.cmd run audit:local
+npm.cmd run smoke:model
+npm.cmd run package:delivery
 ```
+
+`smoke:model` skips safely unless model environment variables are configured.
 
 ## Interview Package
 
@@ -53,13 +57,14 @@ For strict screenshot-requirement mapping, see `docs/strict-requirements-audit.m
 - Local object storage adapter under `storage/objects`
 - Vanilla HTML/CSS/JS frontend
 - Sandboxed iframe Play runtime
+- Optional OpenAI-compatible model provider, including Responses API private providers
 
 ## Why This Architecture
 
 The target machine has Node 24 and Git, but no Docker. A zero-dependency Node implementation reduces install risk and makes the demo reproducible under a short delivery window. The code still keeps clear migration boundaries:
 
 - `LocalObjectStorage` can be replaced by S3/OSS.
-- `AgentOrchestrator` can be replaced by OpenAI, LangGraph, OpenClaw, Hermes, Pi Agent, or another harness.
+- `AgentOrchestrator` can use the local deterministic harness or an OpenAI-compatible model design step.
 - SQLite can be migrated to Postgres through the data access layer.
 - The Play page consumes a manifest contract instead of hardcoded local components.
 
@@ -69,15 +74,20 @@ The target machine has Node 24 and Git, but no Docker. A zero-dependency Node im
 - `src/http.mjs`: routing, auth endpoints, API, static/object serving
 - `src/db.mjs`: schema and data access
 - `src/agent.mjs`: async generation workflow and bundle builder
+- `src/model-provider.mjs`: optional OpenAI-compatible provider adapter
 - `src/storage.mjs`: object storage adapter
 - `public/app.js`: frontend app workflow
 - `tests/run-tests.mjs`: end-to-end API test
+- `tests/model-provider.test.mjs`: provider contract tests
+- `scripts/package-delivery.mjs`: reproducible ZIP packaging
 - `docs/delivery.md`: checklist mapped to required submission items
 - `docs/prd-alignment.md`: product roles and page acceptance mapped to implementation
 - `docs/verification.md`: automated and manual validation evidence
 - `docs/strict-requirements-audit.md`: screenshot-requirement compliance matrix
+- `docs/api-contract.md`: API behavior, auth, errors, and status codes
+- `docs/ops-runbook.md`: startup, health checks, model smoke test, and packaging
+- `docs/risk-register.md`: enterprise risk controls and production follow-ups
 - `docs/ai-collaboration.md`: AI assistance, review, test, and human-fix record
-- `docs/`: system design and delivery evidence
 
 ## Environment Variables
 
@@ -91,4 +101,4 @@ All project-created runtime files are inside this directory:
 - Object storage: `storage/objects`
 - Source/docs/tests: this project folder
 
-The app does not require global installs, system setting changes, Docker, or external services for the MVP.
+The app does not require global installs, system setting changes, Docker, or external services for the default MVP.

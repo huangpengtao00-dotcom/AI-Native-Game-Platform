@@ -1,4 +1,4 @@
-import http from 'node:http';
+﻿import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { AgentOrchestrator } from './agent.mjs';
@@ -323,6 +323,7 @@ export async function createRuntime(overrides = {}) {
   }
 
   async function serveStatic(req, res, url) {
+    if (url.pathname === '/favicon.ico') return send(res, 204, '');
     if (url.pathname.startsWith('/objects/')) {
       const key = decodeUrlPath(url.pathname.slice('/objects/'.length));
       const filePath = storage.resolve(key);
@@ -341,7 +342,7 @@ export async function createRuntime(overrides = {}) {
     return send(res, 200, body, {
       'Content-Type': contentTypeFor(filePath),
       'Cache-Control': filePath.endsWith('index.html') ? 'no-store' : 'public, max-age=60',
-      'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+      'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
     });
   }
 
@@ -372,3 +373,4 @@ export async function createRuntime(overrides = {}) {
     close: () => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
   };
 }
+

@@ -1,4 +1,4 @@
-# Strict Requirements Audit
+﻿# Strict Requirements Audit
 
 This audit maps the screenshot requirements to concrete project evidence.
 
@@ -48,7 +48,7 @@ This audit maps the screenshot requirements to concrete project evidence.
 | Ordinary CRUD only, no Create Agent chain. | Avoided | Async task, Agent workflow, persisted logs, generated artifact and manifest. |
 | Play only runs local hardcoded components. | Avoided | Manifest API + object storage iframe loading. |
 | Object storage replaced by local file management with no migration boundary. | Avoided | `LocalObjectStorage` adapter, object keys, `docs/artifact-protocol.md` migration path. |
-| AI generation is fixed fake data with no extension path. | Avoided | `AgentOrchestrator` has replaceable task/log/artifact contract and documented provider upgrade path. |
+| AI generation is fixed fake data with no extension path. | Avoided | `AgentOrchestrator` has replaceable task/log/artifact contract, optional OpenAI-compatible Responses provider integration, and documented provider fallback path. |
 | Missing README/startup/reproducibility. | Avoided | README, `.env.example`, tests, ZIP package, local audit command. |
 
 ## Engineering Design Reference
@@ -57,14 +57,18 @@ This audit maps the screenshot requirements to concrete project evidence.
 | --- | --- | --- |
 | Overall architecture: frontend, backend, async task, Agent Orchestrator, database, object storage, runtime isolation. | Pass | `docs/system-design.md`, `src/http.mjs`, `src/agent.mjs`, `src/storage.mjs`, `public/app.js`. |
 | Data model: users, games, versions, assets, generation tasks, Agent logs, publish state. | Pass | `docs/data-model.md`, `src/db.mjs`. |
-| Agent orchestration: harness choice and replacement path. | Pass | `docs/agent-workflow.md`, `AgentOrchestrator` in `src/agent.mjs`. |
+| Agent orchestration: harness choice and replacement path. | Pass | `docs/agent-workflow.md`, `src/agent.mjs`, `src/model-provider.mjs`, `tests/model-provider.test.mjs`, `npm.cmd run smoke:model`. |
 | Remote artifact protocol: manifest/bundle structure delivered to Play. | Pass | `docs/artifact-protocol.md`, `buildGameArtifact()` manifest generation, `/objects/` serving. |
 | Security isolation: uploaded material, prompt injection, generated code execution, secret protection, resource limits. | Pass | `docs/security.md`, `src/security.mjs`, upload allowlist, CSP, sandboxed iframe, `.env.example` without secrets. |
-| Failure recovery: model/build/upload/publish/load failures. | Pass | Task `failed` state and error logs, structured API errors, Play failed state, readiness endpoint, completion plan for production retries. |
+| Failure recovery: model/build/upload/publish/load failures. | Pass | External model failures log a warning and fall back to deterministic design; task `failed` state and error logs, structured API errors, Play failed state, readiness endpoint, and risk register cover production retries. |
 | Observability: generation process, Agent input/output, user actions, errors, and demo evidence. | Pass | `agent_logs`, `audit_events`, structured request logs, `X-Request-Id`, `docs/verification.md`, `delivery/media/`. |
 
 ## Final Verification
 
 - `npm.cmd run audit:local`: passed on 2026-06-20.
+- `npm.cmd run smoke:model`: passed against the configured fighting Responses provider on 2026-06-20, with the API key supplied only through the process environment.
 - ZIP package excludes `.git/`, `data/`, `storage/objects/`, `node_modules/`, `.env`, and `output/`.
 - Latest GitHub commit after this audit should include this file and the fresh-seed Create-flow fix.
+
+
+

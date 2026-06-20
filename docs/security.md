@@ -17,12 +17,14 @@
 - Request IDs on every response plus structured rejection/error logs.
 - `/api/health` and `/api/ready` endpoints for liveness/readiness checks.
 - Prompt-injection-like phrase detection in the Agent safety step.
+- Optional model provider credentials are read from `MODEL_API_KEY` only and are not stored in source, generated manifests, logs, screenshots, or the delivery package.
 - Audit events for auth, uploads, generation, publishing, and seed.
 
 ## Known MVP Limits
 
 - Demo OAuth does not perform real provider token exchange.
 - Generated HTML is deterministic and simple; real model output would need static analysis, allowlist packaging, and possibly SES/Web Worker isolation.
+- The optional OpenAI-compatible provider step currently requests a design JSON only; it does not execute model-generated code directly.
 - Local object storage is process-local; production should use object-store policies, signed URLs, or an isolated artifact domain.
 - App-level fixed-window rate limiting is suitable for the internship MVP; public production deployments should add a gateway or WAF layer.
 

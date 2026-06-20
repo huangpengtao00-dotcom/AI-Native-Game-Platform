@@ -1,4 +1,4 @@
-const app = document.querySelector('#app');
+﻿const app = document.querySelector('#app');
 const state = {
   user: null,
   csrfToken: null,
@@ -98,11 +98,11 @@ async function loadTasks() {
 
 function routeTitle() {
   const map = {
-    '/home': ['Published games', 'Browse playable artifacts backed by database metadata.'],
-    '/create': ['Create agent', 'Generate a playable bundle from prompt and uploaded material.'],
-    '/tasks': ['Generation tasks', 'Inspect Agent progress, logs, failures, and publish state.'],
-    '/play': ['Play runtime', 'Manifest-driven iframe loader with sandboxed game execution.'],
-    '/docs': ['Delivery notes', 'Architecture, boundaries, and verification summary.']
+    '/home': ['Game Hall', 'AI-generated side-scrollers, published from object storage.'],
+    '/create': ['Create Studio', 'Design, generate, inspect, and publish a playable side-scroller.'],
+    '/tasks': ['Agent Console', 'Review model-design, build logs, artifact persistence, and publish state.'],
+    '/play': ['Play Runtime', 'Sandboxed 16:9 object runtime with manifest loading.'],
+    '/docs': ['Delivery System', 'Architecture, operations, risk, and verification evidence.']
   };
   return map[state.route] || map['/home'];
 }
@@ -172,12 +172,34 @@ function render() {
 
 function homeView() {
   const tags = [...new Set(state.games.flatMap((game) => game.tags || []))].sort();
+  const featured = state.games[0];
+  const heroCover = featured ? coverAssetFor(featured) : '';
+  const heroStyle = heroCover ? `--hero-cover:url('${heroCover}')` : '';
   return html`
+    <section class="hero" style="${heroStyle}">
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow">ForgePlay Studio · AI Native Game Platform</div>
+          <h1>Generate Side-Scrolling Games With AI Agents</h1>
+          <p class="hero-copy">Prompt a game idea, let the Agent design and build a portable HTML artifact, publish it to the database-backed hall, then play it from object storage inside a sandboxed runtime.</p>
+          <div class="actions"><button class="primary" data-nav="/create">Create Game</button>${featured ? `<button class="secondary" data-play="${esc(featured.id)}">Play Featured</button>` : ''}<button class="ghost" data-nav="/docs">Review Architecture</button></div>
+        </div>
+        <aside class="hero-panel">
+          <div class="eyebrow">Runtime stack</div>
+          <div class="status-grid">
+            <div class="status-cell"><strong>${state.games.length}</strong><span>published</span></div>
+            <div class="status-cell"><strong>16:9</strong><span>side-scroll</span></div>
+            <div class="status-cell"><strong>API</strong><span>fighting ready</span></div>
+          </div>
+          <p class="summary">Every Play session fetches a manifest, mounts <span class="kbd">/objects/.../bundle.html</span>, and keeps generated code isolated in an iframe sandbox.</p>
+        </aside>
+      </div>
+    </section>
     <div class="toolbar">
-      <div class="searchbar"><input class="input" id="searchInput" placeholder="Search title, tag, summary" value="${esc(state.query)}"><button class="secondary" id="searchBtn">Search</button></div>
+      <div class="searchbar"><input class="input" id="searchInput" placeholder="Search games, genres, tags" value="${esc(state.query)}"><button class="secondary" id="searchBtn">Search</button></div>
       <select id="tagFilter" style="max-width:220px"><option value="">All tags</option>${tags.map((tag) => `<option ${state.tag === tag ? 'selected' : ''} value="${esc(tag)}">${esc(tag)}</option>`).join('')}</select>
     </div>
-    ${state.games.length ? `<div class="grid">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">No published games match the current filter.</div>'}`;
+    ${state.games.length ? `<div class="rail">${state.games.map(gameCard).join('')}</div>` : '<div class="empty">No published games match the current filter.</div>'}`;
 }
 
 function gameCard(game) {
@@ -208,27 +230,27 @@ function coverAssetFor(game) {
 
 function createView() {
   return html`
-    <div class="split">
+    <div class="studio">
       <section class="panel">
-        <h2>Creator input</h2>
+        <div class="eyebrow">AI Creation Pipeline</div>
+        <h2>Create Studio</h2>
         <form id="createForm" class="form-row">
-          <div class="form-row"><label>Game title hint</label><input class="input" name="title" value="Neon Archive Sprint"></div>
-          <div class="form-row"><label>Creative prompt</label><textarea name="prompt">Create an interactive adventure where a player repairs a floating archive with memory puzzles, a clear win state, and a short replay loop.</textarea><div class="hint">The local agent turns this into a portable HTML bundle plus manifest.</div></div>
-          <div class="form-row"><label>Upload reference material</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">Uploads are stored under object storage, linked by key and sha256.</div></div>
+          <div class="form-row"><label>Game title hint</label><input class="input" name="title" value="Signal Run: Neon Relay"></div>
+          <div class="form-row"><label>Creative prompt</label><textarea name="prompt">Create a premium horizontal side-scrolling arcade game. The player repairs a neon relay, jumps across platforms, collects energy cores, avoids hazards, and reaches a final gate with a clear win state.</textarea><div class="hint">The Agent requests model design JSON when fighting API variables are configured, then builds a sandboxed Canvas artifact.</div></div>
+          <div class="form-row"><label>Reference material</label><input class="input" id="assetInput" type="file" multiple accept="image/*,video/*,.txt,.json,.pdf"><div class="hint">Files are stored as object keys with sha256 metadata and linked to the generation task.</div></div>
           <div id="assetList" class="tags">${state.uploadedAssets.map((asset) => `<span class="tag">${esc(asset.filename)}</span>`).join('')}</div>
-          <button class="primary" type="submit">Generate playable game</button>
+          <button class="primary" type="submit">Generate Side-Scroller</button>
         </form>
         <div id="createMsg"></div>
       </section>
-      <section class="panel">
-        <h2>Expected Agent chain</h2>
-        <table class="table"><tbody>
-          <tr><th>1</th><td>Intent analysis and genre selection.</td></tr>
-          <tr><th>2</th><td>Safety screen for prompt injection and unsafe file execution.</td></tr>
-          <tr><th>3</th><td>Bundle and manifest generation into object storage.</td></tr>
-          <tr><th>4</th><td>Database persistence for task, version, game meta, logs.</td></tr>
-          <tr><th>5</th><td>Preview, then publish to Home.</td></tr>
-        </tbody></table>
+      <section class="panel studio-preview">
+        <div style="position:relative;z-index:1">
+          <div class="eyebrow">Playable output target</div>
+          <h2>16:9 Canvas Runtime</h2>
+          <p class="summary">The generated artifact includes keyboard controls, side-scrolling camera, collectible cores, hazards, a relay gate, score, timer, restart, and sandbox-safe rendering.</p>
+          <div class="tags"><span class="tag">manifest-driven</span><span class="tag">object storage</span><span class="tag">iframe sandbox</span><span class="tag">model-design logs</span></div>
+        </div>
+        <div class="mock-stage"></div>
       </section>
     </div>`;
 }
@@ -251,7 +273,7 @@ function taskDetail(task) {
 function playView() {
   const game = state.playGame || state.games[0];
   return html`<div class="play-layout">
-    <section class="panel"><div class="toolbar"><div><h2>${esc(game?.title || 'Select a game')}</h2><div class="hint">${game ? `Manifest: ${esc(game.manifestUrl)}` : 'Choose a published game from Home.'}</div></div><div class="actions"><button class="ghost" id="backHome">Back home</button>${game ? `<button class="secondary" data-play="${esc(game.id)}">Reload manifest</button>` : ''}</div></div></section>
+    <section class="panel"><div class="toolbar"><div><div class="eyebrow">Sandboxed object runtime</div><h2>${esc(game?.title || 'Select a game')}</h2><div class="hint">${game ? `Manifest: ${esc(game.manifestUrl || 'loaded through API')}` : 'Choose a published game from Game Hall.'}</div></div><div class="actions"><button class="ghost" id="backHome">Game Hall</button>${game ? `<button class="secondary" data-play="${esc(game.id)}">Reload Runtime</button>` : ''}</div></div></section>
     <section class="play-frame-wrap" id="playWrap">${playFrameContent()}</section>
   </div>`;
 }
@@ -267,12 +289,12 @@ function playFrameContent() {
 }
 
 function docsView() {
-  return html`<section class="panel"><h2>Delivery boundary</h2><p class="summary">This MVP stores all runtime files inside the project folder: SQLite in <span class="kbd">data/</span>, object artifacts in <span class="kbd">storage/objects</span>, and docs in <span class="kbd">docs/</span>. The product path covers register/login, Create generation, preview, publish, Home discovery, and Play dynamic loading.</p></section>
+  return html`<section class="panel"><div class="eyebrow">Engineering delivery</div><h2>Submission Boundary</h2><p class="summary">Runtime state stays inside the project folder: SQLite in <span class="kbd">data/</span>, object artifacts in <span class="kbd">storage/objects</span>, and delivery evidence in <span class="kbd">docs/</span>. The app does not require Docker or global installs for the default demo.</p></section>
   <section class="panel"><h2>Reviewer checklist</h2><table class="table"><tbody>
-    <tr><th>Architecture</th><td>Frontend, backend, async task runner, database, and storage adapter are separated.</td></tr>
-    <tr><th>Security</th><td>HttpOnly SameSite cookies, upload limits, sanitized object keys, sandbox iframe, CSP, and prompt-injection screen.</td></tr>
-    <tr><th>Observability</th><td>Task states, Agent logs, audit events, health endpoint, and verification docs.</td></tr>
-    <tr><th>Extensibility</th><td>ObjectStorage and AgentOrchestrator boundaries support S3/OSS and real model providers later.</td></tr>
+    <tr><th>Product</th><td>Game Hall, Create Studio, Agent Console, and Play Runtime are organized as a product workflow.</td></tr>
+    <tr><th>Game runtime</th><td>Generated bundles are playable 16:9 Canvas side-scrollers loaded by manifest from object storage.</td></tr>
+    <tr><th>Security</th><td>HttpOnly SameSite cookies, CSRF, upload limits, sanitized object keys, sandbox iframe, CSP, and prompt-injection screening.</td></tr>
+    <tr><th>Enterprise</th><td>Provider contract tests, local audit, API smoke test, CI workflow, operations runbook, and risk register.</td></tr>
   </tbody></table></section>`;
 }
 
@@ -428,3 +450,4 @@ async function loadPlay(gameId) {
 
 window.addEventListener('hashchange', () => { state.route = location.hash.replace('#', '') || '/home'; render(); afterRender(); });
 bootstrap();
+

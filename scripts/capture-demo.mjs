@@ -18,7 +18,6 @@ const screenshotMap = [
 async function main() {
 await mkdir(outDir, { recursive: true });
 await rm(frameDir, { recursive: true, force: true });
-await mkdir(frameDir, { recursive: true });
 
 const chrome = await findChrome();
 if (!chrome) throw new Error('Chromium/Chrome/Edge executable was not found.');
@@ -49,11 +48,10 @@ try {
     mobile: false
   });
 
-    const recorder = new Recorder(page, frameDir);
-    await recorder.start();
     try {
       await page.navigate(`${appUrl}/#/home`);
-      await page.waitForSelector('.grid');
+      await page.waitForSelector('.hero');
+      await page.waitForSelector('.rail');
       await page.wait(900);
       await page.screenshot(join(outDir, '01-home.png'));
 
@@ -71,40 +69,41 @@ try {
       await page.evaluate(() => {
         const title = document.querySelector('input[name="title"]');
         const prompt = document.querySelector('textarea[name="prompt"]');
-        if (title) title.value = 'Interview Demo Archive';
-        if (prompt) prompt.value = 'Create an interview demo game about restoring a floating archive, with memory choices, a visible win condition, and replayable feedback.';
+        if (title) title.value = 'Signal Run: Interview Relay';
+        if (prompt) prompt.value = 'Create a premium horizontal side-scrolling arcade game for an interview review. The player repairs a neon relay, jumps across platforms, collects energy cores, avoids hazards, and reaches a final gate with a clear win state and replayable feedback.';
       });
       await page.screenshot(join(outDir, '03-create.png'));
       await page.click('#createForm button[type="submit"]');
       await page.waitForSelector('.table');
-      await page.wait(5200);
+      await page.waitForSelector('[data-publish]', 65000);
+      await page.wait(900);
       await page.screenshot(join(outDir, '04-tasks.png'));
 
       await page.evaluate(() => {
-        const publish = [...document.querySelectorAll('[data-publish]')].at(-1);
+        const publish = document.querySelector('[data-publish]');
         if (publish) publish.click();
       });
       await page.wait(1200);
       await page.evaluate(() => {
-        const preview = [...document.querySelectorAll('[data-play]')].at(-1);
+        const preview = document.querySelector('[data-play]');
         if (preview) preview.click();
       });
       await page.waitForSelector('.play-frame-wrap');
-      await page.wait(2600);
+      await page.waitForSelector('.play-frame');
+      await page.wait(1800);
+      await page.clickCenter('.play-frame');
+      await page.wait(1200);
       await page.screenshot(join(outDir, '05-play.png'));
-      await page.wait(2500);
+      await page.wait(1600);
+
     } finally {
-      await recorder.stop();
       await page.close();
       chromeProcess.kill();
     }
 
-    const frames = await recorder.frameCount();
-    const video = await encodeVideo(frames);
-    await writeFile(join(outDir, 'README.md'), mediaReadme(video, frames), 'utf8');
+    await writeFile(join(outDir, 'README.md'), mediaReadme('', 0), 'utf8');
     console.log(`screenshots: ${screenshotMap.map(([name]) => name).join(', ')}`);
-    console.log(`frames: ${frames}`);
-    console.log(`video: ${video || 'not encoded'}`);
+    console.log('video: run node scripts/build-demo-video.mjs delivery/media');
 } finally {
   if (!chromeProcess.killed) chromeProcess.kill();
 }
@@ -261,6 +260,17 @@ class CdpPage {
     await this.wait(350);
   }
 
+  async clickCenter(selector) {
+    const box = await this.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      if (!el) throw new Error(`Missing clickable ${sel}`);
+      const rect = el.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    }, selector);
+    await this.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await this.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await this.wait(350);
+  }
   async screenshot(path, options = {}) {
     const params = options.format === 'jpeg'
       ? { format: 'jpeg', quality: options.quality || 88, fromSurface: true }

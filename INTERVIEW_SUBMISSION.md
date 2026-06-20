@@ -1,4 +1,4 @@
-# Interview Submission
+﻿# Interview Submission
 
 ## Project
 
@@ -24,9 +24,11 @@ Demo accounts:
 
 ```powershell
 npm.cmd run audit:local
+npm.cmd run smoke:model
+npm.cmd run package:delivery
 ```
 
-This runs the automated functional tests and the local project audit.
+`audit:local` runs provider contract tests, end-to-end API tests, and the local project audit. `smoke:model` verifies the optional fighting Responses provider only when model environment variables are present.
 
 ## What To Review
 
@@ -38,6 +40,9 @@ This runs the automated functional tests and the local project audit.
 - Agent workflow: `docs/agent-workflow.md`
 - Artifact protocol: `docs/artifact-protocol.md`
 - Security review: `docs/security.md`
+- API contract: `docs/api-contract.md`
+- Operations runbook: `docs/ops-runbook.md`
+- Risk register: `docs/risk-register.md`
 - Verification evidence: `docs/verification.md`
 - Strict screenshot-requirement audit: `docs/strict-requirements-audit.md`
 - Completion statement: `docs/completion.md`
@@ -53,7 +58,7 @@ This runs the automated functional tests and the local project audit.
   - `delivery/media/04-tasks.png`
   - `delivery/media/05-play.png`
 
-The media was generated from the real local browser flow against the running app.
+The media was generated from the real local browser flow against the running app. The optional fighting Responses provider was smoke-tested through `npm.cmd run smoke:model` without committing any API key.
 
 ## Submission Boundary
 
@@ -61,3 +66,10 @@ The ZIP package excludes local runtime state and secrets:
 
 - excluded: `.git/`, `data/`, `storage/objects/`, `node_modules/`, `.env`, local output/cache folders
 - included: source code, tests, scripts, docs, `.env.example`, final visual assets, screenshots, and demo video
+
+## Rollback Point
+
+A pre-upgrade rollback tag and branch were created before the enterprise/API changes:
+
+- tag: `checkpoint-before-enterprise-20260620-031124`
+- branch: `backup/before-enterprise-20260620-031124`

@@ -115,7 +115,9 @@ try {
 
   const bundleRes = await fetch(base + manifest.manifest.entry, { headers: { Cookie: cookieHeader() } });
   assert.equal(bundleRes.status, 200);
-  assert.match(await bundleRes.text(), /AI Agent Generated Bundle/);
+  const bundleText = await bundleRes.text();
+  assert.match(bundleText, /AI Agent Side-Scroller|Playable side-scrolling game canvas|Start Mission/);
+  assert.match(bundleText, /<canvas id="game"/);
 
   const games = await request('/api/games?status=published');
   assert.ok(games.games.some((game) => game.id === task.gameId), 'published Create game should be visible on Home');

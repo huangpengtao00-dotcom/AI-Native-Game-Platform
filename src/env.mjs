@@ -50,6 +50,14 @@ export function createConfig(overrides = {}) {
   const rateLimitWindowMs = Number(overrides.rateLimitWindowMs ?? numberSetting('RATE_LIMIT_WINDOW_MS', 60000, { min: 1000, max: 3600000 }));
   const authRateLimitMax = Number(overrides.authRateLimitMax ?? numberSetting('AUTH_RATE_LIMIT_MAX', 12, { min: 1, max: 1000 }));
   const writeRateLimitMax = Number(overrides.writeRateLimitMax ?? numberSetting('WRITE_RATE_LIMIT_MAX', 80, { min: 1, max: 5000 }));
+  const modelProvider = String(overrides.modelProvider ?? process.env.MODEL_PROVIDER ?? 'local-deterministic-agent');
+  const modelWireApi = String(overrides.modelWireApi ?? process.env.MODEL_WIRE_API ?? 'chat-completions');
+  const modelBaseUrl = String(overrides.modelBaseUrl ?? process.env.MODEL_BASE_URL ?? '');
+  const modelName = String(overrides.modelName ?? process.env.MODEL_NAME ?? '');
+  const modelApiKey = String(overrides.modelApiKey ?? process.env.MODEL_API_KEY ?? '');
+  const modelTimeoutMs = Number(overrides.modelTimeoutMs ?? numberSetting('MODEL_TIMEOUT_MS', 12000, { min: 1000, max: 60000 }));
+  const modelReasoningEffort = String(overrides.modelReasoningEffort ?? process.env.MODEL_REASONING_EFFORT ?? '');
+  const modelDisableResponseStorage = overrides.modelDisableResponseStorage ?? booleanSetting('MODEL_DISABLE_RESPONSE_STORAGE', true);
 
   return {
     rootDir,
@@ -65,7 +73,14 @@ export function createConfig(overrides = {}) {
     maxUploadBytes: Math.max(1, maxUploadMb) * 1024 * 1024,
     cookieSecure: overrides.cookieSecure ?? booleanSetting('COOKIE_SECURE', false),
     trustProxy: overrides.trustProxy ?? booleanSetting('TRUST_PROXY', false),
-    modelProvider: String(overrides.modelProvider ?? process.env.MODEL_PROVIDER ?? 'local-deterministic-agent'),
+    modelProvider,
+    modelWireApi,
+    modelBaseUrl,
+    modelName,
+    modelApiKey,
+    modelTimeoutMs,
+    modelReasoningEffort,
+    modelDisableResponseStorage,
     rateLimitWindowMs,
     authRateLimitMax,
     writeRateLimitMax

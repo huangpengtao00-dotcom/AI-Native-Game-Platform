@@ -17,6 +17,8 @@ Steps:
 
 Replace `AgentOrchestrator.run()` with a provider-backed graph while preserving the same task/log/artifact contract.
 
+The implementation now includes an optional OpenAI-compatible model-design step before artifact build. The default remains `local-deterministic-agent`, so the demo works without credentials. When configured with `MODEL_PROVIDER`, `MODEL_WIRE_API`, `MODEL_BASE_URL`, `MODEL_NAME`, and `MODEL_API_KEY`, the Agent requests a compact JSON design plan from the model, normalizes it, records the provider result in Agent logs, and still falls back to the local deterministic design if the provider fails.
+
 Candidate integrations:
 
 - OpenAI Responses API with tool calls
@@ -30,3 +32,12 @@ Required invariants:
 - Every significant step writes an `agent_logs` row.
 - Task status is updated on both success and failure.
 - Unsafe generated code must run in a sandboxed runtime.
+- API keys must stay in environment variables or local `.env` files ignored by git.
+
+## Optional Provider Smoke Test
+
+```powershell
+npm.cmd run smoke:model
+```
+
+Without model environment variables this exits successfully as skipped. With a configured provider, it calls the model endpoint and verifies that a normalized design JSON can be produced.
