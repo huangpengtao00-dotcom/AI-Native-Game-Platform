@@ -23,6 +23,7 @@ const iconPaths = {
   play: ['M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z', 'M10 8.5v7l5.5-3.5L10 8.5Z'],
   docs: ['M6 2h8l4 4v16H6z', 'M14 2v5h5', 'M9 13h6', 'M9 17h6'],
   refresh: ['M20 7v5h-5', 'M4 17v-5h5', 'M18.2 9A7 7 0 0 0 6.1 6.8L4 12', 'M5.8 15A7 7 0 0 0 17.9 17.2L20 12'],
+  expand: ['M15 3h6v6', 'M21 3l-7 7', 'M9 21H3v-6', 'M3 21l7-7'],
   search: ['M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z', 'M21 21l-4.3-4.3'],
   manifest: ['M7 3h7l4 4v14H7z', 'M14 3v5h5', 'M10 13h6', 'M10 17h4'],
   log: ['M4 4h16v16H4z', 'M8 9l3 3-3 3', 'M13 15h4'],
@@ -256,8 +257,8 @@ async function loadTasks() {
 function routeTitle() {
   const map = {
     '/intro': ['作者与项目入口', 'Opall / 黄澎涛 的 AI 原生游戏生成平台。'],
-    '/home': ['游戏大厅', 'AI 生成的横版游戏，从对象存储发布并运行。'],
-    '/create': ['创作工坊', '设计、生成、检查并发布可玩的横版游戏。'],
+    '/home': ['游戏大厅', 'AI 生成的多类型 Canvas 游戏，从对象存储发布并运行。'],
+    '/create': ['创作工坊', '设计、生成、检查并发布可玩的多类型游戏。'],
     '/tasks': ['智能体控制台', '查看模型设计、构建日志、产物持久化和发布状态。'],
     '/play': ['试玩运行时', '通过 manifest 加载的 16:9 沙盒对象运行时。'],
     '/docs': ['交付系统', '架构、运维、风险与验证证据。']
@@ -486,7 +487,7 @@ function homeView() {
         <div>
           <div class="eyebrow">ForgePlay Studio · AI 原生游戏生成控制台</div>
           <h1>把游戏想法锻造成可试玩作品</h1>
-          <p class="hero-copy">从创意提示、模型设计、对象存储到 iframe 沙盒运行时，ForgePlay 用一条可审计的 Agent 流水线生成、发布并验证 16:9 横版游戏。界面以留白、层次、材质和清晰反馈为核心，开箱即可演示完整闭环。</p>
+          <p class="hero-copy">从创意提示、模型设计、对象存储到 iframe 沙盒运行时，ForgePlay 用一条可审计的 Agent 流水线生成、发布并验证 16:9 多类型 Canvas 游戏。界面以留白、层次、材质和清晰反馈为核心，开箱即可演示完整闭环。</p>
           <div class="actions"><button class="primary icon-button" data-nav="/create">${icon('create')}<span>创建游戏</span></button>${featured ? `<button class="secondary icon-button" data-play="${esc(featured.id)}">${icon('play')}<span>试玩精选</span></button>` : ''}<button class="ghost icon-button" data-nav="/docs">${icon('docs')}<span>查看架构</span></button></div>
         </div>
         <aside class="hero-panel">
@@ -634,7 +635,7 @@ function createView() {
           <div class="eyebrow">可玩产物目标</div>
           <h2>${esc(selected.label)} · 16:9 Canvas 运行时</h2>
           <p class="summary">${esc(selected.desc)} 生成产物包含键盘/鼠标交互、分数、计时、重开、胜利/失败反馈，以及沙盒安全渲染。</p>
-          <div class="tags"><span class="tag">manifest 驱动</span><span class="tag">对象存储</span><span class="tag">iframe 沙盒</span><span class="tag">模型设计日志</span><span class="tag">FPS 可扩展</span></div>
+          <div class="tags"><span class="tag">manifest 驱动</span><span class="tag">对象存储</span><span class="tag">iframe 沙盒</span><span class="tag">模型设计日志</span><span class="tag">多类型 Canvas</span></div>
         </div>
         <div class="mock-stage ${esc(selected.id)}"><span class="reticle"></span><span class="mock-player"></span><span class="mock-hud">Score 1200 · Combo 8</span></div>
       </section>
@@ -676,7 +677,7 @@ function playFrameContent() {
   if (state.playState.status === 'loaded' && state.playState.manifest) {
     const demoAutoplay = new URLSearchParams(location.search).get('demo') === 'autoplay' || location.hash.includes('demo=autoplay');
     const src = esc(state.playState.manifest.entry + (demoAutoplay ? '#autoplay' : ''));
-    return `<div class="play-status-strip"><span>Manifest verified</span><b>高清 Canvas 已挂载</b><em>点击画面后用 A/D/Space 试玩，R 重开</em></div><iframe class="play-frame" title="游戏运行时" sandbox="allow-scripts" referrerpolicy="no-referrer" src="${src}"></iframe>`;
+    return `<div class="play-status-strip"><span>Manifest verified</span><b>高清 Canvas 已挂载</b><em>点击画面后按游戏内提示试玩，R 重开</em><button class="ghost icon-button fullscreen-play" id="fullscreenPlay" type="button">${icon('expand')}<span>全屏试玩</span></button></div><iframe class="play-frame" title="游戏运行时" sandbox="allow-scripts" allow="fullscreen" allowfullscreen referrerpolicy="no-referrer" src="${src}"></iframe>`;
   }
   return '<div class="loader"><h2>准备加载</h2><p>正在等待选择游戏；进入试玩页时会自动加载第一个已发布游戏。</p></div>';
 }
@@ -687,11 +688,23 @@ function preferredPlayGameId() {
   if (latestTaskGame) return latestTaskGame;
   return state.games[0]?.id || '';
 }
+
+async function enterPlayFullscreen() {
+  const wrap = document.querySelector('#playWrap');
+  if (!wrap) return;
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (wrap.requestFullscreen) await wrap.requestFullscreen();
+  } catch (error) {
+    alert('当前浏览器阻止了全屏请求，请点击试玩区域后再试。');
+  }
+}
+
 function docsView() {
   return html`<section class="panel"><div class="eyebrow">工程交付</div><h2>提交边界</h2><p class="summary">运行时状态保留在项目文件夹内：SQLite 位于 <span class="kbd">data/</span>，对象产物位于 <span class="kbd">storage/objects</span>，交付证据位于 <span class="kbd">docs/</span>。默认演示不需要 Docker 或全局安装。</p></section>
   <section class="panel"><h2>评审清单</h2><table class="table"><tbody>
     <tr><th>产品</th><td>游戏大厅、创作工坊、智能体控制台和试玩运行时组成完整产品工作流。</td></tr>
-    <tr><th>游戏运行时</th><td>生成 bundle 是可玩的 16:9 Canvas 横版游戏，并通过 manifest 从对象存储加载。</td></tr>
+    <tr><th>游戏运行时</th><td>生成 bundle 是可玩的 16:9 多类型 Canvas 游戏，并通过 manifest 从对象存储加载。</td></tr>
     <tr><th>安全</th><td>包含 HttpOnly SameSite Cookie、CSRF、上传限制、对象 key 清洗、iframe 沙盒、CSP 和提示词注入筛查。</td></tr>
     <tr><th>工程化</th><td>包含模型供应商契约测试、本地审计、API 冒烟测试、CI 工作流、运维手册和风险登记。</td></tr>
   </tbody></table></section>`;
@@ -712,6 +725,7 @@ function afterRender() {
   document.querySelectorAll('[data-task]').forEach((btn) => btn.addEventListener('click', () => openTask(btn.dataset.task)));
   document.querySelectorAll('[data-detail]').forEach((btn) => btn.addEventListener('click', () => showManifest(btn.dataset.detail)));
   document.querySelector('#backHome')?.addEventListener('click', () => navigate('/home'));
+  document.querySelector('#fullscreenPlay')?.addEventListener('click', enterPlayFullscreen);
   wireAuth();
   wireCreate();
   bindMotion();

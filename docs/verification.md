@@ -15,6 +15,7 @@ The test starts the server on an ephemeral port and verifies:
 - Readiness endpoint confirms database and object storage access.
 - Every API response includes `X-Request-Id`.
 - Seed creates at least 15 published games, all with website-generation style `create-agent` task evidence.
+- Seeded bundles include distinct Canvas runtime markers for FPS target training, flying shooter, racing, tower defense, card strategy, rhythm, stealth, survival gathering, and gravity flipping.
 - Unauthenticated task access returns 401.
 - Registration creates a creator session and CSRF token.
 - Authenticated mutating requests without CSRF return 403.
@@ -26,7 +27,7 @@ The test starts the server on an ephemeral port and verifies:
 - Draft game is created.
 - Publish changes game to `published`.
 - Manifest entry points to `/objects/`.
-- Bundle can be fetched and contains playable runtime markup.
+- Bundle can be fetched and contains playable runtime markup; the FPS bundle is explicitly checked to avoid reusing the side-scrolling platform template.
 - Published Create game appears in Home API.
 
 ## Manual Smoke Test
@@ -40,6 +41,7 @@ The test starts the server on an ephemeral port and verifies:
 7. Publish it.
 8. Return Home and verify it appears.
 9. Click Play and verify the iframe game runs.
+10. Use the Play toolbar's full-screen button to verify the sandbox stage can enter browser fullscreen.
 
 ## Self-Audit Notes
 

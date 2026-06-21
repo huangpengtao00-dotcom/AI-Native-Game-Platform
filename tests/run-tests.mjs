@@ -69,6 +69,34 @@ try {
   const seededCreateGame = seededCreateGames[0];
   assert.ok(seededCreateGame.manifestUrl?.startsWith('/objects/'), 'seeded Create-flow game should use object manifest');
 
+  const seededBundleTexts = [];
+  for (const game of seededCreateGames) {
+    const seededManifest = await request(`/api/games/${game.id}/manifest`);
+    assert.ok(seededManifest.manifest.entry.startsWith('/objects/'), `${game.title} should expose an object bundle entry`);
+    const seededBundleRes = await fetch(base + seededManifest.manifest.entry);
+    assert.equal(seededBundleRes.status, 200);
+    seededBundleTexts.push(await seededBundleRes.text());
+  }
+  const seededRuntimeEvidence = seededBundleTexts.join('\n---bundle---\n');
+  for (const marker of [
+    'FPS_TARGET_TRAINER',
+    'CANVAS_RUNTIME_SHOOTER',
+    'CANVAS_RUNTIME_RACING',
+    'CANVAS_RUNTIME_TOWER',
+    'CANVAS_RUNTIME_CARD',
+    'CANVAS_RUNTIME_RHYTHM',
+    'CANVAS_RUNTIME_STEALTH',
+    'CANVAS_RUNTIME_SURVIVAL',
+    'CANVAS_RUNTIME_GRAVITY'
+  ]) {
+    assert.match(seededRuntimeEvidence, new RegExp(marker), `seeded games should include ${marker}`);
+  }
+  const fpsBundle = seededBundleTexts.find((text) => text.includes('FPS_TARGET_TRAINER'));
+  assert.ok(fpsBundle, 'seed should include a distinct FPS target trainer bundle');
+  assert.doesNotMatch(fpsBundle, /function initWorld\(\)/, 'FPS bundle must not reuse the side-scrolling platform template');
+  assert.match(fpsBundle, /crosshair/);
+  assert.match(fpsBundle, /hitTarget/);
+
   const ready = await request('/api/ready');
   assert.equal(ready.ok, true);
   assert.equal(ready.checks.database, true);

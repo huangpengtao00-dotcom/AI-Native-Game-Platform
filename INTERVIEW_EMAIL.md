@@ -15,11 +15,11 @@ https://github.com/huangpengtao00-dotcom/AI-Native-Game-Platform
 核心亮点：
 
 - 完整业务闭环：游戏大厅 -> 登录/注册 -> 创作工坊 -> Agent 生成任务 -> 日志与产物持久化 -> 预览 -> 发布 -> 试玩。
-- 可运行游戏产物：生成 bundle 是 16:9 Canvas 横版游戏，包含键盘控制、收集物、机关、终点、分数、计时和重开。
+- 可运行游戏产物：生成 bundle 是 16:9 多类型 Canvas 游戏，包含独立 FPS 靶场、飞行射击、竞速、塔防、卡牌、节奏、潜行、生存采集、重力翻转等运行时，并支持全屏试玩。
 - 工程化后端：Node.js 原生 HTTP、Node 24 `node:sqlite`、SQLite、对象存储适配层、任务日志、审计事件、manifest 合约。
 - 安全边界：HttpOnly SameSite Cookie、CSRF、上传类型限制、对象 key 清洗、CSP、iframe sandbox、提示词注入筛查。
 - AI 接入边界：默认本地确定性 Agent 可离线运行，也支持 OpenAI 兼容模型供应商生成设计 JSON。
-- 展示完整度：新版浅色高级前端包含 Opall / 黄澎涛 作者封面页、Steam 式 15 类游戏类型橱窗，以及 15 个通过网站 Create-flow 预生产的可试玩游戏。
+- 展示完整度：新版浅色高级前端包含 Opall / 黄澎涛 作者封面页、Steam 式 15 类游戏类型橱窗，以及 15 个通过网站 Create-flow 预生产的可试玩游戏；试玩截图已更新为真实 FPS 目标训练画面。
 
 本地运行方式：
 
