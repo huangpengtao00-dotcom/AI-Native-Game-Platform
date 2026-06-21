@@ -54,6 +54,12 @@ flowchart LR
 - Replace `LocalObjectStorage` with S3/OSS-compatible adapter.
 - Replace local Agent harness with model/tool orchestration.
 - Add optional Godot MCP adapter as a secondary generator/export path while keeping HTML Canvas bundles as the default zero-install runtime.
+- Add a realtime game server tier for larger online games and dungeon/instance games:
+  - Gateway: WebSocket or WebTransport entrypoint with auth, rate limiting, heartbeat, and reconnect tokens.
+  - Matchmaking/room service: creates rooms, parties, and dungeon instance assignments.
+  - Instance workers: run authoritative simulation for each dungeon copy, persist checkpoints, and stream state deltas to clients.
+  - Persistence: Postgres for account/character/inventory/progression, Redis for presence/session routing, and object storage/CDN for generated assets.
+  - Operations: horizontal worker scaling, shard/region routing, replay/debug traces, metrics, and anti-cheat validation on the server.
 - Add job queue durability using Redis/BullMQ or database polling.
 - Add OAuth provider exchanges and CSRF state validation.
 - Add Postgres migrations and row-level authorization tests.

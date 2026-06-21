@@ -33,3 +33,11 @@
 5. Admin moderation for unsafe games.
 6. More game templates and version remixing.
 7. Optional Godot MCP export adapter after local Godot/export-template prerequisites are controlled.
+
+## Long-Term Online Game Upgrade Path
+
+- Add a realtime server layer for larger online games, co-op rooms, and dungeon/instance gameplay.
+- Introduce matchmaking, party creation, room lifecycle APIs, and authoritative dungeon instance workers.
+- Use WebSocket or WebTransport for state sync while keeping the generated manifest/bundle contract for client delivery.
+- Persist character progression, inventory, dungeon checkpoints, match results, and generated asset versions in production-grade storage.
+- Add server-side simulation validation, replay/debug traces, region/shard routing, and observability before claiming MMO-scale readiness.

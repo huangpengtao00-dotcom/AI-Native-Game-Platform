@@ -67,6 +67,7 @@ The target machine has Node 24 and Git, but no Docker. A zero-dependency Node im
 - `AgentOrchestrator` can use the local deterministic harness or an OpenAI-compatible model design step.
 - SQLite can be migrated to Postgres through the data access layer.
 - The Play page consumes a manifest contract instead of hardcoded local components.
+- Large online games or dungeon/instance games can evolve behind the same manifest model by adding a realtime game server layer: room/session service, dungeon instance workers, WebSocket state sync, matchmaking, persistence for characters/inventory, and authoritative anti-cheat validation.
 
 ## Important Files
 
